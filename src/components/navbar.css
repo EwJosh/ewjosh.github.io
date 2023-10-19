@@ -1,0 +1,39 @@
+#heading {
+    padding: 0.75rem;
+    height: 3rem;
+    background-color: transparent;
+    color: white;
+
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+#navbar-title {
+    min-width: 25vw;
+}
+
+#navbar-title > img {
+    min-width: 100%;
+    image-rendering: pixelated;
+}
+
+#navbar {
+    width: 100%;
+    justify-content: space-around;
+    margin: 0 10rem;
+}
+
+#navbar > .MuiButton-root {
+    padding: 0.75rem;
+    min-width: 8%;
+    background-color: rgb(190, 99, 13);
+}
+
+/*
+.navbar-link {
+    color: black;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0 1em;
+} */

@@ -1,0 +1,14 @@
+#main-block {
+    min-width: 50%;
+}
+
+#date, #time {
+    margin: 2rem;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    font-size: 5rem;
+    font-family: Roboto;
+}

@@ -1,0 +1,22 @@
+#footer {
+    height: 4rem;
+    padding: 1rem;
+    background-color: rgb(190, 99, 13);
+}
+
+#footer-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+#footer-title-img {
+    max-height: 3rem;
+}
+
+.footer-link {
+    color: black;
+    /* text-decoration: none; */
+    /* font-weight: 500; */
+    padding: 0 1em;
+}
