@@ -8,7 +8,7 @@ function Home() {
                 <div className="half-box large-text-box">
                     <p>
                         Welcome, weary traveler, to the <i>Pumpkin Patchwork</i>!
-                        A website housing a variety of applications!
+                        A website housing a variety of applications and whatnot.
                     </p>
                     <p >
                         Enjoy your stay, crafted by Edward Josh Hermano!
@@ -35,7 +35,7 @@ function Home() {
                 </div>
                 <div className="half-box large-text-box">
                     <p>
-                        This website is a work in progress, but I have an assortment of features for you.
+                        Take a pumpkin and walk around.
                     </p>
                 </div>
             </div>

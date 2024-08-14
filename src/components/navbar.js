@@ -1,6 +1,6 @@
 import React from 'react';
 import "./navbar.css";
-import ppTitle from '../assets/Pumpkin_Patchwork_Title.png'
+import ppTitle from '../assets/images/Pumpkin_Patchwork_Title.png'
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -79,6 +79,13 @@ function Navbar() {
                         onClick={handleClose}
                     >
                         Calculator
+                    </MenuItem>
+                    <MenuItem
+                        href="/apps/nikkeTeamBuilder"
+                        component="a"
+                        onClick={handleClose}
+                    >
+                        Nikke
                     </MenuItem>
                 </Menu>
 

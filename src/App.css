@@ -1,10 +1,12 @@
 #App {
-  background-color: beige;
+  /* background-color: beige; */
+  background-color: #303030;
   min-width: 100vw;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: #fff6df;
 }
 
 #heading {
@@ -12,9 +14,9 @@
 }
 
 .page {
-  margin: 3rem 0 3rem;
-  padding: 1rem 1rem;
-  min-width: 100%;
+  margin: 5rem 0 3rem;
+  /* padding: 1rem 1rem; */
+  width: 100vw;
   min-height: 85vh;
   flex: 1 0 auto;
   display: flex;
@@ -62,6 +64,6 @@
 .paper-back {
   margin: 1rem;
   border-radius: 1rem;
-  background-color: white;
+  background-color: #deb88771;
   padding: 1rem;
 }

@@ -269,6 +269,7 @@ function Calculator() {
                 <TextField
                     onChange={directExpression}
                     value={expression}
+                    sx={{ backgroundColor: '#deb887c0;' }}
                 >
 
                 </TextField>
