@@ -1,0 +1,18 @@
+{
+  "categories": [
+    "Burst",
+    "Burst Cooldown",
+    "Rarity",
+    "Class",
+    "Code",
+    "Manufacturer",
+    "Weapon"
+  ],
+  "Burst": ["1", "2", "3", "1M", "V"],
+  "Burst Cooldown": ["20", "40", "60"],
+  "Rarity": ["R", "SR", "SSR"],
+  "Class": ["Attacker", "Defender", "Supporter"],
+  "Code": ["Electric", "Fire", "Iron", "Water", "Wind"],
+  "Manufacturer": ["Elysion", "Missilis", "Tetra", "Pilgrim", "Abnormal"],
+  "Weapon": ["AR", "MG", "RL", "SG", "SMG", "SR"]
+}
