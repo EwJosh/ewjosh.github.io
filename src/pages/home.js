@@ -25,7 +25,7 @@ function Home() {
                     </span>
                 </div>
             </div>
-            <div className="grid-row">
+            <div className="grid-row paper-back">
                 <div className="half-box center-items">
                     <img
                         id="cool-guy-img"

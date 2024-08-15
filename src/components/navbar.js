@@ -41,11 +41,12 @@ function Navbar() {
             >
                 <Button
                     id="navbar-apps-btn"
-                    aria-controls={open ? "navbar-apps-menu" : undefined}
+                    aria-controls="navbar-apps-menu"
                     aria-haspopup="true"
                     aria-expanded={open ? "true" : "false"}
                     onClick={(e) => handleClick(0, e)}
                     onMouseOver={(e) => handleClick(0, e)}
+                    // onMouseLeave={handleClose}
                     color="inherit"
                 >
                     Apps
@@ -67,21 +68,21 @@ function Navbar() {
                     MenuListProps={{ onMouseLeave: handleClose }}
                 >
                     <MenuItem
-                        href="/apps/clock"
+                        href="/#/apps/clock"
                         component="a"
                         onClick={handleClose}
                     >
                         Clock
                     </MenuItem>
                     <MenuItem
-                        href="/apps/calculator"
+                        href="/#/apps/calculator"
                         component="a"
                         onClick={handleClose}
                     >
                         Calculator
                     </MenuItem>
                     <MenuItem
-                        href="/apps/nikkeTeamBuilder"
+                        href="/#/apps/nikkeTeamBuilder"
                         component="a"
                         onClick={handleClose}
                     >
@@ -91,7 +92,7 @@ function Navbar() {
 
                 <Button
                     id="navbar-games-btn"
-                    aria-controls={open ? "navbar-games-menu" : undefined}
+                    aria-controls="navbar-games-menu"
                     aria-haspopup="true"
                     aria-expanded={open ? "true" : "false"}
                     onClick={(e) => handleClick(1, e)}
@@ -106,6 +107,7 @@ function Navbar() {
                     anchorEl={anchorEl && anchorEl[1]}
                     open={anchorEl && anchorEl[1]}
                     onClose={handleClose}
+
                     anchorOrigin={{
                         vertical: "bottom",
                         horizontal: "left",
@@ -116,23 +118,25 @@ function Navbar() {
                     }}
                     MenuListProps={{ onMouseLeave: handleClose }}
                 >
-                    <MenuItem onClick={handleClose}>Tic Tac Toe</MenuItem>
-                    <MenuItem onClick={handleClose}>Piranha Frenzy</MenuItem>
+                    <MenuItem disabled>You got games on your phone?</MenuItem>
+                    {/* <MenuItem onClick={handleClose}>Tic Tac Toe</MenuItem>
+                    <MenuItem onClick={handleClose}>Piranha Frenzy</MenuItem> */}
                 </Menu>
 
                 <Button
                     id="navbar-about-btn"
-                    aria-controls={open ? "navbar-about-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : "false"}
-                    onClick={(e) => handleClick(2, e)}
-                    onMouseOver={(e) => handleClick(2, e)}
+                    // aria-controls={open ? "navbar-about-menu" : undefined}
+                    // aria-haspopup="true"
+                    // aria-expanded={open ? "true" : "false"}
+                    // onClick={(e) => handleClick(2, e)}
+                    // onMouseOver={(e) => handleClick(2, e)}
+                    href='/#/about'
 
                     color="inherit"
                 >
                     About
                 </Button>
-                <Menu
+                {/* <Menu
                     id="navbar-about-menu"
                     aria-labelledby="navbar-about-btn"
                     anchorEl={anchorEl && anchorEl[2]}
@@ -150,7 +154,7 @@ function Navbar() {
                 >
                     <MenuItem onClick={handleClose}>About</MenuItem>
                     <MenuItem onClick={handleClose}>About</MenuItem>
-                </Menu>
+                </Menu> */}
             </Toolbar>
         </AppBar>
     );

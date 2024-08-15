@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react';
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Routes,
   Route
 } from 'react-router-dom';
@@ -16,6 +16,8 @@ import NikkeTB from './pages/nikkeTeamBuilder.js';
 import ToDo from './pages/toDo.js';
 
 import TicTacToe from './games/tictactoe.js';
+
+import About from './pages/about.js'
 
 import { alpha, createTheme, getContrastRatio, ThemeProvider } from '@mui/material';
 
@@ -40,7 +42,6 @@ const theme = createTheme({
 function App() {
   return (
     <div id="App">
-
       <ThemeProvider theme={theme}>
         <Navbar />
         <Router>
@@ -52,7 +53,7 @@ function App() {
             <Route exact path="/apps/nikkeTeamBuilder" element={<NikkeTB />} />
             <Route exact path="/games" element={<Home />} />
             <Route exact path="/games/tictactoe" element={<TicTacToe />} />
-            <Route exact path="/about" element={<Home />} />
+            <Route exact path="/about" element={<About />} />
             <Route exact path="/test" element={<ToDo />}></Route>
           </Routes>
         </Router>

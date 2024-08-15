@@ -31,8 +31,15 @@
 
 #navbar > .MuiButton-root {
   padding: 0.75rem;
-  min-width: 8%;
+  width: 5rem;
   background-color: rgb(190, 99, 13);
+}
+
+.navbar-menu-container {
+  position: absolute;
+  width: 5rem;
+  height: 3rem;
+  top: -3.5rem;
 }
 
 /*
