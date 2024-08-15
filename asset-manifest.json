@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.ca487bd2.css",
-    "main.js": "/static/js/main.595ca840.js",
+    "main.css": "/static/css/main.b5662d1e.css",
+    "main.js": "/static/js/main.ee79856a.js",
     "static/js/787.2083b764.chunk.js": "/static/js/787.2083b764.chunk.js",
     "static/media/NikkeWeaponAR.png": "/static/media/NikkeWeaponAR.5da20fd5a28d3f4161f3.png",
     "static/media/NikkeWeaponSMG.png": "/static/media/NikkeWeaponSMG.5ed44cb72b1a297237c6.png",
@@ -16,12 +16,12 @@
     "static/media/NikkeClassSupporter.png": "/static/media/NikkeClassSupporter.b494d6f3afbd869baebd.png",
     "static/media/NikkeWeaponSG.png": "/static/media/NikkeWeaponSG.e96d23e8ae7edbde33e5.png",
     "index.html": "/index.html",
-    "main.ca487bd2.css.map": "/static/css/main.ca487bd2.css.map",
-    "main.595ca840.js.map": "/static/js/main.595ca840.js.map",
+    "main.b5662d1e.css.map": "/static/css/main.b5662d1e.css.map",
+    "main.ee79856a.js.map": "/static/js/main.ee79856a.js.map",
     "787.2083b764.chunk.js.map": "/static/js/787.2083b764.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ca487bd2.css",
-    "static/js/main.595ca840.js"
+    "static/css/main.b5662d1e.css",
+    "static/js/main.ee79856a.js"
   ]
 }
