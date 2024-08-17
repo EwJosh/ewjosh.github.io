@@ -14,7 +14,10 @@
 }
 
 #navbar-title {
-  min-width: 25vw;
+  /* margin-top: 1rem; */
+  min-width: 20vw;
+  width: 25vw;
+  min-height: 3rem;
   background-color: beige;
 }
 
