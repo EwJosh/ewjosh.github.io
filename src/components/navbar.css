@@ -1,12 +1,7 @@
 #heading {
-  padding: 0.75rem;
   height: 3rem;
   background-color: transparent;
   color: white;
-
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
 }
 
 #heading > * {
@@ -14,28 +9,33 @@
 }
 
 #navbar-title {
-  /* margin-top: 1rem; */
-  min-width: 20vw;
-  width: 25vw;
-  min-height: 3rem;
+  min-width: 10vw;
+  /* width: 25vw; */
+  height: 100%;
   background-color: beige;
+  margin-right: 5vw;
 }
 
 #navbar-title > img {
-  min-width: 100%;
+  height: 100%;
   image-rendering: pixelated;
 }
 
 #navbar {
   width: 100%;
-  justify-content: space-around;
   margin: 0 10rem;
+
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10vw;
 }
 
-#navbar > .MuiButton-root {
+.navbar-btn {
   padding: 0.75rem;
-  width: 5rem;
-  background-color: rgb(190, 99, 13);
+  height: 100%;
+  color: white;
 }
 
 .navbar-menu-container {

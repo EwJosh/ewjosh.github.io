@@ -1,5 +1,5 @@
 import React from 'react';
-import "./navbar.css";
+import './navbar.css';
 import ppTitle from '../assets/images/Pumpkin_Patchwork_Title.png'
 
 import AppBar from '@mui/material/AppBar';
@@ -21,69 +21,74 @@ function Navbar() {
 
     return (
         <AppBar
-            id="heading"
+            id='heading'
             elevation={0}
         >
-            <Button
-                id="navbar-title"
-                href="/"
-                color="inherit"
-            >
-                <img
-                    src={ppTitle}
-                    alt="Pumpkin Patchwork"
-                />
-            </Button>
             <Toolbar
-                id="navbar"
-                variant="dense"
+                id='navbar'
+                variant='dense'
                 disableGutters
             >
                 <Button
-                    id="navbar-apps-btn"
-                    aria-controls="navbar-apps-menu"
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : "false"}
+                    id='navbar-title'
+                    href='/'
+                >
+                    <img
+                        src={ppTitle}
+                        alt='Pumpkin Patchwork'
+                    />
+                </Button>
+
+                <Button
+                    id='navbar-apps-btn'
+                    className='navbar-btn'
+                    aria-controls='navbar-apps-menu'
+                    aria-haspopup='true'
+                    aria-expanded={open ? 'true' : 'false'}
                     onClick={(e) => handleClick(0, e)}
                     onMouseOver={(e) => handleClick(0, e)}
                     // onMouseLeave={handleClose}
-                    color="inherit"
+                    color='inherit'
+                    sx={{
+                        minWidth: '5vw',
+                        backgroundColor: 'rgb(190, 99, 13)'
+                    }}
                 >
                     Apps
                 </Button>
                 <Menu
-                    id="navbar-apps-menu"
-                    aria-labelledby="navbar-apps-btn"
+                    id='navbar-apps-menu'
+                    aria-labelledby='navbar-apps-btn'
                     anchorEl={anchorEl && anchorEl[0]}
                     open={anchorEl && anchorEl[0]}
                     onClose={handleClose}
                     anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left",
+                        vertical: 'bottom',
+                        horizontal: 'left',
                     }}
                     transformOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
+                        vertical: 'top',
+                        horizontal: 'left',
                     }}
                     MenuListProps={{ onMouseLeave: handleClose }}
                 >
                     <MenuItem
-                        href="/#/apps/clock"
-                        component="a"
+                        href='/#/apps/clock'
+                        component='a'
                         onClick={handleClose}
                     >
                         Clock
                     </MenuItem>
                     <MenuItem
-                        href="/#/apps/calculator"
-                        component="a"
+                        href='/#/apps/calculator'
+                        component='a'
                         onClick={handleClose}
                     >
                         Calculator
                     </MenuItem>
                     <MenuItem
-                        href="/#/apps/nikkeTeamBuilder"
-                        component="a"
+                        href='/#/apps/nikkeTeamBuilder'
+                        component='a'
                         onClick={handleClose}
                     >
                         Nikke
@@ -91,30 +96,36 @@ function Navbar() {
                 </Menu>
 
                 <Button
-                    id="navbar-games-btn"
-                    aria-controls="navbar-games-menu"
-                    aria-haspopup="true"
-                    aria-expanded={open ? "true" : "false"}
+                    id='navbar-games-btn'
+                    className='navbar-btn'
+                    aria-controls='navbar-games-menu'
+                    aria-haspopup='true'
+                    aria-expanded={open ? 'true' : 'false'}
                     onClick={(e) => handleClick(1, e)}
                     onMouseOver={(e) => handleClick(1, e)}
-                    color="inherit"
+                    color='inherit'
+                    sx={{
+                        minWidth: '5vw',
+                        backgroundColor: 'rgb(190, 99, 13)'
+                    }}
                 >
                     Games
                 </Button>
                 <Menu
-                    id="navbar-games-menu"
-                    aria-labelledby="navbar-games-btn"
+                    id='navbar-games-menu'
+                    className='navbar-btn'
+                    aria-labelledby='navbar-games-btn'
                     anchorEl={anchorEl && anchorEl[1]}
                     open={anchorEl && anchorEl[1]}
                     onClose={handleClose}
 
                     anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left",
+                        vertical: 'bottom',
+                        horizontal: 'left',
                     }}
                     transformOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
+                        vertical: 'top',
+                        horizontal: 'left',
                     }}
                     MenuListProps={{ onMouseLeave: handleClose }}
                 >
@@ -124,37 +135,22 @@ function Navbar() {
                 </Menu>
 
                 <Button
-                    id="navbar-about-btn"
-                    // aria-controls={open ? "navbar-about-menu" : undefined}
-                    // aria-haspopup="true"
-                    // aria-expanded={open ? "true" : "false"}
+                    id='navbar-about-btn'
+                    className='navbar-btn'
+                    // aria-controls={open ? 'navbar-about-menu' : undefined}
+                    // aria-haspopup='true'
+                    // aria-expanded={open ? 'true' : 'false'}
                     // onClick={(e) => handleClick(2, e)}
                     // onMouseOver={(e) => handleClick(2, e)}
                     href='/#/about'
-
-                    color="inherit"
+                    color='inherit'
+                    sx={{
+                        minWidth: '5vw',
+                        backgroundColor: 'rgb(190, 99, 13)'
+                    }}
                 >
                     About
                 </Button>
-                {/* <Menu
-                    id="navbar-about-menu"
-                    aria-labelledby="navbar-about-btn"
-                    anchorEl={anchorEl && anchorEl[2]}
-                    open={anchorEl && anchorEl[2]}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "left",
-                    }}
-                    transformOrigin={{
-                        vertical: "top",
-                        horizontal: "left",
-                    }}
-                    MenuListProps={{ onMouseLeave: handleClose }}
-                >
-                    <MenuItem onClick={handleClose}>About</MenuItem>
-                    <MenuItem onClick={handleClose}>About</MenuItem>
-                </Menu> */}
             </Toolbar>
         </AppBar>
     );

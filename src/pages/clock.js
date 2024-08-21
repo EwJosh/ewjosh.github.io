@@ -135,7 +135,7 @@ function Clock() {
                 <div id="main-block" className="paper-back">
                     <span id="date">
                         <span>
-                            {timeObj.find(element => element.type === "weekday").value}
+                            {timeObj.find(element => element.type === "weekday").value},
                         </span>
                         <span>
 
@@ -143,7 +143,7 @@ function Clock() {
                         </span>
                         <span>
 
-                            {timeObj.find(element => element.type === "day").value}
+                            {timeObj.find(element => element.type === "day").value},
                         </span>
                         <span>
                             {timeObj.find(element => element.type === "year").value}

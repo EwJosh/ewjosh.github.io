@@ -1,14 +1,21 @@
-#main-block {
-    min-width: 50%;
+#left-sidebar > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-#date, #time {
-    margin: 2rem;
+#main-block {
+  min-width: 100%;
+}
 
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
+#date,
+#time {
+  margin: 2rem;
 
-    font-size: 5rem;
-    font-family: Roboto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+
+  font-size: 5rem;
+  font-family: Roboto;
 }
