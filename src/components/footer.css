@@ -1,8 +1,10 @@
 #footer {
+  max-width: 100vw;
   height: 4rem;
   padding: 1rem;
   background-color: rgb(190, 99, 13);
   justify-content: space-between;
+  box-sizing: border-box;
 }
 
 #footer > div {

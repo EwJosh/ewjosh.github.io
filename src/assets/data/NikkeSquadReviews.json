@@ -9,6 +9,6 @@
     "error": "Squad cannot reach full burst."
   },
   "Code": {
-    "warning": "Squad is missing %CODE%."
+    "error": "Squad is missing %CODE%."
   }
 }

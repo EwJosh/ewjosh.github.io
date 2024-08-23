@@ -24,6 +24,18 @@ import { alpha, createTheme, getContrastRatio, ThemeProvider } from '@mui/materi
 const theme = createTheme({
   palette: {
     mode: 'dark',
+    white: {
+      main: alpha('#fff', 0.9),
+      light: alpha('#fff', 0.7),
+      dark: '#fff',
+      contrastText: '#111',
+    },
+    black: {
+      main: alpha('#000', 0.9),
+      light: alpha('#000', 0.7),
+      dark: '#000',
+      contrastText: '#eee',
+    },
     selected: {
       main: alpha('#111', 0.9),
       light: alpha('#111', 0.7),
@@ -50,7 +62,7 @@ function App() {
             <Route exact path="/apps" element={<Home />} />
             <Route exact path="/apps/clock" element={<Clock />} />
             <Route exact path="/apps/calculator" element={<Calculator />} />
-            <Route exact path="/apps/nikkeTeamBuilder" element={<NikkeTB />} />
+            <Route exact path="/apps/nikkeTeamBuilder" element={<NikkeTB theme={theme} />} />
             <Route exact path="/games" element={<Home />} />
             <Route exact path="/games/tictactoe" element={<TicTacToe />} />
             <Route exact path="/about" element={<About />} />

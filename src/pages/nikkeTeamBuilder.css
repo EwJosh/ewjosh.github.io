@@ -5,6 +5,35 @@ h4 {
   margin: 0;
 }
 
+#tb-header {
+  /* position: relative; */
+  /* left: 1.15rem; */
+
+  gap: 1rem;
+  align-items: center;
+}
+
+#tb-header > h1 {
+  margin: 0 1rem;
+}
+
+#settings-dialog-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+#settings-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sett-select-icon {
+  max-height: 1rem;
+  margin-right: 0.5rem;
+  color: #70809069;
+}
+
 #filter-container {
   width: 80vw;
   border: 1px solid;
@@ -15,16 +44,32 @@ h4 {
   background-color: #006b6b;
 }
 
+.filter-header {
+  width: 100%;
+  gap: 5%;
+  align-items: center;
+}
+
 #filter {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+#filter-category-container {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   flex-wrap: wrap;
+  align-items: flex-end;
 }
 
 .filter-category {
   align-items: center;
   margin: 0.2rem 1rem;
+  flex-grow: 1;
 }
 
 .filter-category-visibility-container {
@@ -32,9 +77,6 @@ h4 {
   position: relative;
   left: 0.75rem;
   align-items: center;
-  /* width: 100%; */
-  /* justify-content: flex-end; */
-  /* align-items: flex-end; */
 }
 
 .filter-category > div {
@@ -42,15 +84,20 @@ h4 {
 }
 
 .filter-icon {
-  /* height: 100%; */
-  max-height: 2rem;
+  height: 30px;
+  max-width: 2rem;
+  box-sizing: border-box;
+}
+
+.filter-icon-unselected {
+  padding: 6px;
 }
 
 .nikke-squad {
   margin: 0.25rem;
   border-radius: 1rem;
   padding: 0.25rem;
-  min-width: 50vw;
+  min-width: 60vw;
   min-height: 2rem;
 
   display: flex;
@@ -60,7 +107,7 @@ h4 {
 }
 
 .nikke-squad-info {
-  width: 20%;
+  min-width: 20%;
   padding-left: 1rem;
 }
 
@@ -72,12 +119,19 @@ h4 {
 
 .nikke-squad-list {
   gap: 0rem;
-  width: 80%;
+  /* min-width: 50%; */
+  min-width: 35rem;
+  min-height: 2rem;
 
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
+
+  border-radius: 1rem;
+  background-color: #b59872;
+  border: 2px solid #766d62;
+  align-self: center;
 }
 
 .squad-rating-tip {
@@ -102,8 +156,8 @@ h4 {
   padding: 0.25rem;
   text-align: center;
   /* background-color: #ffc0cbbf; */
-  background-color: #deb887c3;
-  border: 2px solid #5c5c5cb6;
+  background-color: #b59872;
+  border: 2px solid #766d62;
 }
 
 .nikke-list {
@@ -137,10 +191,21 @@ h4 {
 
 .nikke-image-container {
   position: relative;
+  /* min-width: 1rem; */
+  width: 100%;
+  min-height: 3rem;
 }
 
 .nikke-image {
   max-width: 100%;
+}
+
+.nikke-burst {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  min-width: 1rem;
+  max-width: 30%;
 }
 
 .nikke-name {
@@ -167,11 +232,4 @@ h4 {
   /* aspect-ratio: 1/1; */
   object-fit: contain;
   width: 25%;
-}
-
-.nikke-burst {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  max-width: 30%;
 }

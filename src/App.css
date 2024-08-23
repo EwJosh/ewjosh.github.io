@@ -1,7 +1,7 @@
 #App {
   /* background-color: beige; */
   background-color: #303030;
-  min-width: 100vw;
+  max-width: 100vw;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -16,7 +16,7 @@
 .page {
   margin: 5rem 0 3rem;
   /* padding: 1rem 1rem; */
-  width: 100vw;
+  max-width: 100vw;
   min-height: 85vh;
   flex: 1 0 auto;
   display: flex;

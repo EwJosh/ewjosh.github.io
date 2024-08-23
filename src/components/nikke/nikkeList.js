@@ -1,21 +1,22 @@
-import React, { useLayoutEffect } from 'react';
+import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
-import NikkeUnit from '../components/nikkeUnit.js'
+import NikkeUnit from './nikkeUnit.js'
 
 function NikkeList(props) {
-    // useLayoutEffect(() => {
-    //     props.visible.categories.forEach(category => {
-    //         if (!props.visible[category])
-    //             props.nikkes.forEach(nikke => nikke[category] = null)
-    //     })
-    // }, [props.visible])
 
+    /**
+     * When a Nikke Unit calls for a move, the list needs to input its own information before sending it up to the Team Builder.
+     * @param {string} nikkeId ID of the moving Nikke.
+     * @param {number} srcIndex Index of the Nikke's ID in the list.
+     */
     const onMoveNikke = (nikkeId, srcIndex) => {
+        // If we're in the bench, send to roster. Otherwise, send to bench.
         let dstSectionId = (
             props.section.id === 'bench' ?
                 'roster'
                 : 'bench'
         );
+        // Send info up to Team Builder.
         props.onMoveNikke(nikkeId, props.section.id, dstSectionId, srcIndex, -1);
     }
 
