@@ -63,10 +63,10 @@ function App() {
             <Route exact path="/apps/clock" element={<Clock />} />
             <Route exact path="/apps/calculator" element={<Calculator />} />
             <Route exact path="/apps/nikkeTeamBuilder" element={<NikkeTB theme={theme} />} />
+            <Route exact path="/apps/todo-list" element={<ToDo />}></Route>
             <Route exact path="/games" element={<Home />} />
             <Route exact path="/games/tictactoe" element={<TicTacToe />} />
             <Route exact path="/about" element={<About />} />
-            <Route exact path="/test" element={<ToDo />}></Route>
           </Routes>
         </Router>
         <Footer />

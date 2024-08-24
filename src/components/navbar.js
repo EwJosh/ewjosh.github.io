@@ -1,23 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './navbar.css';
-import ppTitle from '../assets/images/Pumpkin_Patchwork_Title.png'
+import ppTitle from '../assets/images/PP_Title_Horizontal.png'
+import ppTitleVert from '../assets/images/PP_Title_Vertical.png'
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
+
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListSubheader from '@mui/material/ListSubheader';
+
+import { styled } from '@mui/material';
+
+import MenuIcon from '@mui/icons-material/Menu';
+
+const StyledListItem = styled(ListItem)({
+    minWidth: '10rem',
+    padding: 0
+})
+
+const StyledListSubheader = styled(ListSubheader)({
+    width: '100%',
+    padding: '0.5rem 1rem',
+
+    fontWeight: 'bold',
+    fontSize: '2rem',
+    color: 'white',
+    backgroundColor: 'rgb(190, 99, 13)'
+})
+
+const StyledListItemButton = styled(ListItemButton)({
+    padding: '0.5rem 1.5rem',
+
+    fontSize: '1.5rem'
+})
 
 function Navbar() {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const open = Boolean(anchorEl);
+    // Boolean for determining whether navbar should be using mobile or desktop versions of components and assets.
+    const [small, setSmall] = useState(window.innerWidth <= 800);
 
-    const handleClick = (index, event) => {
-        setAnchorEl({ [index]: event.currentTarget });
-    };
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    /**
+     * Event fired when window is resized. Updates boolean small.
+     */
+    const handleResize = () => {
+        if (window.innerWidth <= 800)
+            setSmall(true);
+        else
+            setSmall(false);
+    }
+    window.onresize = handleResize;
+
+
+    // Boolean state for whether sidebar is open or not.
+    const [open, setOpen] = useState(false);
+
+    const handleCloseMenu = () => {
+        setOpen(false);
+    }
+
 
     return (
         <AppBar
@@ -29,128 +73,108 @@ function Navbar() {
                 variant='dense'
                 disableGutters
             >
+                {/* Sidebar Button */}
+                <IconButton
+                    id='sidebar-btn'
+                    onClick={() => setOpen(true)}
+                    onMouseEnter={() => setOpen(true)}
+                    sx={{
+                        backgroundColor: 'rgb(190, 99, 13)'
+                    }}
+                >
+                    <MenuIcon />
+                </IconButton>
+
+                {/* Home Button w/ Picture */}
                 <Button
                     id='navbar-title'
                     href='/'
                 >
                     <img
-                        src={ppTitle}
+                        src={small ? ppTitleVert : ppTitle}
                         alt='Pumpkin Patchwork'
                     />
                 </Button>
 
-                <Button
-                    id='navbar-apps-btn'
-                    className='navbar-btn'
-                    aria-controls='navbar-apps-menu'
-                    aria-haspopup='true'
-                    aria-expanded={open ? 'true' : 'false'}
-                    onClick={(e) => handleClick(0, e)}
-                    onMouseOver={(e) => handleClick(0, e)}
-                    // onMouseLeave={handleClose}
-                    color='inherit'
-                    sx={{
-                        minWidth: '5vw',
-                        backgroundColor: 'rgb(190, 99, 13)'
+                {/* Sidebar Menu */}
+                <Drawer
+                    open={open}
+                    onClose={handleCloseMenu}
+                    PaperProps={{
+                        sx: {
+                            minWidth: '20%'
+                        }
                     }}
                 >
-                    Apps
-                </Button>
-                <Menu
-                    id='navbar-apps-menu'
-                    aria-labelledby='navbar-apps-btn'
-                    anchorEl={anchorEl && anchorEl[0]}
-                    open={anchorEl && anchorEl[0]}
-                    onClose={handleClose}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                    MenuListProps={{ onMouseLeave: handleClose }}
-                >
-                    <MenuItem
-                        href='/#/apps/clock'
-                        component='a'
-                        onClick={handleClose}
-                    >
-                        Clock
-                    </MenuItem>
-                    <MenuItem
-                        href='/#/apps/calculator'
-                        component='a'
-                        onClick={handleClose}
-                    >
-                        Calculator
-                    </MenuItem>
-                    <MenuItem
-                        href='/#/apps/nikkeTeamBuilder'
-                        component='a'
-                        onClick={handleClose}
-                    >
-                        Nikke
-                    </MenuItem>
-                </Menu>
+                    <List>
+                        {/* Apps Section */}
+                        <StyledListItem disableGutters>
+                            <StyledListSubheader>
+                                Apps
+                            </StyledListSubheader>
+                        </StyledListItem>
+                        <StyledListItem disableGutters>
+                            <StyledListItemButton
+                                href='/#/apps/nikkeTeamBuilder'
+                                component='a'
+                                onClick={handleCloseMenu}
+                            >
+                                Nikke
+                            </StyledListItemButton>
+                        </StyledListItem>
+                        <StyledListItem>
+                            <StyledListItemButton
+                                href='/#/apps/todo-list'
+                                component='a'
+                                onClick={handleCloseMenu}
+                            >
+                                To-do List
+                            </StyledListItemButton>
+                        </StyledListItem>
+                        <StyledListItem>
+                            <StyledListItemButton
+                                href='/#/apps/clock'
+                                component='a'
+                                onClick={handleCloseMenu}
+                            >
+                                Clock
+                            </StyledListItemButton>
+                        </StyledListItem>
+                        <StyledListItem>
+                            <StyledListItemButton
+                                href='/#/apps/calculator'
+                                component='a'
+                                onClick={handleCloseMenu}
+                            >
+                                Calculator
+                            </StyledListItemButton>
+                        </StyledListItem>
 
-                <Button
-                    id='navbar-games-btn'
-                    className='navbar-btn'
-                    aria-controls='navbar-games-menu'
-                    aria-haspopup='true'
-                    aria-expanded={open ? 'true' : 'false'}
-                    onClick={(e) => handleClick(1, e)}
-                    onMouseOver={(e) => handleClick(1, e)}
-                    color='inherit'
-                    sx={{
-                        minWidth: '5vw',
-                        backgroundColor: 'rgb(190, 99, 13)'
-                    }}
-                >
-                    Games
-                </Button>
-                <Menu
-                    id='navbar-games-menu'
-                    className='navbar-btn'
-                    aria-labelledby='navbar-games-btn'
-                    anchorEl={anchorEl && anchorEl[1]}
-                    open={anchorEl && anchorEl[1]}
-                    onClose={handleClose}
-
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                    MenuListProps={{ onMouseLeave: handleClose }}
-                >
-                    <MenuItem disabled>You got games on your phone?</MenuItem>
-                    {/* <MenuItem onClick={handleClose}>Tic Tac Toe</MenuItem>
-                    <MenuItem onClick={handleClose}>Piranha Frenzy</MenuItem> */}
-                </Menu>
-
-                <Button
-                    id='navbar-about-btn'
-                    className='navbar-btn'
-                    // aria-controls={open ? 'navbar-about-menu' : undefined}
-                    // aria-haspopup='true'
-                    // aria-expanded={open ? 'true' : 'false'}
-                    // onClick={(e) => handleClick(2, e)}
-                    // onMouseOver={(e) => handleClick(2, e)}
-                    href='/#/about'
-                    color='inherit'
-                    sx={{
-                        minWidth: '5vw',
-                        backgroundColor: 'rgb(190, 99, 13)'
-                    }}
-                >
-                    About
-                </Button>
+                        {/* More Section */}
+                        <StyledListItem disableGutters>
+                            <StyledListSubheader>
+                                More
+                            </StyledListSubheader>
+                        </StyledListItem>
+                        <StyledListItem>
+                            <StyledListItemButton
+                                href='/#/about'
+                                component='a'
+                                onClick={handleCloseMenu}
+                            >
+                                About
+                            </StyledListItemButton>
+                        </StyledListItem>
+                        <StyledListItem>
+                            <StyledListItemButton
+                                onClick={handleCloseMenu}
+                                disabled
+                            >
+                                <span style={{ textDecoration: 'line-through' }}>Settings</span>
+                            </StyledListItemButton>
+                        </StyledListItem>
+                    </List>
+                </Drawer>
             </Toolbar>
         </AppBar>
     );
