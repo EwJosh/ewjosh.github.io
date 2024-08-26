@@ -40,19 +40,19 @@ const StyledListItemButton = styled(ListItemButton)({
 })
 
 function Navbar() {
-    // Boolean for determining whether navbar should be using mobile or desktop versions of components and assets.
-    const [small, setSmall] = useState(window.innerWidth <= 800);
+    // // Boolean for determining whether navbar should be using mobile or desktop versions of components and assets.
+    // const [small, setSmall] = useState(window.innerWidth <= 800);
 
-    /**
-     * Event fired when window is resized. Updates boolean small.
-     */
-    const handleResize = () => {
-        if (window.innerWidth <= 800)
-            setSmall(true);
-        else
-            setSmall(false);
-    }
-    window.onresize = handleResize;
+    // /**
+    //  * Event fired when window is resized. Updates boolean small.
+    //  */
+    // const handleResize = () => {
+    //     if (window.innerWidth <= 800)
+    //         setSmall(true);
+    //     else
+    //         setSmall(false);
+    // }
+    // window.onresize = handleResize;
 
 
     // Boolean state for whether sidebar is open or not.
@@ -91,7 +91,7 @@ function Navbar() {
                     href='/'
                 >
                     <img
-                        src={small ? ppTitleVert : ppTitle}
+                        src={false ? ppTitleVert : ppTitle}
                         alt='Pumpkin Patchwork'
                     />
                 </Button>

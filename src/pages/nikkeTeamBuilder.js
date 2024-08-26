@@ -40,14 +40,16 @@ import Burst2Icon from '../assets/images/Nikke/NikkeBurst2.png'
 import Burst3Icon from '../assets/images/Nikke/NikkeBurst3.png'
 import BurstVIcon from '../assets/images/Nikke/NikkeBurstV.png'
 import BlankIcon from '../assets/images/Nikke/NikkeIconBase.png'
-import { IconButton, Tooltip } from '@mui/material';
-import { Add, Edit, QuestionMark, Remove, Settings } from '@mui/icons-material';
+import { Button, IconButton, Tooltip } from '@mui/material';
+import { Add, Edit, QuestionMark, Settings, DeleteForever } from '@mui/icons-material';
 import ContentPaste from '@mui/icons-material/ContentPaste';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 
 function NikkeTeamBuilder(props) {
     const [debugMode, setDebugMode] = useState(false);
     const [editable, setEditable] = useState(false);
-    const [squadCnt, setSquadCnt] = useState(5);
+    const [squadCnt, setSquadCnt] = useState(1);
     const [help, setHelp] = useState(false);
 
     /**
@@ -63,6 +65,7 @@ function NikkeTeamBuilder(props) {
 
     const [settings, setSettings] = useState({
         open: false,
+        showRatings: true,
         targetCode: 'None'
     });
 
@@ -129,26 +132,7 @@ function NikkeTeamBuilder(props) {
                 id: 'squad-1',
                 title: 'Squad 1',
                 nikkeIds: [],
-            },
-            'squad-2': {
-                id: 'squad-2',
-                title: 'Squad 2',
-                nikkeIds: [],
-            },
-            'squad-3': {
-                id: 'squad-3',
-                title: 'Squad 3',
-                nikkeIds: [],
-            },
-            'squad-4': {
-                id: 'squad-4',
-                title: 'Squad 4',
-                nikkeIds: [],
-            },
-            'squad-5': {
-                id: 'squad-5',
-                title: 'Squad 5',
-                nikkeIds: [],
+                minimized: false
             },
             'bench': {
                 id: 'bench',
@@ -161,8 +145,8 @@ function NikkeTeamBuilder(props) {
                 nikkeIds: [...getAllNikkeIds()]
             }
         },
-        sectionOrder: ['squad-1', 'squad-2', 'squad-3', 'squad-4', 'squad-5', 'bench', 'roster']
-        // sectionOrder: ['squad-1', 'bench', 'roster']
+        // sectionOrder: ['squad-1', 'squad-2', 'squad-3', 'squad-4', 'squad-5', 'bench', 'roster']
+        sectionOrder: ['squad-1', 'bench', 'roster']
     }
     // Collection of Nikkes to be used and altered
     const [nikkeLists, setNikkeLists] = useState(initNikkeLists);
@@ -171,10 +155,11 @@ function NikkeTeamBuilder(props) {
     // filteredNikkes = {[{nikke1}, {nikke2}, ...]}
     const [filteredNikkes, setFilteredNikkes] = useState([...getAllNikkeIds()]);
 
-    // States for rendering 
-    const [visible, setVisible] = useState({
+    // States for rendering icons
+    const [visibility, setVisibility] = useState({
         'categories': ['Burst', 'Class', 'Code', 'Manufacturer', 'Weapon'],
         'filter': true,
+        'categoryIcons': true,
         'Burst': true,
         'Class': true,
         'Code': true,
@@ -333,8 +318,6 @@ function NikkeTeamBuilder(props) {
      */
     const handleFilterIds = (inputFilter, inputIds) => {
         setFilter({ ...inputFilter });
-        console.log(inputFilter);
-        console.log(filter);
 
 
         // Run Nikke roster through filter
@@ -414,6 +397,7 @@ function NikkeTeamBuilder(props) {
                     id: newSectionId,
                     title: newSectionTitle,
                     nikkeIds: [],
+                    minimized: false
                 }
             },
             sectionOrder: newSectionOrder
@@ -451,6 +435,7 @@ function NikkeTeamBuilder(props) {
                         id: 'squad-1',
                         title: 'Squad 1',
                         nikkeIds: [],
+                        minimized: false
                     },
                     'bench': {
                         ...nikkeLists.sections['bench']
@@ -473,6 +458,33 @@ function NikkeTeamBuilder(props) {
         }
     }
 
+    const handleMoveSquad = (sectionId, ifMoveUp) => {
+        let sectOrder = nikkeLists.sectionOrder;
+
+        // If only squad, return
+        if (sectOrder.length === 3)
+            return;
+
+        // Grab initial indices
+        let srcIndex = sectOrder.indexOf(sectionId);
+        let dstIndex = ifMoveUp ? srcIndex - 1 : srcIndex + 1;
+
+        // If attempting to move outside of range, move to opposite end.
+        if (dstIndex === -1)
+            dstIndex = sectOrder.length - 3;
+        else if (dstIndex === sectOrder.length - 2)
+            dstIndex = 0;
+
+        // Perform simple array swap
+        sectOrder[srcIndex] = sectOrder[dstIndex];
+        sectOrder[dstIndex] = sectionId;
+
+        setNikkeLists({
+            ...nikkeLists,
+            'sectionOrder': sectOrder
+        })
+    }
+
     const handleSquadTitleChange = (sectionId, title) => {
         setNikkeLists({
             sections: {
@@ -486,8 +498,25 @@ function NikkeTeamBuilder(props) {
         })
     }
 
+    const handleSetSquadMinimized = (sectionId, bool) => {
+        console.log(sectionId, bool);
+
+        setNikkeLists({
+            sections: {
+                ...nikkeLists.sections,
+                [sectionId]: {
+                    ...nikkeLists.sections[sectionId],
+                    minimized: bool
+                }
+            },
+            sectionOrder: nikkeLists.sectionOrder
+        })
+    }
+
     return (
-        <div className="page">
+        <div className="page" style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
+            {/* Page Title */}
+            <h1>Nikke Team Builder</h1>
             {/* Page Header */}
             <div id='tb-header' className='grid-row'>
                 {/* Debug: Print Button */}
@@ -498,13 +527,13 @@ function NikkeTeamBuilder(props) {
                             placement='top'
                         >
                             <IconButton
-                                onClick={() => console.log(nikkeLists)}
-                                sx={{ backgroundColor: '#ed6c02', width: '1.5rem', height: '1.5rem' }}
+                                onClick={() => console.log(nikkeLists, visibility)}
+                                sx={{ backgroundColor: '#ed6c02' }}
                             >
-                                <ContentPaste sx={{ width: '1rem', height: '1rem' }} />
+                                <ContentPaste />
                             </IconButton>
                         </Tooltip>
-                        : <div style={{ width: '1.5rem', height: '1.5rem' }} />
+                        : null
                 }
                 {/* Help Button */}
                 <Tooltip
@@ -513,34 +542,37 @@ function NikkeTeamBuilder(props) {
                 >
                     <IconButton
                         onClick={() => setHelp(true)}
-                        sx={{ backgroundColor: '#1976d2', width: '1.5rem', height: '1.5rem' }}
+                        sx={{ backgroundColor: '#1976d2', }}
                     >
-                        <QuestionMark sx={{ width: '1rem', height: '1rem' }} />
+                        <QuestionMark />
                     </IconButton>
                 </Tooltip>
                 <NikkeHelp
                     open={help}
                     onClose={() => setHelp(false)}
                 />
-                {/* Page Title */}
-                <h1>Nikke Team Builder</h1>
                 {/* Edit Button */}
                 <Tooltip
                     title='Edit Squads'
                     placement='top'
                 >
-                    <IconButton
+                    <Button
                         onClick={() => setEditable(!editable)}
-
+                        startIcon={<Edit />}
+                        color='inherit'
                         sx={{
-                            width: '1.5rem',
-                            height: '1.5rem',
-                            backgroundColor: editable ? props.theme.palette.selected.light : '#1976d2',
-                            border: editable ? '1px solid white' : '0'
+                            height: '2.5rem',
+                            margin: '0 1rem',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            fontSize: 'large',
+                            textTransform: 'none',
+                            backgroundColor: editable ? 'gray' : '#1976d2',
+                            border: editable ? '1px solid  #ffffff77' : '0'
                         }}
                     >
-                        <Edit sx={{ width: '1rem', height: '1rem' }} />
-                    </IconButton>
+                        Edit
+                    </Button>
                 </Tooltip>
                 {/* Settings Button */}
                 <Tooltip
@@ -548,15 +580,16 @@ function NikkeTeamBuilder(props) {
                     placement='top'
                 >
                     <IconButton
-                        sx={{ backgroundColor: '#1976d2', width: '1.5rem', height: '1.5rem' }}
+                        sx={{ backgroundColor: '#1976d2' }}
                         onClick={() => setSettings({
                             ...settings,
                             open: true
                         })}
                     >
-                        <Settings sx={{ width: '1rem', height: '1rem' }} />
+                        <Settings />
                     </IconButton>
                 </Tooltip>
+                {/* Settings Dialog */}
                 <NikkeSettings
                     onClose={() => setSettings({
                         ...settings,
@@ -576,31 +609,76 @@ function NikkeTeamBuilder(props) {
                 {
                     nikkeLists.sectionOrder.map((sectionId, index) => {
                         let section = nikkeLists.sections[sectionId];
+
                         if (sectionId === 'roster' || sectionId === 'bench')
                             return null;
 
                         let nikkes = collectNikkes(section.nikkeIds);
 
-                        return <div key={sectionId}>
+                        return <div
+                            className='squad-supercontainer grid-row'
+                            key={sectionId}
+                        >
+                            {
+                                // Left edit buttons: Move Squad Up op Down
+                                editable ?
+                                    <div className='grid-column'>
+                                        <IconButton
+                                            onClick={() => handleMoveSquad(sectionId, true)}
+                                            sx={{
+                                                maxWidth: '1.5rem',
+                                                maxHeight: '1.5rem',
+                                                backgroundColor: 'gray',
+                                                border: '1px solid #ffffff77'
+                                            }}
+                                        ><KeyboardDoubleArrowUpIcon fontSize='small' /></IconButton>
+                                        <IconButton
+                                            onClick={() => handleMoveSquad(sectionId, false)}
+                                            sx={{
+                                                maxWidth: '1.5rem',
+                                                maxHeight: '1.5rem',
+                                                backgroundColor: 'gray',
+                                                border: '1px solid #ffffff77'
+                                            }}
+                                        ><KeyboardDoubleArrowDownIcon fontSize='small' /></IconButton>
+                                    </div>
+                                    : null
+                            }
                             <NikkeSquad
                                 section={section}
                                 nikkes={nikkes}
                                 icons={icons}
-                                visible={visible}
+                                windowSmall={props.windowSmall}
+                                visibility={visibility}
                                 onMoveNikke={handleMoveNikke}
                                 editable={editable}
                                 onSquadTitleChange={handleSquadTitleChange}
                                 targetCode={settings.targetCode}
+                                showRatings={settings.showRatings}
+                                onSetSquadMinimized={handleSetSquadMinimized}
+                                theme={props.theme}
                             />
                             {
                                 editable ?
-                                    <div>
-                                        <IconButton
-                                            onClick={() => handleAddSquad(index)}
-                                        ><Add /></IconButton>
+                                    <div className='grid-column'>
                                         <IconButton
                                             onClick={() => handleRemoveSquad(sectionId)}
-                                        ><Remove /></IconButton>
+                                            sx={{
+                                                maxWidth: '1.5rem',
+                                                maxHeight: '1.5rem',
+                                                backgroundColor: '#c32020',
+                                                border: '1px solid #ffffff77'
+                                            }}
+                                        ><DeleteForever fontSize='small' /></IconButton>
+                                        <IconButton
+                                            onClick={() => handleAddSquad(index)}
+                                            sx={{
+                                                maxWidth: '1.5rem',
+                                                maxHeight: '1.5rem',
+                                                backgroundColor: '#209320',
+                                                border: '1px solid #ffffff77'
+                                            }}
+                                        ><Add /></IconButton>
                                     </div>
                                     : null
                             }
@@ -612,16 +690,18 @@ function NikkeTeamBuilder(props) {
                     section={nikkeLists.sections['bench']}
                     nikkes={collectNikkes(nikkeLists.sections['bench'].nikkeIds)}
                     icons={icons}
-                    visible={visible}
+                    windowSmall={props.windowSmall}
+                    visibility={visibility}
                     onMoveNikke={handleMoveNikke}
                 />
                 <NikkeFilter
                     filter={filter}
                     onFilter={handleFilter}
                     icons={icons}
+                    windowSmall={props.windowSmall}
                     tags={Tags}
-                    visible={visible}
-                    setVisible={setVisible}
+                    visibility={visibility}
+                    setVisibility={setVisibility}
                     debugMode={debugMode}
                 />
 
@@ -630,7 +710,8 @@ function NikkeTeamBuilder(props) {
                     section={nikkeLists.sections['roster']}
                     nikkes={collectNikkes(filteredNikkes)}
                     icons={icons}
-                    visible={visible}
+                    windowSmall={props.windowSmall}
+                    visibility={visibility}
                     onMoveNikke={handleMoveNikke}
                 />
 

@@ -2,8 +2,10 @@ import React, { useLayoutEffect, useState } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import NikkeUnit from './nikkeUnit.js';
 import Reviews from '../../assets/data/NikkeSquadReviews.json';
-import { TextField, Tooltip } from '@mui/material';
+import { Button, InputBase, Tooltip } from '@mui/material';
 import { Error, ReportProblemOutlined } from '@mui/icons-material';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 function NikkeSquad(props) {
     const [rating, setRating] = useState({});
@@ -46,18 +48,18 @@ function NikkeSquad(props) {
         if (props.nikkes.length < 5) {
             return {
                 ...newRating,
-                "Size": "error"
+                'Size': 'error'
             };
         }
         else if (props.nikkes.length > 5)
             return {
                 ...newRating,
-                "Size": "warning"
+                'Size': 'warning'
             };
         else
             return {
                 ...newRating,
-                "Size": null
+                'Size': null
             };
     }
 
@@ -120,21 +122,21 @@ function NikkeSquad(props) {
         if (burstStages.length !== 3) {
             return {
                 ...newRating,
-                "Burst": "error"
+                'Burst': 'error'
             };
         }
         // If Full Burst rotation is possible but poor, warn
         else if (minBSI['1'] !== 20 || minBSI['2'] !== 20 || minBSI['3'] !== 20) {
             return {
                 ...newRating,
-                "Burst": "warning"
+                'Burst': 'warning'
             };
         }
         // Otherwise if Full Burst rotation is possible and stable, pass
         else {
             return {
                 ...newRating,
-                "Burst": null
+                'Burst': null
             };
         }
     }
@@ -202,6 +204,7 @@ function NikkeSquad(props) {
                 {
                     <div
                         className={'squad-rating-tip rating-' + ratingCase}
+                        style={{ fontSize: props.windowSmall ? 'medium' : 'x-large' }}
                     >
                         {(ratingCase === 'error') ? <Error /> : null}
                         {(ratingCase === 'warning') ? <ReportProblemOutlined /> : null}
@@ -226,93 +229,112 @@ function NikkeSquad(props) {
     }
 
     return (
-        <div className='nikke-squad'>
-            <div className='nikke-squad-info'>
-                <div className='grid-row'>
-                    <TextField
-                        defaultValue={props.section.title}
-                        onChange={onSquadTitleChange}
-                        variant='standard'
-                        disabled={!props.editable}
-                        color='white'
-                        size='medium'
-                        sx={{
-                            fontWeight: 'bold',
-                            "& .MuiInputBase-input.Mui-disabled": {
-                                WebkitTextFillColor: "#fff",
-                                color: '#fff'
-                            },
-                        }}
-                        InputProps={{
-                            disableUnderline: props.editable ? false : true
-                        }}
-                        inputProps={{
-                            style: {
-                                fontSize: '1.5rem',
-                                fontWeight: props.editable ? 'unset' : 'bold'
-                            }
-                        }}
-                    />
-                </div>
-                {/* <div className='grid-row'>
-                    <IconButton
-                        size='small'
-                        sx={{ backgroundColor: '#2e7d32' }}
-                    >
-                        <Add fontSize='small' sx={{ width: '1rem', height: '1rem' }} />
-                    </IconButton>
-                    <IconButton
-                        size='small'
-                        sx={{ backgroundColor: '#d32f2f' }}
-                    >
-                        <Remove fontSize='small' sx={{ width: '1rem', height: '1rem' }} />
-                    </IconButton>
-                </div> */}
-                {buildRatingNotes()}
-            </div>
-            <Droppable
-                droppableId={props.section.id}
-                key={props.section.id}
-                direction='horizontal'
+        <div className='nikke-squad-container'>
+            <div className='squad-header grid-row'
+                style={{ minWidth: props.windowSmall ? '20.25em' : '35.25rem', }}
             >
-                {(provided, snapshot) => (
-                    <div
-                        className='nikke-squad-list'
-                        key={props.section.id}
-                        ref={provided.innerRef}
-                        // style={{ backgroundColor: snapshot.isDraggingOver ? 'blue' : 'grey' }}
-                        {...provided.droppableProps}
-                    >
-                        {
-                            props.nikkes &&
-                            props.nikkes.map((item, index) => {
-                                return (
-                                    <NikkeUnit
-                                        key={'unit-' + item.Name}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        unit={item}
-                                        sectionId={props.section.id}
-                                        index={index}
-                                        icons={[
-                                            props.icons.Burst[item.Burst],
-                                            props.icons.Class[item.Class],
-                                            props.icons.Code[item.Code],
-                                            props.icons.Manufacturer[item.Manufacturer],
-                                            props.icons.Weapon[item.Weapon]
-                                        ]}
-                                        visible={props.visible}
-                                        onMoveNikke={onMoveNikke}
-                                    />)
-                            }
-                            )
-
+                <InputBase
+                    defaultValue={props.section.title}
+                    onChange={onSquadTitleChange}
+                    variant='standard'
+                    disabled={!props.editable}
+                    size={props.windowSmall ? 'small' : 'medium'}
+                    sx={{
+                        margin: '0.25rem 0',
+                        paddingLeft: '0.5rem',
+                        fontSize: props.windowSmall ? '1rem' : '1.5rem',
+                        fontWeight: props.editable ? 'unset' : 'bold',
+                        backgroundColor: props.editable ? '#00000040' : 'transparent',
+                        '.Mui-disabled, .MuiInputBase-input.Mui-disabled': {
+                            WebkitTextFillColor: '#fff',
+                            color: '#fff'
                         }
-                        {provided.placeholder}
+                    }}
+                    inputProps={{
+                        style: {
+                            padding: 0
+                        }
+                    }}
+                />
+                <Button
+                    className='toggle-rating-btn'
+                    onClick={() => props.onSetSquadMinimized(props.section.id, !props.section.minimized)}
+                    variant='contained'
+                    color={props.section.minimized ? 'info' : 'pumpkin'}
+                    style={{
+                        height: '80%',
+                        borderTopRightRadius: '1rem',
+                        // backgroundColor: '#1976d2'
+                    }}
+                >
+                    {
+                        props.section.minimized ?
+                            <ArrowDropUpIcon />
+                            : <ArrowDropDownIcon />
+                    }
+                </Button>
+            </div>
+            {
+                props.section.minimized ?
+                    null :
+                    <div>
+                        <Droppable
+                            droppableId={props.section.id}
+                            key={props.section.id}
+                            direction='horizontal'
+                        >
+                            {(provided, snapshot) => (
+                                <div
+                                    className='nikke-squad-list'
+                                    key={props.section.id}
+                                    ref={provided.innerRef}
+                                    style={{
+                                        minWidth: props.windowSmall ? '20.25em' : '35.25rem',
+                                        minHeight:
+                                            props.nikkes.length === 0 ? '2.5rem'
+                                                : (props.windowSmall ?
+                                                    '5.75rem' : '10rem'
+                                                ),
+                                        backgroundColor: snapshot.isDraggingOver ? '#1976d280' : '#b59872',
+                                    }}
+                                    {...provided.droppableProps}
+                                >
+                                    {
+                                        props.nikkes &&
+                                        props.nikkes.map((item, index) => {
+                                            return (
+                                                <NikkeUnit
+                                                    key={'unit-' + item.Name}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    unit={item}
+                                                    sectionId={props.section.id}
+                                                    index={index}
+                                                    windowSmall={props.windowSmall}
+                                                    icons={[
+                                                        props.icons.Burst[item.Burst],
+                                                        props.icons.Class[item.Class],
+                                                        props.icons.Code[item.Code],
+                                                        props.icons.Manufacturer[item.Manufacturer],
+                                                        props.icons.Weapon[item.Weapon]
+                                                    ]}
+                                                    visibility={props.visibility}
+                                                    onMoveNikke={onMoveNikke}
+                                                />)
+                                        }
+                                        )
+
+                                    }
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                        <div className='nikke-squad-info grid-row'>
+                            {props.showRatings ? buildRatingNotes() : null}
+                        </div>
                     </div>
-                )}
-            </Droppable>
-        </div>
+            }
+        </div >
     );
 }
 

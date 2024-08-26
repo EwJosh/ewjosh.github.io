@@ -1,10 +1,8 @@
 import React from 'react';
-// import Button from '@mui/material/Button';
-// import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
+// import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
+// import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Select, Switch } from '@mui/material';
 import Close from '@mui/icons-material/Close';
@@ -33,6 +31,23 @@ function NikkeSettings(props) {
                 id='settings-dialog-body'
                 sx={{ overflow: "initial" }}
             >
+                <FormControlLabel
+                    control={<Switch
+                        checked={props.settings.showRatings}
+                        onChange={(event) => props.setSettings({
+                            ...props.settings,
+                            showRatings: !props.settings.showRatings
+                        })}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        color='warning'
+                    />}
+                    label='Enable Ratings'
+                    labelPlacement='start'
+                    sx={{
+                        margin: 0,
+                        flexDirection: 'row'
+                    }}
+                />
                 <FormControl>
                     <InputLabel id='sett-code-weak-label'>Code Weakness</InputLabel>
                     <Select
@@ -43,7 +58,7 @@ function NikkeSettings(props) {
                             targetCode: event.target.value
                         })}
                         sx={{
-                            minWidth: '100%'
+                            // minWidth: '100%'
                         }}
                     >
                         <MenuItem value='None'>

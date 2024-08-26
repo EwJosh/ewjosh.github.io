@@ -1,5 +1,7 @@
 import { Dialog, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import React from 'react';
+import Edit from '@mui/icons-material/Edit';
+import Settings from '@mui/icons-material/Settings';
 
 function NikkeHelp(props) {
     return (
@@ -22,6 +24,16 @@ function NikkeHelp(props) {
                     <ul>
                         <li>Press the (+) Button to move a Nikke from Roster (or Squad) to the Bench.</li>
                         <li>Drag and drop Nikkes into the dark box of a Squad.</li>
+                        <li>
+                            More squads can be added after toggling
+                            the <Edit fontSize='small' sx={{ position: 'relative', top: '5px' }} /> Edit
+                            button.
+                        </li>
+                        <li>
+                            Check
+                            the <Settings fontSize='small' sx={{ position: 'relative', top: '5px' }} /> Settings
+                            button for more settings.
+                        </li>
                     </ul>
 
                     <hr />
@@ -29,12 +41,17 @@ function NikkeHelp(props) {
 
                     <h3>= Squads =</h3>
                     <ul>
-                        <li>Names can be edited and Squads can be added or removed by toggling the &lt;Edit&gt; button in the top-right.</li>
+                        <li>
+                            Names can be edited and Squads can be added or removed by toggling
+                            the <Edit fontSize='small' sx={{ position: 'relative', top: '5px' }} /> Edit
+                            button in the top-right.
+                        </li>
                         <li>Pressing the (-) Button on a Nikke will move them to the Bench.</li>
                         <li>
                             Has a 'rating system' that's WIP. I don't plan on rating things like damage calcs and breakpoints.
                             They're just mainly to check if you have a stable team.
                         </li>
+                        <li>If you hover over the rating (or hold press on mobile), you'll see a tooltip about the rating.</li>
                         <li>
                             <h4>
                                 Rating system covers...

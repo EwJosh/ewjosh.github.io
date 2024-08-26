@@ -33,7 +33,9 @@ function NikkeList(props) {
                         className='nikke-list'
                         key={props.section.id}
                         ref={provided.innerRef}
-                        // style={{ backgroundColor: snapshot.isDraggingOver ? 'blue' : 'grey' }}
+                        style={{
+                            backgroundColor: snapshot.isDraggingOver ? '#1976d280' : '#b59872'
+                        }}
                         {...provided.droppableProps}
                     >
                         {
@@ -47,6 +49,7 @@ function NikkeList(props) {
                                         unit={item}
                                         sectionId={props.section.id}
                                         index={index}
+                                        windowSmall={props.windowSmall}
                                         icons={[
                                             props.icons.Burst[item.Burst],
                                             props.icons.Class[item.Class],
@@ -54,7 +57,7 @@ function NikkeList(props) {
                                             props.icons.Manufacturer[item.Manufacturer],
                                             props.icons.Weapon[item.Weapon]
                                         ]}
-                                        visible={props.visible}
+                                        visibility={props.visibility}
                                         onMoveNikke={onMoveNikke}
                                     />)
                             }

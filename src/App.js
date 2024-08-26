@@ -1,5 +1,5 @@
 import './App.css';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   HashRouter as Router,
   Routes,
@@ -33,8 +33,20 @@ const theme = createTheme({
     black: {
       main: alpha('#000', 0.9),
       light: alpha('#000', 0.7),
-      dark: '#000',
+      dark: '#000000',
       contrastText: '#eee',
+    },
+    pumpkin: {
+      main: alpha('#be630d', 0.9),
+      light: alpha('#be630d', 0.7),
+      dark: '#be630d',
+      contrastText: '#eeeeee',
+    },
+    blue: {
+      main: alpha('#fff', 0.9),
+      light: alpha('#fff', 0.7),
+      dark: '#fff',
+      contrastText: '#111',
     },
     selected: {
       main: alpha('#111', 0.9),
@@ -52,6 +64,20 @@ const theme = createTheme({
 });
 
 function App() {
+  // Boolean for determining whether navbar should be using mobile or desktop versions of components and assets.
+  const [windowSmall, setWindowSmall] = useState(window.innerWidth <= 500);
+
+  /**
+   * Event fired when window is resized. Updates boolean small.
+   */
+  const handleResize = () => {
+    if (window.innerWidth <= 500)
+      setWindowSmall(true);
+    else
+      setWindowSmall(false);
+  }
+  window.onresize = handleResize;
+
   return (
     <div id="App">
       <ThemeProvider theme={theme}>
@@ -62,7 +88,10 @@ function App() {
             <Route exact path="/apps" element={<Home />} />
             <Route exact path="/apps/clock" element={<Clock />} />
             <Route exact path="/apps/calculator" element={<Calculator />} />
-            <Route exact path="/apps/nikkeTeamBuilder" element={<NikkeTB theme={theme} />} />
+            <Route exact path="/apps/nikkeTeamBuilder" element={<NikkeTB
+              theme={theme}
+              windowSmall={windowSmall}
+            />} />
             <Route exact path="/apps/todo-list" element={<ToDo />}></Route>
             <Route exact path="/games" element={<Home />} />
             <Route exact path="/games/tictactoe" element={<TicTacToe />} />

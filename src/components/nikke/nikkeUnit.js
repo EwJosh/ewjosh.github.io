@@ -31,7 +31,19 @@ function NikkeUnit(props) {
 
     const name = getName();
 
-    const getNameClass = () => {
+    const getUnitClassName = () => {
+        let className = 'nikke-unit';
+
+        if (props.windowSmall)
+            className += ' nikke-unit-small';
+
+        if (!props.visibility.categoryIcons)
+            className += ' nikke-unit-hidden-icons';
+
+        return className;
+    }
+
+    const getNameClassName = () => {
         if (name === null)
             return '=ERR='
         if (name.length >= 12)
@@ -46,22 +58,22 @@ function NikkeUnit(props) {
         if (props.sectionId === 'roster')
             return <Tooltip title='Add to bench' placement='top'>
                 <Add fontSize='small' sx={{
-                    width: '1rem',
-                    height: '1rem'
+                    width: '1em',
+                    height: '1em'
                 }} />
             </Tooltip>;
         else if (props.sectionId === 'bench')
             return <Tooltip title='Remove from bench' placement='top'>
                 <Remove fontSize='small' sx={{
-                    width: '1rem',
-                    height: '1rem'
+                    width: '1em',
+                    height: '1em'
                 }} />
             </Tooltip>;
         else
             return <Tooltip title='Remove from Squad' placement='top'>
                 <Remove fontSize='small' sx={{
-                    width: '1rem',
-                    height: '1rem'
+                    width: '1em',
+                    height: '1em'
                 }} />
             </Tooltip>;
     }
@@ -77,7 +89,7 @@ function NikkeUnit(props) {
         >
             {(provided) => (
                 <div
-                    className='nikke-unit'
+                    className={getUnitClassName()}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
@@ -90,11 +102,11 @@ function NikkeUnit(props) {
                             color={props.sectionId !== 'bench' ? 'success' : 'error'}
                             sx={{
                                 border: 'solid 1px',
-                                width: '1.2rem',
-                                height: '1.2rem',
+                                width: '1.2em',
+                                height: '1.2em',
                                 position: 'absolute',
-                                top: '0.3rem',
-                                left: '0.3rem',
+                                top: '0.3em',
+                                left: '0.rem',
                                 backgroundColor: '#fff'
                             }}
 
@@ -105,7 +117,7 @@ function NikkeUnit(props) {
                         </IconButton>
                         <img className='nikke-image' src={props.unit.Image} alt='Nikke' />
                         {
-                            props.visible['Burst'] ?
+                            props.visibility['Burst'] ?
 
                                 <img className='nikke-icon nikke-burst' src={props.icons[0]} alt={'Burst ' + props.unit.Burst} />
                                 : null
@@ -113,27 +125,32 @@ function NikkeUnit(props) {
                     </div>
 
                     <div className='nikke-name-container'>
-                        <span className={'nikke-name' + getNameClass()}>{getName()}</span>
+                        <span className={'nikke-name' + getNameClassName()}>{getName()}</span>
                     </div>
 
-                    <div className='nikke-icon-container'>
-                        {
-                            props.visible.categories.map((category, index) => {
-                                if (category !== 'Burst' && props.visible[category])
-                                    return <img
-                                        key={category}
-                                        className={'nikke-icon nikke-' + category.toLowerCase()}
-                                        src={props.icons[index]}
-                                        alt={category + props.unit[category]}
-                                    />;
-                                else
-                                    return null;
-                            })
-                        }
-                    </div>
+                    {
+                        props.visibility.categoryIcons ?
+                            < div className='nikke-icon-container'>
+                                {
+                                    props.visibility.categories.map((category, index) => {
+                                        if (category !== 'Burst' && props.visibility[category])
+                                            return <img
+                                                key={category}
+                                                className={'nikke-icon nikke-' + category.toLowerCase()}
+                                                src={props.icons[index]}
+                                                alt={category + props.unit[category]}
+                                            />;
+                                        else
+                                            return null;
+                                    })
+                                }
+                            </div>
+                            : null
+                    }
                 </div>
-            )}
-        </Draggable>
+            )
+            }
+        </Draggable >
     );
 }
 

@@ -11,6 +11,7 @@ p {
 
 .full-width {
   width: 100%;
+  box-sizing: border-box;
 }
 
 .bgc-1 {

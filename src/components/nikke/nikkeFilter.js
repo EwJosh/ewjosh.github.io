@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, ToggleButtonGroup, ToggleButton, IconButton, TextField, InputAdornment, Tooltip, Select, InputLabel, FormControl, MenuItem, styled } from '@mui/material';
 import Close from '@mui/icons-material/Close';
 import Visibility from '@mui/icons-material/Visibility';
@@ -49,17 +49,57 @@ function NikkeFilter(props) {
     }
 
     const handleToggleFilterVisibility = () => {
-        props.setVisible({
-            ...props.visible,
-            'filter': !props.visible.filter
+        props.setVisibility({
+            ...props.visibility,
+            'filter': !props.visibility.filter
         });
     }
 
     const handleToggleTagCategoryVisibility = (category) => {
-        props.setVisible({
-            ...props.visible,
-            [category]: !props.visible[category]
-        })
+        // Check if props.visibility.categoryIcons should be true or false
+        // Don't check with Burst category. Start on index 1 to skip Burst too
+        if (category !== 'Burst') {
+            let hasVisibility = false;
+            for (let i = 1; i < props.visibility.categories.length; i++) {
+                let ctgr = props.visibility.categories[i];
+                console.log(category, props.visibility[category],
+                    ctgr, props.visibility[ctgr]
+                );
+
+
+                // If the clicked category and the checking category are the same
+                if (category === ctgr) {
+                    // If the checked category is already false (i.e. we are now enabling a category),
+                    // then ctgrIcons will always be true
+                    if (!props.visibility[ctgr]) {
+                        hasVisibility = true;
+                        break;
+                    }
+                    // If the checked category is true and being disabled, continue
+                }
+                // If the clicked category and the checking category are the different,
+                // And if the checked category is still visible, ctgrIcons is true
+                else if (props.visibility[ctgr]) {
+                    hasVisibility = true;
+                    break;
+                }
+                // If the checked category is diferent and false, continue
+            }
+            console.log(hasVisibility);
+
+            // Set accordingly
+            props.setVisibility({
+                ...props.visibility,
+                [category]: !props.visibility[category],
+                'categoryIcons': hasVisibility
+            })
+        }
+        // If clicked category is Burst, don't check and just flip
+        else
+            props.setVisibility({
+                ...props.visibility,
+                [category]: !props.visibility[category]
+            })
     }
 
     const handleResetFilter = () => {
@@ -93,7 +133,7 @@ function NikkeFilter(props) {
         <div id='filter-container' className='paper-back grid-column'>
             {
                 // Hide/Show Filter Button
-                props.visible.filter ?
+                props.visibility.filter ?
                     <div className='filter-header grid-row'>
                         {
                             props.debugMode ?
@@ -113,7 +153,10 @@ function NikkeFilter(props) {
                         <Button
                             onClick={handleToggleFilterVisibility}
                             variant={'outlined'}
-                            sx={{ width: '70%' }}
+                            sx={{
+                                width: props.windowSmall ? '55%' : '70%',
+                                padding: '6px 0'
+                            }}
                         >
                             Hide Filter
                         </Button>
@@ -121,7 +164,10 @@ function NikkeFilter(props) {
                             onClick={handleResetFilter}
                             variant='contained'
                             color='error'
-                            sx={{ width: '25%' }}
+                            sx={{
+                                width: props.windowSmall ? '40%' : '25%',
+                                padding: '6px 0'
+                            }}
                         >
                             Reset Filter
                         </Button>
@@ -136,11 +182,17 @@ function NikkeFilter(props) {
             }
             {
                 // Filter options, if shown
-                props.visible.filter ?
+                props.visibility.filter ?
                     (
                         <div id='filter'>
                             {/* Main and misc filter tags */}
-                            <div id='filter-category-container'>
+                            <div
+                                id='filter-list-container'
+                                className={props.windowSmall ? 'grid-column' : 'grid-row'}
+                                style={{
+                                    flexWrap: props.windowSmall ? 'initial' : 'wrap'
+                                }}
+                            >
                                 {
                                     // For each category in tags, create a ToggleButtonGroup
                                     props.tags.categories.map(category => {
@@ -148,12 +200,12 @@ function NikkeFilter(props) {
                                             <div className='filter-category grid-column' key={'category-' + category}>
                                                 {
 
-                                                    (props.visible.categories.indexOf(category) !== -1) ?
+                                                    (props.visibility.categories.indexOf(category) !== -1) ?
                                                         <div className='filter-category-visibility-container grid-row'>
                                                             <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
                                                             {/* Create IconButton for toggling visibility */}
                                                             <Tooltip
-                                                                title={props.visible[category] ?
+                                                                title={props.visibility[category] ?
                                                                     'Hide Icons'
                                                                     : 'Show Icons'
                                                                 }
@@ -164,7 +216,7 @@ function NikkeFilter(props) {
                                                                     sx={{ padding: '0', maxWidth: '1rem', maxHeight: '1rem' }}
                                                                 >
                                                                     {
-                                                                        props.visible[category] ?
+                                                                        props.visibility[category] ?
                                                                             <Visibility sx={{ maxWidth: '1rem', maxHeight: '1rem' }} />
                                                                             : <VisibilityOff sx={{ maxWidth: '1rem', maxHeight: '1rem' }} />
                                                                     }
@@ -175,10 +227,12 @@ function NikkeFilter(props) {
                                                 }
 
                                                 <ToggleButtonGroup
+                                                    className='filter-btn-group'
                                                     value={props.filter[category]}
                                                     onChange={(event, value) => onFilter(category, value)}
                                                     sx={{
                                                         width: '100%',
+                                                        boxSizing: 'border-box',
                                                         justifyContent: 'center'
                                                     }}
                                                 >
@@ -195,6 +249,7 @@ function NikkeFilter(props) {
                                                                     value={tag}
                                                                     key={'tag-' + tag}
                                                                     sx={{
+                                                                        // maxWidth: props.windowSmall ? '20%' : 'none',
                                                                         backgroundColor: '#70809069',
                                                                         fontWeight: selectState ? 'bold' : 'normal',
                                                                         textDecoration: selectState ? 'inherit' : 'line-through',
@@ -228,8 +283,15 @@ function NikkeFilter(props) {
                                 {/* Misc tags */}
                                 <FormControl
                                     id='filter-misc'
+                                    size='small'
                                     sx={{
-                                        flexGrow: 4
+                                        minWidth: props.windowSmall ? '80%' : '5rem',
+                                        maxWidth: '100%',
+                                        marginTop: '0.5em',
+                                        flexGrow: 4,
+                                        boxSizing: 'border-box'
+                                    }}
+                                    InputProps={{
                                     }}
                                 >
                                     <InputLabel id='filter-misc-input-label'>Tags (WIP)</InputLabel>
@@ -246,9 +308,10 @@ function NikkeFilter(props) {
                                 label='Nikke Name'
                                 value={props.filter.Name}
                                 onChange={(event) => handleTextChange(event.target.value)}
-                                size='small'
+                                // size='small'
                                 sx={{
-                                    width: '25%'
+                                    minWidth: '25%',
+                                    marginTop: '1em'
                                 }}
                                 InputProps={{
                                     endAdornment: (
