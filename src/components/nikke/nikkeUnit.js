@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { IconButton, Tooltip } from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
@@ -52,6 +52,19 @@ function NikkeUnit(props) {
             return ' nikke-name-long';
         else
             return '';
+    }
+
+    const getImageSrc = () => {
+        let check = props.unit.Name.split(':');
+        // console.log('../../assets/images/Nikke/avatars/' + props.unit.Name + '.png');
+
+
+        if (check.length === 1)
+            return '../../assets/images/Nikke/avatars/' + props.unit.Name + '.png';
+
+        else if (check.length === 2) {
+            return '../../assets/images/Nikke/avatars/' + check[0] + check[1] + '.png';
+        }
     }
 
     const getAddRemoveButton = () => {
@@ -115,7 +128,9 @@ function NikkeUnit(props) {
                                 getAddRemoveButton()
                             }
                         </IconButton>
-                        <img className='nikke-image' src={props.unit.Image} alt='Nikke' />
+                        {/* <Suspense fallback={<div />}> */}
+                        <img className='nikke-image' src={props.avatar} alt='Nikke' />
+                        {/* </Suspense> */}
                         {
                             props.visibility['Burst'] ?
 

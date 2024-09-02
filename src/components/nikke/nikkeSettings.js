@@ -6,6 +6,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Select, Switch } from '@mui/material';
 import Close from '@mui/icons-material/Close';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 
 function NikkeSettings(props) {
     return (
@@ -19,29 +21,45 @@ function NikkeSettings(props) {
                 }
             }}
         >
-            <DialogTitle>
-                <div id='settings-dialog-header'>
-                    Settings
-                    <IconButton onClick={props.onClose}>
-                        <Close />
-                    </IconButton>
-                </div>
+            <DialogTitle className='dialog-header' style={{}}>
+                Settings
+                <IconButton onClick={props.onClose}>
+                    <Close />
+                </IconButton>
             </DialogTitle>
+            <hr style={{ width: '100%', margin: 0, boxSizing: 'border-box' }} />
             <DialogContent
                 id='settings-dialog-body'
                 sx={{ overflow: "initial" }}
             >
                 <FormControlLabel
                     control={<Switch
-                        checked={props.settings.showRatings}
+                        checked={props.settings.enableRatings}
                         onChange={(event) => props.setSettings({
                             ...props.settings,
-                            showRatings: !props.settings.showRatings
+                            enableRatings: !props.settings.enableRatings
                         })}
                         inputProps={{ 'aria-label': 'controlled' }}
                         color='warning'
                     />}
                     label='Enable Ratings'
+                    labelPlacement='start'
+                    sx={{
+                        margin: 0,
+                        flexDirection: 'row'
+                    }}
+                />
+                <FormControlLabel
+                    control={<Switch
+                        checked={!props.visibility.filter}
+                        onChange={(event) => props.setVisibility({
+                            ...props.visibility,
+                            filter: !props.visibility.filter
+                        })}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        color='warning'
+                    />}
+                    label='Hide Filter'
                     labelPlacement='start'
                     sx={{
                         margin: 0,

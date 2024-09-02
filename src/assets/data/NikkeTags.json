@@ -8,7 +8,7 @@
     "Manufacturer",
     "Weapon"
   ],
-  "Burst": ["1", "2", "3", "1M", "V"],
+  "Burst": ["1", "2", "3", "1R", "V"],
   "Burst Cooldown": ["20", "40", "60"],
   "Rarity": ["R", "SR", "SSR"],
   "Class": ["Attacker", "Defender", "Supporter"],

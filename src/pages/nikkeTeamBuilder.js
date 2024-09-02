@@ -4,49 +4,26 @@ import NikkeData from '../assets/data/NikkeData.json';
 import Tags from '../assets/data/NikkeTags.json';
 
 import './nikkeTeamBuilder.css';
+import { Icons, getNikkeAvatars } from '../components/nikke/nikkeAssets.js'
 import NikkeSquad from '../components/nikke/nikkeSquad.js'
 import NikkeList from '../components/nikke/nikkeList.js'
 import NikkeFilter from '../components/nikke/nikkeFilter.js';
 import NikkeSettings from '../components/nikke/nikkeSettings.js';
 import NikkeHelp from '../components/nikke/nikkeHelp.js';
 
-// Import Manufacturer
-import ManufacturerElysionIcon from '../assets/images/Nikke/NikkeManufacturerElysion.png'
-import ManufacturerMissilisIcon from '../assets/images/Nikke/NikkeManufacturerMissilis.png'
-import ManufacturerTetraIcon from '../assets/images/Nikke/NikkeManufacturerTetra.png'
-import ManufacturerPilgrimIcon from '../assets/images/Nikke/NikkeManufacturerPilgrim.png'
-import ManufacturerAbnormalIcon from '../assets//images/Nikke/NikkeManufacturerAbnormal.png'
-// Import Weapon
-import WeaponARIcon from '../assets/images/Nikke/NikkeWeaponAR.png'
-import WeaponMGIcon from '../assets/images/Nikke/NikkeWeaponMG.png'
-import WeaponRLIcon from '../assets/images/Nikke/NikkeWeaponRL.png'
-import WeaponSGIcon from '../assets/images/Nikke/NikkeWeaponSG.png'
-import WeaponSMGIcon from '../assets/images/Nikke/NikkeWeaponSMG.png'
-import WeaponSRIcon from '../assets/images/Nikke/NikkeWeaponSR.png'
-// Import Class
-import ClassAtkIcon from '../assets/images/Nikke/NikkeClassAttacker.png'
-import ClassDefIcon from '../assets/images/Nikke/NikkeClassDefender.png'
-import ClassSptIcon from '../assets/images/Nikke/NikkeClassSupporter.png'
-// Import (Nikke) Code
-import CodeElectricIcon from '../assets/images/Nikke/NikkeCodeElectric.png'
-import CodeFireIcon from '../assets/images/Nikke/NikkeCodeFire.png'
-import CodeIronIcon from '../assets/images/Nikke/NikkeCodeIron.png'
-import CodeWaterIcon from '../assets/images/Nikke/NikkeCodeWater.png'
-import CodeWindIcon from '../assets/images/Nikke/NikkeCodeWind.png'
-// Import Burst
-import Burst1Icon from '../assets/images/Nikke/NikkeBurst1.png'
-import Burst1MIcon from '../assets/images/Nikke/NikkeBurst1M.png'
-import Burst2Icon from '../assets/images/Nikke/NikkeBurst2.png'
-import Burst3Icon from '../assets/images/Nikke/NikkeBurst3.png'
-import BurstVIcon from '../assets/images/Nikke/NikkeBurstV.png'
-import BlankIcon from '../assets/images/Nikke/NikkeIconBase.png'
+
 import { Button, IconButton, Tooltip } from '@mui/material';
 import { Add, Edit, QuestionMark, Settings, DeleteForever } from '@mui/icons-material';
-import ContentPaste from '@mui/icons-material/ContentPaste';
+import DriveFileRenameOutlineSharpIcon from '@mui/icons-material/DriveFileRenameOutlineSharp';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 
+const NikkeAvatars = { ...getNikkeAvatars() };
+
 function NikkeTeamBuilder(props) {
+    console.log(NikkeAvatars);
+    console.log(Icons);
+
     const [debugMode, setDebugMode] = useState(false);
     const [editable, setEditable] = useState(false);
     const [squadCnt, setSquadCnt] = useState(1);
@@ -59,56 +36,15 @@ function NikkeTeamBuilder(props) {
     */
     const [filter, setFilter] = useState({
         ...Tags,
-        Rarity: ["SSR"],
-        Name: ''
+        'Rarity': ['SSR'],
+        'Name': ''
     });
 
     const [settings, setSettings] = useState({
         open: false,
-        showRatings: true,
+        enableRatings: true,
         targetCode: 'None'
     });
-
-    /**
-     * Constant collection of icons
-     */
-    const icons = {
-        'Burst': {
-            '1': Burst1Icon,
-            '2': Burst2Icon,
-            '3': Burst3Icon,
-            '1M': Burst1MIcon,
-            'V': BurstVIcon
-        },
-        'Class': {
-            'Attacker': ClassAtkIcon,
-            'Defender': ClassDefIcon,
-            'Supporter': ClassSptIcon
-        },
-        'Code': {
-            'Electric': CodeElectricIcon,
-            'Fire': CodeFireIcon,
-            'Iron': CodeIronIcon,
-            'Water': CodeWaterIcon,
-            'Wind': CodeWindIcon
-        },
-        'Manufacturer': {
-            'Elysion': ManufacturerElysionIcon,
-            'Missilis': ManufacturerMissilisIcon,
-            'Tetra': ManufacturerTetraIcon,
-            'Abnormal': ManufacturerAbnormalIcon,
-            'Pilgrim': ManufacturerPilgrimIcon
-        },
-        'Weapon': {
-            'AR': WeaponARIcon,
-            'MG': WeaponMGIcon,
-            'RL': WeaponRLIcon,
-            'SG': WeaponSGIcon,
-            'SMG': WeaponSMGIcon,
-            'SR': WeaponSRIcon
-        },
-        'Blank': BlankIcon
-    }
 
     /**
      * @returns Returns an Array of only Nikke ID/Names
@@ -155,7 +91,7 @@ function NikkeTeamBuilder(props) {
     // filteredNikkes = {[{nikke1}, {nikke2}, ...]}
     const [filteredNikkes, setFilteredNikkes] = useState([...getAllNikkeIds()]);
 
-    // States for rendering icons
+    // States for rendering icons and other components
     const [visibility, setVisibility] = useState({
         'categories': ['Burst', 'Class', 'Code', 'Manufacturer', 'Weapon'],
         'filter': true,
@@ -515,26 +451,17 @@ function NikkeTeamBuilder(props) {
 
     return (
         <div className="page" style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
-            {/* Page Title */}
-            <h1>Nikke Team Builder</h1>
+            {/* Page Title: prints states if debugMode is enabled */}
+            <h1
+                onClick={() => debugMode ? console.log(nikkeLists, visibility)
+                    : null
+                }
+            >
+                Nikke Team Builder
+            </h1>
+
             {/* Page Header */}
             <div id='tb-header' className='grid-row'>
-                {/* Debug: Print Button */}
-                {
-                    debugMode ?
-                        <Tooltip
-                            title='Print Nikke Lists'
-                            placement='top'
-                        >
-                            <IconButton
-                                onClick={() => console.log(nikkeLists, visibility)}
-                                sx={{ backgroundColor: '#ed6c02' }}
-                            >
-                                <ContentPaste />
-                            </IconButton>
-                        </Tooltip>
-                        : null
-                }
                 {/* Help Button */}
                 <Tooltip
                     title='Help'
@@ -558,7 +485,7 @@ function NikkeTeamBuilder(props) {
                 >
                     <Button
                         onClick={() => setEditable(!editable)}
-                        startIcon={<Edit />}
+                        startIcon={editable ? <DriveFileRenameOutlineSharpIcon /> : <Edit />}
                         color='inherit'
                         sx={{
                             height: '2.5rem',
@@ -567,8 +494,12 @@ function NikkeTeamBuilder(props) {
                             fontWeight: 'bold',
                             fontSize: 'large',
                             textTransform: 'none',
-                            backgroundColor: editable ? 'gray' : '#1976d2',
-                            border: editable ? '1px solid  #ffffff77' : '0'
+
+                            paddingRight: editable ? '6px' : '8px',
+                            paddingLeft: editable ? '6px' : '8px',
+                            border: editable ? '2px solid  #ffffff77' : '0',
+                            backgroundColor: editable ? props.theme.palette.pumpkin.main : '#1976d2',
+                            textDecoration: editable ? 'underline 3px' : 'none'
                         }}
                     >
                         Edit
@@ -597,9 +528,11 @@ function NikkeTeamBuilder(props) {
                     })}
                     settings={settings}
                     setSettings={setSettings}
+                    visibility={visibility}
+                    setVisibility={setVisibility}
                     debugMode={debugMode}
                     setDebugMode={setDebugMode}
-                    icons={icons}
+                    icons={Icons}
                 />
             </div>
 
@@ -623,93 +556,109 @@ function NikkeTeamBuilder(props) {
                                 // Left edit buttons: Move Squad Up op Down
                                 editable ?
                                     <div className='grid-column'>
-                                        <IconButton
-                                            onClick={() => handleMoveSquad(sectionId, true)}
-                                            sx={{
-                                                maxWidth: '1.5rem',
-                                                maxHeight: '1.5rem',
-                                                backgroundColor: 'gray',
-                                                border: '1px solid #ffffff77'
-                                            }}
-                                        ><KeyboardDoubleArrowUpIcon fontSize='small' /></IconButton>
-                                        <IconButton
-                                            onClick={() => handleMoveSquad(sectionId, false)}
-                                            sx={{
-                                                maxWidth: '1.5rem',
-                                                maxHeight: '1.5rem',
-                                                backgroundColor: 'gray',
-                                                border: '1px solid #ffffff77'
-                                            }}
-                                        ><KeyboardDoubleArrowDownIcon fontSize='small' /></IconButton>
+                                        <Tooltip title='Move Squad up' placement='top'>
+                                            <IconButton
+                                                onClick={() => handleMoveSquad(sectionId, true)}
+                                                sx={{
+                                                    maxWidth: '1.5rem',
+                                                    maxHeight: '1.5rem',
+                                                    backgroundColor: 'gray',
+                                                    border: '1px solid #ffffff77'
+                                                }}
+                                            ><KeyboardDoubleArrowUpIcon fontSize='small' /></IconButton></Tooltip>
+                                        <Tooltip title='Move Squad down' placement='top'>
+                                            <IconButton
+                                                onClick={() => handleMoveSquad(sectionId, false)}
+                                                sx={{
+                                                    maxWidth: '1.5rem',
+                                                    maxHeight: '1.5rem',
+                                                    backgroundColor: 'gray',
+                                                    border: '1px solid #ffffff77'
+                                                }}
+                                            ><KeyboardDoubleArrowDownIcon fontSize='small' /></IconButton></Tooltip>
                                     </div>
                                     : null
                             }
                             <NikkeSquad
                                 section={section}
                                 nikkes={nikkes}
-                                icons={icons}
+                                icons={Icons}
+                                avatars={NikkeAvatars}
                                 windowSmall={props.windowSmall}
                                 visibility={visibility}
                                 onMoveNikke={handleMoveNikke}
                                 editable={editable}
                                 onSquadTitleChange={handleSquadTitleChange}
                                 targetCode={settings.targetCode}
-                                showRatings={settings.showRatings}
+                                enableRatings={settings.enableRatings}
                                 onSetSquadMinimized={handleSetSquadMinimized}
                                 theme={props.theme}
                             />
                             {
                                 editable ?
                                     <div className='grid-column'>
-                                        <IconButton
-                                            onClick={() => handleRemoveSquad(sectionId)}
-                                            sx={{
-                                                maxWidth: '1.5rem',
-                                                maxHeight: '1.5rem',
-                                                backgroundColor: '#c32020',
-                                                border: '1px solid #ffffff77'
-                                            }}
-                                        ><DeleteForever fontSize='small' /></IconButton>
-                                        <IconButton
-                                            onClick={() => handleAddSquad(index)}
-                                            sx={{
-                                                maxWidth: '1.5rem',
-                                                maxHeight: '1.5rem',
-                                                backgroundColor: '#209320',
-                                                border: '1px solid #ffffff77'
-                                            }}
-                                        ><Add /></IconButton>
+                                        <Tooltip title='Delete Squad' placement='top'>
+                                            <IconButton
+                                                onClick={() => handleRemoveSquad(sectionId)}
+                                                sx={{
+                                                    maxWidth: '1.5rem',
+                                                    maxHeight: '1.5rem',
+                                                    backgroundColor: '#c32020',
+                                                    border: '1px solid #ffffff77'
+                                                }}
+                                            ><DeleteForever fontSize='small' /></IconButton></Tooltip>
+                                        <Tooltip title='Add Squad below' placement='top'>
+                                            <IconButton
+                                                onClick={() => handleAddSquad(index)}
+                                                sx={{
+                                                    maxWidth: '1.5rem',
+                                                    maxHeight: '1.5rem',
+                                                    backgroundColor: '#209320',
+                                                    border: '1px solid #ffffff77'
+                                                }}
+                                            ><Add /></IconButton></Tooltip>
                                     </div>
                                     : null
                             }
                         </div>;
                     })
                 }
+
+                {/* Bench Section */}
                 <NikkeList
                     key={'bench'}
                     section={nikkeLists.sections['bench']}
                     nikkes={collectNikkes(nikkeLists.sections['bench'].nikkeIds)}
-                    icons={icons}
+                    icons={Icons}
+                    avatars={NikkeAvatars}
                     windowSmall={props.windowSmall}
                     visibility={visibility}
                     onMoveNikke={handleMoveNikke}
                 />
-                <NikkeFilter
-                    filter={filter}
-                    onFilter={handleFilter}
-                    icons={icons}
-                    windowSmall={props.windowSmall}
-                    tags={Tags}
-                    visibility={visibility}
-                    setVisibility={setVisibility}
-                    debugMode={debugMode}
-                />
 
+                {/* Filter */}
+                {
+                    visibility.filter ?
+                        <NikkeFilter
+                            filter={filter}
+                            onFilter={handleFilter}
+                            icons={Icons}
+                            windowSmall={props.windowSmall}
+                            tags={Tags}
+                            visibility={visibility}
+                            setVisibility={setVisibility}
+                            debugMode={debugMode}
+                        />
+                        : null
+                }
+
+                {/* Roster Section */}
                 <NikkeList
                     key={'roster'}
                     section={nikkeLists.sections['roster']}
                     nikkes={collectNikkes(filteredNikkes)}
-                    icons={icons}
+                    icons={Icons}
+                    avatars={NikkeAvatars}
                     windowSmall={props.windowSmall}
                     visibility={visibility}
                     onMoveNikke={handleMoveNikke}

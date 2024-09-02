@@ -1,6 +1,8 @@
 import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import NikkeUnit from './nikkeUnit.js'
+import ChairAltIcon from '@mui/icons-material/ChairAlt';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 function NikkeList(props) {
 
@@ -21,8 +23,15 @@ function NikkeList(props) {
     }
 
     return (
-        <div className='nikke-list-container'>
-            <h1>{props.section.title}</h1>
+        <div id={props.section.id} className='nikke-list-container'>
+            <div className='nikke-list-header'>
+                {
+                    props.section.id === 'roster' ?
+                        <PersonSearchIcon className='section-badge' />
+                        : <ChairAltIcon className='section-badge' />
+                }
+                <h1>{props.section.title}</h1>
+            </div>
             <Droppable
                 droppableId={props.section.id}
                 key={props.section.id}
@@ -57,6 +66,7 @@ function NikkeList(props) {
                                             props.icons.Manufacturer[item.Manufacturer],
                                             props.icons.Weapon[item.Weapon]
                                         ]}
+                                        avatar={props.avatars[item.Name]}
                                         visibility={props.visibility}
                                         onMoveNikke={onMoveNikke}
                                     />)

@@ -3,6 +3,7 @@ import { Droppable } from '@hello-pangea/dnd';
 import NikkeUnit from './nikkeUnit.js';
 import Reviews from '../../assets/data/NikkeSquadReviews.json';
 import { Button, InputBase, Tooltip } from '@mui/material';
+import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import { Error, ReportProblemOutlined } from '@mui/icons-material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
@@ -233,6 +234,7 @@ function NikkeSquad(props) {
             <div className='squad-header grid-row'
                 style={{ minWidth: props.windowSmall ? '20.25em' : '35.25rem', }}
             >
+                <RecentActorsIcon sx={{ color: '#fff' }} />
                 <InputBase
                     defaultValue={props.section.title}
                     onChange={onSquadTitleChange}
@@ -241,7 +243,7 @@ function NikkeSquad(props) {
                     size={props.windowSmall ? 'small' : 'medium'}
                     sx={{
                         margin: '0.25rem 0',
-                        paddingLeft: '0.5rem',
+                        paddingLeft: '0.25rem',
                         fontSize: props.windowSmall ? '1rem' : '1.5rem',
                         fontWeight: props.editable ? 'unset' : 'bold',
                         backgroundColor: props.editable ? '#00000040' : 'transparent',
@@ -257,14 +259,15 @@ function NikkeSquad(props) {
                     }}
                 />
                 <Button
-                    className='toggle-rating-btn'
                     onClick={() => props.onSetSquadMinimized(props.section.id, !props.section.minimized)}
                     variant='contained'
                     color={props.section.minimized ? 'info' : 'pumpkin'}
                     style={{
-                        height: '80%',
+                        height: '70%',
                         borderTopRightRadius: '1rem',
-                        // backgroundColor: '#1976d2'
+                        position: 'absolute',
+                        right: 0,
+                        top: props.windowSmall ? '0.25rem' : '0.5rem'
                     }}
                 >
                     {
@@ -318,6 +321,7 @@ function NikkeSquad(props) {
                                                         props.icons.Manufacturer[item.Manufacturer],
                                                         props.icons.Weapon[item.Weapon]
                                                     ]}
+                                                    avatar={props.avatars[item.Name]}
                                                     visibility={props.visibility}
                                                     onMoveNikke={onMoveNikke}
                                                 />)
@@ -330,7 +334,7 @@ function NikkeSquad(props) {
                             )}
                         </Droppable>
                         <div className='nikke-squad-info grid-row'>
-                            {props.showRatings ? buildRatingNotes() : null}
+                            {props.enableRatings ? buildRatingNotes() : null}
                         </div>
                     </div>
             }
