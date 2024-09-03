@@ -272,7 +272,11 @@ function NikkeHelp(props) {
                 <Collapse in={open.settings}>
                     <ul className='dropdown-body'>
                         <li>Ratings can be fully disabled.</li>
-                        <li>The filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(will still be active, however)</li>
+                        <li>
+                            Duplicate Nikkes can be enabled.&nbsp;&nbsp;&nbsp;&nbsp;(Re-disabling
+                            duplicates doesn't delete duplicates in Squads and Bench)
+                        </li>
+                        <li>The filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(But will still be active, however)</li>
                         <li>
                             Code Weakness can be selected. When selected, Squad Rating will check if your squad has at least one unit with the selected code.
                             Important for getting that 10% bonus damage or when Raid bosses have code immunity.
@@ -288,7 +292,6 @@ function NikkeHelp(props) {
                         such as healing, shielding, pierce, true damage, cleansing, etc.
                     </li>
                     <li>Add button to move to top.</li>
-                    <li>Add &lt;Allow Duplicate Nikkes&gt; to Settings Menu.</li>
                     <li>Save and share teams.</li>
                 </ul>
 

@@ -6,6 +6,60 @@ import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 function NikkeList(props) {
 
+    const renderRoster = (provided) => {
+        if (props.allowDuplicates) {
+            return props.nikkeData.map((item, index) => {
+                return (
+                    <NikkeUnit
+                        key={'unit-' + item.Name}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        unit={item}
+                        sectionId={props.section.id}
+                        index={index}
+                        windowSmall={props.windowSmall}
+                        icons={[
+                            props.icons.Burst[item.Burst],
+                            props.icons.Class[item.Class],
+                            props.icons.Code[item.Code],
+                            props.icons.Manufacturer[item.Manufacturer],
+                            props.icons.Weapon[item.Weapon]
+                        ]}
+                        avatar={props.avatars[item.Name]}
+                        visibility={props.visibility}
+                        onMoveNikke={onMoveNikke}
+                    />
+                )
+            });
+        }
+        else {
+            return props.nikkes.map((item, index) => {
+                return (
+                    <NikkeUnit
+                        key={'unit-' + item.Name}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        unit={item}
+                        sectionId={props.section.id}
+                        index={index}
+                        windowSmall={props.windowSmall}
+                        icons={[
+                            props.icons.Burst[item.Burst],
+                            props.icons.Class[item.Class],
+                            props.icons.Code[item.Code],
+                            props.icons.Manufacturer[item.Manufacturer],
+                            props.icons.Weapon[item.Weapon]
+                        ]}
+                        avatar={props.avatars[item.Name]}
+                        visibility={props.visibility}
+                        onMoveNikke={onMoveNikke}
+                    />
+                )
+            });
+        }
+    }
+
+
     /**
      * When a Nikke Unit calls for a move, the list needs to input its own information before sending it up to the Team Builder.
      * @param {string} nikkeId ID of the moving Nikke.
@@ -48,31 +102,30 @@ function NikkeList(props) {
                         {...provided.droppableProps}
                     >
                         {
-                            props.nikkes &&
-                            props.nikkes.map((item, index) => {
-                                return (
-                                    <NikkeUnit
-                                        key={'unit-' + item.Name}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        unit={item}
-                                        sectionId={props.section.id}
-                                        index={index}
-                                        windowSmall={props.windowSmall}
-                                        icons={[
-                                            props.icons.Burst[item.Burst],
-                                            props.icons.Class[item.Class],
-                                            props.icons.Code[item.Code],
-                                            props.icons.Manufacturer[item.Manufacturer],
-                                            props.icons.Weapon[item.Weapon]
-                                        ]}
-                                        avatar={props.avatars[item.Name]}
-                                        visibility={props.visibility}
-                                        onMoveNikke={onMoveNikke}
-                                    />)
-                            }
-                            )
-
+                            props.section.id === 'roster' ?
+                                renderRoster(provided)
+                                : props.nikkes.map((item, index) => {
+                                    return (
+                                        <NikkeUnit
+                                            key={'unit-' + item.Name}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            unit={item}
+                                            sectionId={props.section.id}
+                                            index={index}
+                                            windowSmall={props.windowSmall}
+                                            icons={[
+                                                props.icons.Burst[item.Burst],
+                                                props.icons.Class[item.Class],
+                                                props.icons.Code[item.Code],
+                                                props.icons.Manufacturer[item.Manufacturer],
+                                                props.icons.Weapon[item.Weapon]
+                                            ]}
+                                            avatar={props.avatars[item.Name]}
+                                            visibility={props.visibility}
+                                            onMoveNikke={onMoveNikke}
+                                        />)
+                                })
                         }
                         {provided.placeholder}
                     </div>

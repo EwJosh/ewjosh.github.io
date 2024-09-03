@@ -17,7 +17,7 @@ function NikkeSettings(props) {
             onClose={props.onClose}
             PaperProps={{
                 style: {
-                    minWidth: '50vw'
+                    minWidth: '25vw'
                 }
             }}
         >
@@ -43,6 +43,23 @@ function NikkeSettings(props) {
                         color='warning'
                     />}
                     label='Enable Ratings'
+                    labelPlacement='start'
+                    sx={{
+                        margin: 0,
+                        flexDirection: 'row'
+                    }}
+                />
+                <FormControlLabel
+                    control={<Switch
+                        checked={props.settings.allowDuplicates}
+                        onChange={(event) => props.setSettings({
+                            ...props.settings,
+                            allowDuplicates: !props.settings.allowDuplicates
+                        })}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        color='warning'
+                    />}
+                    label='Allow Duplicate Nikkes'
                     labelPlacement='start'
                     sx={{
                         margin: 0,

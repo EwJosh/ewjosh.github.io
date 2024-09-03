@@ -21,12 +21,9 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 const NikkeAvatars = { ...getNikkeAvatars() };
 
 function NikkeTeamBuilder(props) {
-    console.log(NikkeAvatars);
-    console.log(Icons);
-
     const [debugMode, setDebugMode] = useState(false);
     const [editable, setEditable] = useState(false);
-    const [squadCnt, setSquadCnt] = useState(1);
+    const [squadCnt, setSquadCnt] = useState(3);
     const [help, setHelp] = useState(false);
 
     /**
@@ -43,6 +40,7 @@ function NikkeTeamBuilder(props) {
     const [settings, setSettings] = useState({
         open: false,
         enableRatings: true,
+        allowDuplicates: false,
         targetCode: 'None'
     });
 
@@ -70,6 +68,18 @@ function NikkeTeamBuilder(props) {
                 nikkeIds: [],
                 minimized: false
             },
+            'squad-2': {
+                id: 'squad-2',
+                title: 'Squad 2',
+                nikkeIds: [],
+                minimized: true
+            },
+            'squad-3': {
+                id: 'squad-3',
+                title: 'Squad 3',
+                nikkeIds: [],
+                minimized: true
+            },
             'bench': {
                 id: 'bench',
                 title: 'Bench',
@@ -81,8 +91,7 @@ function NikkeTeamBuilder(props) {
                 nikkeIds: [...getAllNikkeIds()]
             }
         },
-        // sectionOrder: ['squad-1', 'squad-2', 'squad-3', 'squad-4', 'squad-5', 'bench', 'roster']
-        sectionOrder: ['squad-1', 'bench', 'roster']
+        sectionOrder: ['squad-1', 'squad-2', 'squad-3']
     }
     // Collection of Nikkes to be used and altered
     const [nikkeLists, setNikkeLists] = useState(initNikkeLists);
@@ -158,17 +167,88 @@ function NikkeTeamBuilder(props) {
                 }
             }
         }
-        // If transferring between different sections
+        // If the Nikke is being sent to Roster, insert it alphabetically to maintain consistency.
+        // If it's already there, don't insert into Roster, just extract from source section
+        else if (dstSectionId === 'roster') {
+            // Create an array of object IDs
+            let srcNikkeIds = Array.from(srcSection.nikkeIds);
+            let dstNikkeIds = Array.from(dstSection.nikkeIds);
+
+            // Find alphabetical index using binary search
+            // Left and right are indices for binary search
+            // srcNikke is the moving Nikke in object form (used for comparing with Rarity)
+            let left = 0;
+            let right = dstNikkeIds.length - 1;
+            let srcNikke = getNikke(nikkeId);
+
+            // Perform binary search
+            while (left < right) {
+                // Compute middle index
+                let mid = Math.floor((right - left + 1) / 2 + left);
+
+                // If middle index is our source Nikke, zero onto mid
+                if (nikkeId === dstNikkeIds[mid]) {
+                    left = mid;
+                    right = mid;
+                }
+                else {
+                    // Get middle Nikke object
+                    let midNikke = getNikke(dstNikkeIds[mid]);
+
+                    // Binary compare
+                    if (lessThan(srcNikke, midNikke))
+                        right = mid - 1;
+                    else
+                        left = mid;
+                }
+            }
+
+            // Remove the dragged object from list.
+            srcNikkeIds.splice(srcIndex, 1)
+
+            // Only insert if Nikke is not already in Roster.
+            if (dstNikkeIds[left] !== nikkeId) {
+                // Insert the dragged object into the destination.
+                dstNikkeIds.splice(left + 1, 0, nikkeId);
+            }
+
+            // Grab a copy of roster to refilter.
+            if (srcSectionId === 'roster')
+                rosterIdsCopy = srcNikkeIds;
+            rosterIdsCopy = dstNikkeIds;
+
+            // Create new section using old section's data, but replacing new Nikke IDs.
+            let newSrcSection = {
+                ...srcSection,
+                nikkeIds: srcNikkeIds
+            }
+
+            let newDstSection = {
+                ...dstSection,
+                nikkeIds: dstNikkeIds
+            }
+
+            // Set data to use new information.
+            newNikkeLists = {
+                ...nikkeLists,
+                sections: {
+                    ...nikkeLists.sections,
+                    [newSrcSection.id]: newSrcSection,
+                    [newDstSection.id]: newDstSection
+                }
+            }
+        }
+        // If transferring between different sections.
         else {
             // Create an array of object IDs
             let srcNikkeIds = Array.from(srcSection.nikkeIds);
             let dstNikkeIds = Array.from(dstSection.nikkeIds);
 
-            // If the moving Nikke is from roster, it might be filtered and so
+            // If the moving Nikke is from Roster, it might be filtered and so
             // we'll have to find the proper src index inside of roster, not filtered
-            if (srcSectionId === 'roster') {
+            if (srcSectionId === 'roster')
                 srcIndex = srcNikkeIds.indexOf(nikkeId);
-            }
+
             // If the Nikke Unit function OnMoveNikke was used, we'll get a -1 as dstIndex. We want that to be the last index of dstSectionId
             if (dstIndex === -1)
                 dstIndex = dstNikkeIds.length;
@@ -206,9 +286,22 @@ function NikkeTeamBuilder(props) {
             }
         }
 
+        // Update filter if roster is involved.
         if (srcSectionId === 'roster' || dstSectionId === 'roster')
             handleFilterIds(filter, rosterIdsCopy);
         setNikkeLists(newNikkeLists);
+    }
+
+    const lessThan = (nikke1, nikke2) => {
+        if (nikke1.Rarity > nikke2.Rarity)
+            return true;
+        else if (nikke1.Rarity < nikke2.Rarity)
+            return false;
+
+        if (nikke1.Name.toUpperCase() < nikke2.Name.toUpperCase())
+            return true;
+        else
+            return false;
     }
 
     /**
@@ -320,7 +413,7 @@ function NikkeTeamBuilder(props) {
         let newSectionTitle = 'Squad ' + (squadCnt + 1);
         setSquadCnt(squadCnt + 1);
 
-        // Create new section order array by inserting the new section id before the bench and roster.
+        // Create new section order array by inserting the new section id in the index slot.
         let newSectionOrder = nikkeLists.sectionOrder.slice(0, index + 1);
         newSectionOrder.push(newSectionId);
         newSectionOrder = newSectionOrder.concat(nikkeLists.sectionOrder.slice(index + 1));
@@ -360,7 +453,7 @@ function NikkeTeamBuilder(props) {
 
         // Deny the removal of the last squad. Could be higher, but...
         // Though not necessary, I'm gonna instead reset Squad Counter to 1 and replace last squad with a 'squad-1'.
-        if (nikkeLists.sectionOrder.length === 3) {
+        if (nikkeLists.sectionOrder.length === 1) {
             setSquadCnt(1);
             // Doesn't work to just use handleAddSquad(0) here. Seems to be a concurrency issue with states.
 
@@ -380,11 +473,11 @@ function NikkeTeamBuilder(props) {
                         ...nikkeLists.sections['roster']
                     }
                 },
-                sectionOrder: ['squad-1', 'bench', 'roster']
+                sectionOrder: ['squad-1']
             })
         }
         else {
-            // Otherwise, update information
+            // Otherwise, update information as normal
             setNikkeLists({
                 sections: {
                     ...newSections
@@ -398,7 +491,7 @@ function NikkeTeamBuilder(props) {
         let sectOrder = nikkeLists.sectionOrder;
 
         // If only squad, return
-        if (sectOrder.length === 3)
+        if (sectOrder.length === 1)
             return;
 
         // Grab initial indices
@@ -407,8 +500,8 @@ function NikkeTeamBuilder(props) {
 
         // If attempting to move outside of range, move to opposite end.
         if (dstIndex === -1)
-            dstIndex = sectOrder.length - 3;
-        else if (dstIndex === sectOrder.length - 2)
+            dstIndex = sectOrder.length - 1;
+        else if (dstIndex === sectOrder.length)
             dstIndex = 0;
 
         // Perform simple array swap
@@ -435,8 +528,6 @@ function NikkeTeamBuilder(props) {
     }
 
     const handleSetSquadMinimized = (sectionId, bool) => {
-        console.log(sectionId, bool);
-
         setNikkeLists({
             sections: {
                 ...nikkeLists.sections,
@@ -453,7 +544,7 @@ function NikkeTeamBuilder(props) {
         <div className="page" style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
             {/* Page Title: prints states if debugMode is enabled */}
             <h1
-                onClick={() => debugMode ? console.log(nikkeLists, visibility)
+                onClick={() => debugMode ? console.log(nikkeLists, settings)
                     : null
                 }
             >
@@ -542,9 +633,6 @@ function NikkeTeamBuilder(props) {
                 {
                     nikkeLists.sectionOrder.map((sectionId, index) => {
                         let section = nikkeLists.sections[sectionId];
-
-                        if (sectionId === 'roster' || sectionId === 'bench')
-                            return null;
 
                         let nikkes = collectNikkes(section.nikkeIds);
 
@@ -662,6 +750,8 @@ function NikkeTeamBuilder(props) {
                     windowSmall={props.windowSmall}
                     visibility={visibility}
                     onMoveNikke={handleMoveNikke}
+                    allowDuplicates={settings.allowDuplicates}
+                    nikkeData={NikkeData}
                 />
 
             </DragDropContext >

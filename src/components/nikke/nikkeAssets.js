@@ -82,8 +82,7 @@ function getNikkeAvatars() {
 
     NikkeData.forEach(nikke => {
         let name = nikke.Name.replace(':', '');
-        // let path = '../../assets/images/Nikke/avatars/' + name + '.png';
-        // let image = lazy(() => import(path));
+
         try {
             let image = imgContext(`./${name}.png`);
             nikkeAvatars = {
@@ -94,8 +93,6 @@ function getNikkeAvatars() {
             console.log('Missing Avatar asset for ', name);
         }
     });
-    console.log(nikkeAvatars);
-
 
     return nikkeAvatars;
 }
