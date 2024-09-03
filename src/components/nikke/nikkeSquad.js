@@ -1,22 +1,34 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import NikkeUnit from './nikkeUnit.js';
+// Import Review responses for rating
 import Reviews from '../../assets/data/NikkeSquadReviews.json';
-import { Button, InputBase, Tooltip } from '@mui/material';
+
+// Import MUI components
+import Button from '@mui/material/Button';
+import InputBase from '@mui/material/InputBase';
+import Tooltip from '@mui/material/Tooltip';
+
+// Import MUI icons
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
-import { Error, ReportProblemOutlined } from '@mui/icons-material';
+import Error from '@mui/icons-material/Error';
+import ReportProblemOutlined from '@mui/icons-material/ReportProblemOutlined';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 function NikkeSquad(props) {
+    // State for current ratings.
     const [rating, setRating] = useState({});
 
+    // Updates Squad ratings when its Nikke list is updated.
     useLayoutEffect(() => {
+        // If empty, set to ratings to empty
         if (props.nikkes.length === 0) {
             setRating({})
             return;
         }
 
+        // Begin ratings.
         rateSquad();
     }, [props.nikkes])
 
@@ -45,17 +57,25 @@ function NikkeSquad(props) {
         setRating({ ...newRating });
     }
 
+    /**
+     * Rates the size of the Squad. (In-game, max size is 5. But it's also unorthodox to have less than 5.)
+     * 
+     * If the Squad is less than 5, tag as a warning.
+     * If the Squad is greater than 5, tag as an error.
+     * @param {Dictionary} newRating Dictionary containing current rating tags for the judged categories.
+     * @returns the updated newRating to be reused or set.
+     */
     const checkSize = (newRating) => {
         if (props.nikkes.length < 5) {
             return {
                 ...newRating,
-                'Size': 'error'
+                'Size': 'warning'
             };
         }
         else if (props.nikkes.length > 5)
             return {
                 ...newRating,
-                'Size': 'warning'
+                'Size': 'error'
             };
         else
             return {
@@ -65,11 +85,14 @@ function NikkeSquad(props) {
     }
 
     /**
-     * Rates the Burst potential of the squad. Checks whether the squad can full burst (error, if not) and can do so every 20 seconds (warning, if not.)
+     * Rates the Burst potential of the squad.
+     * 
+     * If the squad cannot full burst, tag as an error.
+     * If the squad can full burst but can do so every 20 seconds, tag as a warning.
+     * 
      * Covers the simple cases of Bursts 1, 2, and 3 and cooldowns of 20sec, 40sec, 60sec.
-     * Covers the edge cases of Burst 1 Recast (e.g. Rupee: Winter and Tia) and Red Hood's Burst V.
-     * Soon to cover the edge case of Noir and Blanc. 
-     * @param {Dictionary} newRating Dictionary containing rating tags for the judged categories.
+     * Covers the edge cases of Burst 1 Re-enter (e.g. Rupee: Winter and Tia), Red Hood's Burst V, and Noir & Blanc.
+     * @param {Dictionary} newRating Dictionary containing current rating tags for the judged categories.
      * @returns the updated newRating to be reused or set.
      */
     const checkBurst = (newRating) => {
@@ -163,7 +186,14 @@ function NikkeSquad(props) {
             minBSI[burst] = bcd;
     }
 
-
+    /**
+     * Rates the posession of a Code-strong Nikke, if a Code Weakness is set.
+     * 
+     * If the target Code is set AND the Squad lacks a matching Nikke, tag as an error.
+     * 
+     * @param {Dictionary} newRating Dictionary containing current rating tags for the judged categories.
+     * @returns the updated newRating to be reused or set.
+     */
     const checkCode = (newRating) => {
         // If no code is set, set Code to null and skip this check
         if (props.targetCode === 'None')
@@ -191,9 +221,16 @@ function NikkeSquad(props) {
         };
     }
 
+    /**
+     * Builds an array of React components to display the Squad ratings.
+     * Each component consists of a Tooltip, an icon, and its category. (Which are colored depending on the case.)
+     * Currently supported tags are null, 'warning', and 'error'.
+     * @returns An array of React components that echo the Squad ratings.
+     */
     const buildRatingNotes = () => {
         return Reviews.categories.map(category => {
             let ratingCase = rating[category];
+            // Skip category if no case is found.
             if (ratingCase == null) {
                 return null;
             }
@@ -216,6 +253,11 @@ function NikkeSquad(props) {
         });
     }
 
+    /**
+     * In-between function for quick-moving a Nikke. Called when quick-moving a Nikke using the (-) Button in the Unit.
+     * @param {string} nikkeId ID value of the Nikke being moved.
+     * @param {*} srcIndex Nikke's index in its sourced section.
+     */
     const onMoveNikke = (nikkeId, srcIndex) => {
         let dstSectionId = (
             props.section.id === 'bench' ?
@@ -225,6 +267,10 @@ function NikkeSquad(props) {
         props.onMoveNikke(nikkeId, props.section.id, dstSectionId, srcIndex, -1);
     }
 
+    /**
+     * Called when Squad title has been changed. Brings info up into Team Builder.
+     * @param {Event} event Event information. Used for getting the value of the text field via 'event.target.value'.
+     */
     const onSquadTitleChange = (event) => {
         props.onSquadTitleChange(props.section.id, event.target.value)
     }

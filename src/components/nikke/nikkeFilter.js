@@ -1,11 +1,27 @@
 import React from 'react';
-import { Button, ToggleButtonGroup, ToggleButton, IconButton, TextField, InputAdornment, Tooltip, Select, InputLabel, FormControl, MenuItem, styled } from '@mui/material';
+
+// Import MUI components
+import Button from '@mui/material/Button';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import ToggleButton from '@mui/material/ToggleButton';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
+import Tooltip from '@mui/material/Tooltip';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import { styled } from '@mui/material';
+
+// Import MUI icons
 import Close from '@mui/icons-material/Close';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 
+// Restyled MUI ToggleButton for coloring them orange when selected.
 const StyledToggleButton = styled(ToggleButton)({
     "&.Mui-selected, &.Mui-selected:hover": {
         backgroundColor: '#b37227'
@@ -14,9 +30,9 @@ const StyledToggleButton = styled(ToggleButton)({
 
 function NikkeFilter(props) {
     /**
-     * Toggles a filter option when selected
-     * @param {string} category Filter category
-     * @param {string} value Filtered category's new array
+     * Toggles a filter option when selected. Calls for a re-filter in Team Builder.
+     * @param {string} category Filterable tag category.
+     * @param {string} value Filtered tag category's new array.
      */
     const onFilter = (category, value) => {
         let newValue = value;
@@ -49,24 +65,19 @@ function NikkeFilter(props) {
         });
     }
 
-    const handleToggleFilterVisibility = () => {
-        props.setVisibility({
-            ...props.visibility,
-            'filter': !props.visibility.filter
-        });
-    }
-
-    const handleToggleTagCategoryVisibility = (category) => {
+    /**
+     * Toggles visibility of a tag category to influence the rendering of icons on NikkeUnits.
+     * If the categories [Class, Code, Manufacturer, Weapon] are invisible, visibility.categoryIcons will be false
+     * to skip the rendering of the icon div in NikkeUnits.
+     * @param {string} category Filterable tag category.
+     */
+    const handleToggleVisibility = (category) => {
         // Check if props.visibility.categoryIcons should be true or false
         // Don't check with Burst category. Start on index 1 to skip Burst too
         if (category !== 'Burst') {
             let hasVisibility = false;
             for (let i = 1; i < props.visibility.categories.length; i++) {
                 let ctgr = props.visibility.categories[i];
-                console.log(category, props.visibility[category],
-                    ctgr, props.visibility[ctgr]
-                );
-
 
                 // If the clicked category and the checking category are the same
                 if (category === ctgr) {
@@ -86,7 +97,6 @@ function NikkeFilter(props) {
                 }
                 // If the checked category is diferent and false, continue
             }
-            console.log(hasVisibility);
 
             // Set accordingly
             props.setVisibility({
@@ -103,15 +113,22 @@ function NikkeFilter(props) {
             })
     }
 
+    /**
+     * Resets filter to its initial state.
+     */
     const handleResetFilter = () => {
         props.onFilter({
             ...props.tags,
-            'Rarity': ['SSR'],
-            'Name': ''
+            'Rarity': ['SSR'],  // Initialize Rarity to only have SSR selected.
+            'Name': ''          // Add Name to filter (not in Tags) and initialize as blank.
         })
     }
 
-    const handleTextChange = (name) => {
+    /**
+     * Sets the Name attribute in the filter. Called when the TextField for Nikke Name is updated.
+     * @param {string} name Value of the Name being searched.
+     */
+    const handleSearchedNameChange = (name) => {
         props.onFilter({
             ...props.filter,
             'Name': name
@@ -119,9 +136,10 @@ function NikkeFilter(props) {
     }
 
     /** 
-     * @param {string} category The filter category of the tag
-     * @param {string} target The tag being filtered
-     * @returns true if the target tag exists inside the filtered category
+     * Checks whether a filtered tag is selected or not.
+     * @param {string} category The filter category of the tag.
+     * @param {string} target The tag being filtered.
+     * @returns true if the target tag exists inside the filtered category.
      */
     const isSelected = (category, target) => {
         if (props.filter[category] == null)
@@ -136,6 +154,7 @@ function NikkeFilter(props) {
 
     return (
         <div id='filter-container' className='paper-back grid-column'>
+            {/* Header */}
             <div
                 id='filter-header'
                 className={props.windowSmall ? 'grid-column' : null}
@@ -166,7 +185,7 @@ function NikkeFilter(props) {
                     }
                 </Button>
             </div>
-            {/* Main and misc filter tags */}
+            {/* Body */}
             <div
                 id='filter-body'
                 className={props.windowSmall ? 'grid-column' : 'grid-row'}
@@ -177,6 +196,7 @@ function NikkeFilter(props) {
                 }}
             >
                 {
+                    // * Main tags *
                     // For each category in tags, create a ToggleButtonGroup
                     props.tags.categories.map(category => {
                         return (
@@ -195,7 +215,7 @@ function NikkeFilter(props) {
                                                 placement='top'
                                             >
                                                 <IconButton
-                                                    onClick={() => handleToggleTagCategoryVisibility(category)}
+                                                    onClick={() => handleToggleVisibility(category)}
                                                     sx={{ padding: '0', maxWidth: '1rem', maxHeight: '1rem' }}
                                                 >
                                                     {
@@ -263,7 +283,8 @@ function NikkeFilter(props) {
                         )
                     })
                 }
-                {/* Misc tags */}
+
+                {/* Misc tags, WIP */}
                 <FormControl
                     id='filter-misc'
                     size='small'
@@ -285,6 +306,8 @@ function NikkeFilter(props) {
                     </Select>
                 </FormControl>
             </div>
+
+            {/* Footer */}
             <div
                 id='filter-footer'
                 className={props.windowSmall ? 'grid-column' : 'grid-row'}
@@ -294,8 +317,7 @@ function NikkeFilter(props) {
                     id='filter-name'
                     label='Nikke Name'
                     value={props.filter.Name}
-                    onChange={(event) => handleTextChange(event.target.value)}
-                    // size='small'
+                    onChange={(event) => handleSearchedNameChange(event.target.value)}
                     sx={{
                         minWidth: '35%',
                     }}
@@ -303,7 +325,7 @@ function NikkeFilter(props) {
                         endAdornment: (
                             <InputAdornment position="end">
                                 <IconButton
-                                    onClick={() => handleTextChange('')}
+                                    onClick={() => handleSearchedNameChange('')}
                                 >
                                     <Close />
                                 </IconButton>

@@ -107,8 +107,8 @@ h4 {
   box-sizing: border-box;
   border-color: rgba(144, 202, 249, 0.5);
 
-  /* background-color: #004f4f;
-  color: #ffeab6; */
+  /* background-color: #004f4f; */
+  /* color: #ffeab6; */
   background-color: #006b6b;
 }
 
@@ -259,7 +259,6 @@ h4 {
 .nikke-list {
   gap: 0rem;
   min-width: 80vw;
-  /* max-width: 80vw; */
   min-height: 2rem;
   border-radius: 1rem;
 
@@ -278,8 +277,6 @@ h4 {
   width: 6rem;
   height: 10rem;
 
-  /* color: black; */
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -293,7 +290,6 @@ h4 {
 
 .nikke-image-container {
   position: relative;
-  /* min-width: 1rem; */
   width: 100%;
   min-height: 3em;
 }
@@ -301,7 +297,6 @@ h4 {
 .nikke-image {
   max-width: 100%;
   max-height: 100%;
-  /* background-color: #aaa; */
   border-radius: 0.75rem 0.75rem 0 0;
   image-rendering: auto;
 }
@@ -362,7 +357,6 @@ h4 {
 }
 
 .nikke-icon {
-  /* aspect-ratio: 1/1; */
   object-fit: contain;
   width: 25%;
 }

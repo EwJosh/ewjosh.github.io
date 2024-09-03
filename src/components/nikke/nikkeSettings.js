@@ -1,19 +1,25 @@
 import React from 'react';
+
+// Import MUI components
 import Dialog from '@mui/material/Dialog';
-// import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-// import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Select, Switch } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+
+// Import MUI icons
 import Close from '@mui/icons-material/Close';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 
 function NikkeSettings(props) {
     return (
         <Dialog
             id='settings-dialog'
-            open={props.settings.open}
+            open={props.settings.openSettings}
             onClose={props.onClose}
             PaperProps={{
                 style: {
@@ -21,6 +27,7 @@ function NikkeSettings(props) {
                 }
             }}
         >
+            {/* Header */}
             <DialogTitle className='dialog-header' style={{}}>
                 Settings
                 <IconButton onClick={props.onClose}>
@@ -28,61 +35,13 @@ function NikkeSettings(props) {
                 </IconButton>
             </DialogTitle>
             <hr style={{ width: '100%', margin: 0, boxSizing: 'border-box' }} />
+
+            {/* Body */}
             <DialogContent
                 id='settings-dialog-body'
                 sx={{ overflow: "initial" }}
             >
-                <FormControlLabel
-                    control={<Switch
-                        checked={props.settings.enableRatings}
-                        onChange={(event) => props.setSettings({
-                            ...props.settings,
-                            enableRatings: !props.settings.enableRatings
-                        })}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                        color='warning'
-                    />}
-                    label='Enable Ratings'
-                    labelPlacement='start'
-                    sx={{
-                        margin: 0,
-                        flexDirection: 'row'
-                    }}
-                />
-                <FormControlLabel
-                    control={<Switch
-                        checked={props.settings.allowDuplicates}
-                        onChange={(event) => props.setSettings({
-                            ...props.settings,
-                            allowDuplicates: !props.settings.allowDuplicates
-                        })}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                        color='warning'
-                    />}
-                    label='Allow Duplicate Nikkes'
-                    labelPlacement='start'
-                    sx={{
-                        margin: 0,
-                        flexDirection: 'row'
-                    }}
-                />
-                <FormControlLabel
-                    control={<Switch
-                        checked={!props.visibility.filter}
-                        onChange={(event) => props.setVisibility({
-                            ...props.visibility,
-                            filter: !props.visibility.filter
-                        })}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                        color='warning'
-                    />}
-                    label='Hide Filter'
-                    labelPlacement='start'
-                    sx={{
-                        margin: 0,
-                        flexDirection: 'row'
-                    }}
-                />
+                {/* Code Weakness */}
                 <FormControl>
                     <InputLabel id='sett-code-weak-label'>Code Weakness</InputLabel>
                     <Select
@@ -146,10 +105,66 @@ function NikkeSettings(props) {
                         </MenuItem>
                     </Select>
                 </FormControl>
+                {/* Enable Ratings */}
                 <FormControlLabel
                     control={<Switch
-                        checked={props.debugMode}
-                        onChange={() => props.setDebugMode(!props.debugMode)}
+                        checked={props.settings.enableRatings}
+                        onChange={(event) => props.setSettings({
+                            ...props.settings,
+                            enableRatings: !props.settings.enableRatings
+                        })}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        color='warning'
+                    />}
+                    label='Enable Ratings'
+                />
+                {/* Allow Duplicates */}
+                <FormControlLabel
+                    control={<Switch
+                        checked={props.settings.allowDuplicates}
+                        onChange={(event) => props.setSettings({
+                            ...props.settings,
+                            allowDuplicates: !props.settings.allowDuplicates
+                        })}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        color='warning'
+                    />}
+                    label='Allow Duplicate Nikkes'
+                />
+                {/* Hide Filter */}
+                <FormControlLabel
+                    control={<Switch
+                        checked={!props.visibility.filter}
+                        onChange={(event) => props.setVisibility({
+                            ...props.visibility,
+                            filter: !props.visibility.filter
+                        })}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        color='warning'
+                    />}
+                    label='Hide Filter'
+                />
+                {/* Hide Quick-Move Buttons */}
+                <FormControlLabel
+                    control={<Switch
+                        checked={!props.visibility.quickMove}
+                        onChange={(event) => props.setVisibility({
+                            ...props.visibility,
+                            quickMove: !props.visibility.quickMove
+                        })}
+                        inputProps={{ 'aria-label': 'controlled' }}
+                        color='warning'
+                    />}
+                    label='Hide Quick-move in Squads'
+                />
+                {/* Debug Mode */}
+                <FormControlLabel
+                    control={<Switch
+                        checked={props.settings.debugMode}
+                        onChange={() => props.setSettings({
+                            ...props.settings,
+                            debugMode: !props.debugMode
+                        })}
                         inputProps={{ 'aria-label': 'controlled' }}
                         color='warning'
                     />}

@@ -1,8 +1,8 @@
 {
   "categories": ["Size", "Burst", "Code"],
   "Size": {
-    "warning": "Squad size >5.",
-    "error": "Squad size <5."
+    "warning": "Squad size <5.",
+    "error": "Squad size >5."
   },
   "Burst": {
     "warning": "Squad reaches full burst, but has long cooldown.",

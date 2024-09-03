@@ -1,62 +1,51 @@
 import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
+
+// Import MUI components
 import NikkeUnit from './nikkeUnit.js'
+
+// Import MUI icons
 import ChairAltIcon from '@mui/icons-material/ChairAlt';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 function NikkeList(props) {
+    /**
+     * Maps through an array of Nikke objects and converts them into an array of React components for rendering into Nikke cards.
+     * props.nikkes is used by default. If allowDuplicates is active, Roster will map through the initial NikkeData.
+     * @param {object} provided Prop object used by Droppable and Draggable components (@hello-pangea/dnd).
+     * @returns An array of NikkeUnit React components.
+     */
+    const renderDroppable = (provided) => {
+        // By default (for both Bench and Roster, we'll map through their Nikkes).
+        let list = props.nikkes;
 
-    const renderRoster = (provided) => {
-        if (props.allowDuplicates) {
-            return props.nikkeData.map((item, index) => {
-                return (
-                    <NikkeUnit
-                        key={'unit-' + item.Name}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        unit={item}
-                        sectionId={props.section.id}
-                        index={index}
-                        windowSmall={props.windowSmall}
-                        icons={[
-                            props.icons.Burst[item.Burst],
-                            props.icons.Class[item.Class],
-                            props.icons.Code[item.Code],
-                            props.icons.Manufacturer[item.Manufacturer],
-                            props.icons.Weapon[item.Weapon]
-                        ]}
-                        avatar={props.avatars[item.Name]}
-                        visibility={props.visibility}
-                        onMoveNikke={onMoveNikke}
-                    />
-                )
-            });
-        }
-        else {
-            return props.nikkes.map((item, index) => {
-                return (
-                    <NikkeUnit
-                        key={'unit-' + item.Name}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                        unit={item}
-                        sectionId={props.section.id}
-                        index={index}
-                        windowSmall={props.windowSmall}
-                        icons={[
-                            props.icons.Burst[item.Burst],
-                            props.icons.Class[item.Class],
-                            props.icons.Code[item.Code],
-                            props.icons.Manufacturer[item.Manufacturer],
-                            props.icons.Weapon[item.Weapon]
-                        ]}
-                        avatar={props.avatars[item.Name]}
-                        visibility={props.visibility}
-                        onMoveNikke={onMoveNikke}
-                    />
-                )
-            });
-        }
+        // If allowDuplicates is active, Roster will map through the initial NikkeData.
+        if (props.section.id === 'roster' && props.allowDuplicates)
+            list = props.nikkeData
+
+        return list.map((item, index) => {
+            return (
+                <NikkeUnit
+                    key={'unit-' + item.Name}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    unit={item}
+                    sectionId={props.section.id}
+                    index={index}
+                    windowSmall={props.windowSmall}
+                    icons={[
+                        props.icons.Burst[item.Burst],
+                        props.icons.Class[item.Class],
+                        props.icons.Code[item.Code],
+                        props.icons.Manufacturer[item.Manufacturer],
+                        props.icons.Weapon[item.Weapon]
+                    ]}
+                    avatar={props.avatars[item.Name]}
+                    visibility={props.visibility}
+                    onMoveNikke={onMoveNikke}
+                />
+            )
+        });
     }
 
 
@@ -78,6 +67,7 @@ function NikkeList(props) {
 
     return (
         <div id={props.section.id} className='nikke-list-container'>
+            {/* Header */}
             <div className='nikke-list-header'>
                 {
                     props.section.id === 'roster' ?
@@ -86,6 +76,7 @@ function NikkeList(props) {
                 }
                 <h1>{props.section.title}</h1>
             </div>
+            {/* Body */}
             <Droppable
                 droppableId={props.section.id}
                 key={props.section.id}
@@ -101,32 +92,7 @@ function NikkeList(props) {
                         }}
                         {...provided.droppableProps}
                     >
-                        {
-                            props.section.id === 'roster' ?
-                                renderRoster(provided)
-                                : props.nikkes.map((item, index) => {
-                                    return (
-                                        <NikkeUnit
-                                            key={'unit-' + item.Name}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            unit={item}
-                                            sectionId={props.section.id}
-                                            index={index}
-                                            windowSmall={props.windowSmall}
-                                            icons={[
-                                                props.icons.Burst[item.Burst],
-                                                props.icons.Class[item.Class],
-                                                props.icons.Code[item.Code],
-                                                props.icons.Manufacturer[item.Manufacturer],
-                                                props.icons.Weapon[item.Weapon]
-                                            ]}
-                                            avatar={props.avatars[item.Name]}
-                                            visibility={props.visibility}
-                                            onMoveNikke={onMoveNikke}
-                                        />)
-                                })
-                        }
+                        {renderDroppable(provided)}
                         {provided.placeholder}
                     </div>
                 )}

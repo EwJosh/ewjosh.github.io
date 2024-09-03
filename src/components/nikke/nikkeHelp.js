@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Collapse, Dialog, DialogContent, DialogTitle, Divider, IconButton, styled } from '@mui/material';
+
+// Import MUI components
+import Collapse from '@mui/material/Collapse';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material';
+
+// Import MUI icons
 import Edit from '@mui/icons-material/Edit';
 import Settings from '@mui/icons-material/Settings';
 import Add from '@mui/icons-material/Add'
@@ -14,6 +23,9 @@ import Close from '@mui/icons-material/Close';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import Visibility from '@mui/icons-material/Visibility';
 
+/**
+ * Restyled <h3> for being used as a dropdown/accordion button
+ */
 const DropdownButton = styled('h3')({
     minHeight: '2rem',
     borderWidth: '5px',
@@ -30,6 +42,7 @@ const DropdownButton = styled('h3')({
 
 
 function NikkeHelp(props) {
+    // State used for the opening of certain sections.
     const [open, setOpen] = useState({
         'squads': true,
         'broster': true,
@@ -37,6 +50,10 @@ function NikkeHelp(props) {
         'settings': true
     })
 
+    /**
+     * Toggles the open state for a given section.
+     * @param {string} section Value for the section to be toggled.
+     */
     const handleClick = (section) => {
         setOpen({
             ...open,
@@ -114,8 +131,7 @@ function NikkeHelp(props) {
                         </ul>
                         <li>
                             Squad names can be edited and Squads can be added or removed by <b>toggling
-                                the <Edit fontSize='inherit' className='menu-icon-text' /> Edit button</b>
-                            in the top.
+                                the <Edit fontSize='inherit' className='menu-icon-text' /> Edit button</b> in the top.
                         </li>
                         <li>
                             Toggling the <ArrowDropDownIcon fontSize='inherit' className='menu-icon-text' /> Dropdown button
@@ -142,7 +158,8 @@ function NikkeHelp(props) {
                                 </li>
                             </ul>
                             <li>
-                                Matches Code Weakness (If set in 'Settings,' does your squad have at least one matching Nikke?)
+                                Matches Code Weakness (If set in <Settings fontSize='inherit' className='menu-icon-text' /> Settings,
+                                does your squad have at least one matching Nikke?)
                             </li>
                         </ul>
                         <li>
@@ -205,8 +222,8 @@ function NikkeHelp(props) {
                             <li>Filter is applied only on the Roster.</li>
                         </ul>
                         <li>
-                            I made this program primarily for Solo Raids, thus there are no repeat Nikkes (i.e. once a Nikke is deployed, it cannot be deployed again).
-                            I will eventually make this a toggleable feature, in case you're looking to build squads for other reasons.
+                            Duplicate Nikkes are not initially allowed in this Team Builder for the sake of Solo Raids.
+                            Can be enabled in this Team Builder in the <Settings fontSize='inherit' className='menu-icon-text' /> Settings.
                         </li>
                         <li>
                             <i><b>Bug:</b> Can't Drop Nikkes into a line beyond the first line if the droppable area has multiple lines.</i>
@@ -284,6 +301,8 @@ function NikkeHelp(props) {
                     </ul>
                 </Collapse>
                 <hr />
+
+                {/* Upcoming Features */}
                 <h2>Upcoming Features</h2>
                 <ul>
                     <li>
@@ -294,8 +313,9 @@ function NikkeHelp(props) {
                     <li>Add button to move to top.</li>
                     <li>Save and share teams.</li>
                 </ul>
-
                 <hr />
+
+                {/* Credits */}
                 <h2>Credits</h2>
                 <ul>
                     <li>

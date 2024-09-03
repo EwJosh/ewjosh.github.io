@@ -1,19 +1,30 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd'; //'react-beautiful-dnd';
+
+// Import assets
 import NikkeData from '../assets/data/NikkeData.json';
 import Tags from '../assets/data/NikkeTags.json';
-
-import './nikkeTeamBuilder.css';
 import { Icons, getNikkeAvatars } from '../components/nikke/nikkeAssets.js'
+
+// Import components
+import './nikkeTeamBuilder.css';
 import NikkeSquad from '../components/nikke/nikkeSquad.js'
 import NikkeList from '../components/nikke/nikkeList.js'
 import NikkeFilter from '../components/nikke/nikkeFilter.js';
 import NikkeSettings from '../components/nikke/nikkeSettings.js';
 import NikkeHelp from '../components/nikke/nikkeHelp.js';
 
+// Import MUI components
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
-import { Button, IconButton, Tooltip } from '@mui/material';
-import { Add, Edit, QuestionMark, Settings, DeleteForever } from '@mui/icons-material';
+// Import MUI icons
+import Add from '@mui/icons-material/Add';
+import Edit from '@mui/icons-material/Edit';
+import QuestionMark from '@mui/icons-material/QuestionMark';
+import Settings from '@mui/icons-material/Settings';
+import DeleteForever from '@mui/icons-material/DeleteForever';
 import DriveFileRenameOutlineSharpIcon from '@mui/icons-material/DriveFileRenameOutlineSharp';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
@@ -21,31 +32,37 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 const NikkeAvatars = { ...getNikkeAvatars() };
 
 function NikkeTeamBuilder(props) {
-    const [debugMode, setDebugMode] = useState(false);
-    const [editable, setEditable] = useState(false);
+    // How many squads have been created? Different than how many squads are there currently.
     const [squadCnt, setSquadCnt] = useState(3);
-    const [help, setHelp] = useState(false);
 
     /**
     * Active set of tags to process user filtering and can be modified.
-    * [TO IMPLEMENT]
-    * Healing, Shields, Piercing, True-Damage-Buff, MagSize-Buff, etc.
+    * See Tags to see what's available..
     */
     const [filter, setFilter] = useState({
         ...Tags,
-        'Rarity': ['SSR'],
-        'Name': ''
-    });
-
-    const [settings, setSettings] = useState({
-        open: false,
-        enableRatings: true,
-        allowDuplicates: false,
-        targetCode: 'None'
+        'Rarity': ['SSR'],  // Initialize Rarity to only have SSR selected.
+        'Name': ''          // Add Name to filter (not in Tags) and initialize as blank.
     });
 
     /**
-     * @returns Returns an Array of only Nikke ID/Names
+     * Collection of states/settings.
+     * Could be separated into their own variables/states, but this way it's easier to manage them all.
+     */
+    const [settings, setSettings] = useState({
+        editable: false,        // Can edit Squads
+        openHelp: false,        // Help dialog is open
+
+        openSettings: false,    // Settings dialog is open
+        enableRatings: true,    // Ratings is enabled
+        allowDuplicates: false, // Duplicate Nikkes are allowed
+        targetCode: 'None',     // The selected Code weakness (for ratings)
+        debugMode: false        // Debug mode is enabled (for console printing data)
+    });
+
+    /**
+     * Gets ALL Nikke IDs/Names from NikkeData.
+     * @returns Returns an Array of only Nikke IDs/Names.
      */
     const getAllNikkeIds = () => {
         // For each object in NikkeData, grab name
@@ -55,10 +72,13 @@ function NikkeTeamBuilder(props) {
     }
 
     /**
-     * Initial JSON Object containing
-     * nikkes: all Nikke data
-     * sections: each section and their contained Nikkes
-     * sectionOrder: an ordered Array of sections
+     * Initial JSON Object containing...
+     * sections: Each section and their contained Nikkes.
+     *  -Squads: Sections for Nikke game-deployment and rating.
+     *      title: Name displayed for Squads.
+     *      minimized: If true, the Squad's Nikkes and ratings are hidden.
+     *  -Bench and Roster: Sections for Nikke management. Bench is for 'favorites' and Roster is for all.
+     * sectionOrder: An ordered Array of squads.
      */
     const initNikkeLists = {
         sections: {
@@ -93,18 +113,24 @@ function NikkeTeamBuilder(props) {
         },
         sectionOrder: ['squad-1', 'squad-2', 'squad-3']
     }
-    // Collection of Nikkes to be used and altered
+    // Collection of Nikkes to be used and altered.
     const [nikkeLists, setNikkeLists] = useState(initNikkeLists);
 
-    // Filtered collection of Nikkes visible from the roster section
+    // Filtered collection of Nikke objects visible from the roster section.
+    // i.e. Which of the Roster will be rendered.
     // filteredNikkes = {[{nikke1}, {nikke2}, ...]}
     const [filteredNikkes, setFilteredNikkes] = useState([...getAllNikkeIds()]);
 
-    // States for rendering icons and other components
+    // States for rendering icons and other components.
     const [visibility, setVisibility] = useState({
+        // Iterable list of visibility keys for NikkeUnit.
         'categories': ['Burst', 'Class', 'Code', 'Manufacturer', 'Weapon'],
-        'filter': true,
-        'categoryIcons': true,
+
+        'filter': true,         // Whether the filter component is rendered.
+        'categoryIcons': true,  // If false, shrinks NikkeUnit and skips rendering of the bottom four icons.
+        'quickMove': true,      // Whether the quick-move (+/-) buttons are rendered.
+
+        // Icons that can be hidden if false
         'Burst': true,
         'Class': true,
         'Code': true,
@@ -113,7 +139,8 @@ function NikkeTeamBuilder(props) {
     });
 
     /**
-     * Handles onDragEnd events for Drag-n-Drop components
+     * Handles onDragEnd events for Drag-n-Drop components.
+     * Called when a NikkeUnit is dragged and dropped and needs to be moved.
      * @param {Event} result Object containing event data
      */
     const onDragEnd = (result) => {
@@ -124,25 +151,37 @@ function NikkeTeamBuilder(props) {
         if (!destination)
             return;
 
+        // Handle movement
         handleMoveNikke(draggableId, source.droppableId, destination.droppableId, source.index, destination.index);
     }
 
+    /**
+     * Handles the movement of a Nikke. Called for dragging or Add/Remove Units.
+     * Removes target Nikke from the source section and inserts into the designated section.
+     * If Roster is the destination, checks to see if Nikke is already there. If already there, skips insertion.
+     * If Roster is involved, updates filtered Nikkes.
+     * @param {string} nikkeId ID of the moving Nikke.
+     * @param {string} srcSectionId ID of the Nikke's starting section.
+     * @param {string} dstSectionId ID of the Nikke's designated section.
+     * @param {number} srcIndex index of the NIkke in the starting section.
+     * @param {number} dstIndex index of the NIkke in the designated section. If -1, Nikke will be moved to the end of the list.
+     */
     const handleMoveNikke = (nikkeId, srcSectionId, dstSectionId, srcIndex, dstIndex) => {
-        // Check if destination exists and that a change has been made, if not then return
+        // Check if destination exists and that a change has been made, if not then return.
         if (dstSectionId === srcSectionId
             && dstIndex === srcIndex)
             return;
 
-        // Get column from data corresponding to the resulting source and destination sections
+        // Get column from data corresponding to the resulting source and destination sections.
         let srcSection = nikkeLists.sections[srcSectionId];
         let dstSection = nikkeLists.sections[dstSectionId];
 
-        // Used for refiltering the roster since I can't just use state
+        // Used for refiltering the roster since I can't just use state.
         let rosterIdsCopy = [];
 
         let newNikkeLists = {};
 
-        // If moving within the same section (e.g. drag-n-drop within same squad)
+        // If moving within the same section (e.g. drag-n-drop within same squad).
         if (srcSection === dstSection) {
             // Create an array of object IDs
             let srcNikkeIds = Array.from(srcSection.nikkeIds);
@@ -168,7 +207,7 @@ function NikkeTeamBuilder(props) {
             }
         }
         // If the Nikke is being sent to Roster, insert it alphabetically to maintain consistency.
-        // If it's already there, don't insert into Roster, just extract from source section
+        // If it's already there, don't insert into Roster, just extract from source section.
         else if (dstSectionId === 'roster') {
             // Create an array of object IDs
             let srcNikkeIds = Array.from(srcSection.nikkeIds);
@@ -289,15 +328,26 @@ function NikkeTeamBuilder(props) {
         // Update filter if roster is involved.
         if (srcSectionId === 'roster' || dstSectionId === 'roster')
             handleFilterIds(filter, rosterIdsCopy);
+        // Set new lists.
         setNikkeLists(newNikkeLists);
     }
 
+    /**
+     * Compares two Nikke objects akin to nikke1 < nikke2 for the sake of Roster order (by Rarity then Alphabetical).
+     * If their Rarities differ, return whether nikke1's Rarity is 'smaller' (SSR < SR < R).
+     * Otherwise, return whether nikke1's Name is 'smaller' (A < ... < Z).
+     * @param {object} nikke1 Left-side Nikke object.
+     * @param {object} nikke2 Right-side Nikke object.
+     * @returns true if nikke1 should be considered 'less than' nikke2.
+     */
     const lessThan = (nikke1, nikke2) => {
+        // Compare Rarities such that (SSR < SR < R).
         if (nikke1.Rarity > nikke2.Rarity)
             return true;
         else if (nikke1.Rarity < nikke2.Rarity)
             return false;
 
+        // If Rarities are equivalent, compare Names such that (A < ... < Z).
         if (nikke1.Name.toUpperCase() < nikke2.Name.toUpperCase())
             return true;
         else
@@ -305,10 +355,9 @@ function NikkeTeamBuilder(props) {
     }
 
     /**
-     * Creates a new Array of objects whose ID values match the given array
-     * 
-     * @param {Array} nikkeIds Array of strings representing a desired list of Nikkes
-     * @returns An array of JSON object representing Nikkes 
+     * Creates a new Array of Nikke objects whose ID values match the given array.
+     * @param {Array} nikkeIds Array of strings representing a desired list of Nikkes.
+     * @returns An array of JSON object representing Nikkes .
      */
     const collectNikkes = (nikkeIds) => {
         let nikkes = [];
@@ -324,9 +373,9 @@ function NikkeTeamBuilder(props) {
     }
 
     /**
-     * Gets the specified Nikke object
-     * @param {string} nikkeId id value of the desired Nikke
-     * @returns the specified Nikke if found in the original list, null otherwise.
+     * Gets the specified Nikke object via its ID value through the original NikkeData list, if it exists.
+     * @param {string} nikkeId ID value of the desired Nikke.
+     * @returns The specified Nikke if found in the original list, null otherwise.
      */
     const getNikke = (nikkeId) => {
         for (let i = 0; i < NikkeData.length; i++) {
@@ -337,20 +386,26 @@ function NikkeTeamBuilder(props) {
         return null;
     }
 
+    /**
+     * Neutral call for handleFilterIds. Uses the Roster's IDs from the current state.
+     * Called by the Filter component and useLayoutEffect.
+     * @param {object} inputFilter JSON Object of filterable tags.
+     */
     const handleFilter = (inputFilter) => {
         handleFilterIds(inputFilter, nikkeLists.sections['roster'].nikkeIds);
     }
 
     /**
-     * Runs the roster of Nikkes through a filter
-     * @param {JSON} inputFilter JSON Object of filterable tags
+     * Runs the given IDs of Nikkes through a filter. 
+     * Called by the handleFilter and handleMoveNikke.
+     * @param {object} inputFilter JSON Object of filterable tags.
      */
     const handleFilterIds = (inputFilter, inputIds) => {
+        // Update filter state.
         setFilter({ ...inputFilter });
 
-
         // Run Nikke roster through filter
-        // return true if nikke matches filter
+        // - return true if nikke matches filter
         let newFilteredNikkes = inputIds.filter(nikkeId => {
             let nikke = getNikke(nikkeId);
 
@@ -392,6 +447,7 @@ function NikkeTeamBuilder(props) {
             return true;
         })
 
+        // Update FilteredNikkes array
         setFilteredNikkes([
             ...newFilteredNikkes
         ])
@@ -406,6 +462,11 @@ function NikkeTeamBuilder(props) {
     }, [nikkeLists.sections['roster'].nikkeIds])
 
 
+    /**
+     * Adds a new Squad into sections. The new Squad's placement in sectionOrder is dependent on the given index.
+     * ID and Name of the new Squad is dependent on the state squadCnt regardless of its index and the quantity of current Squads.
+     * @param {number} index Index for the new Squad.
+     */
     const handleAddSquad = (index) => {
         // Create new section id and a new section object using Squad Count.
         // Need to increment because concurrency still reads Squad Count as pre-increment
@@ -433,6 +494,11 @@ function NikkeTeamBuilder(props) {
         });
     }
 
+    /**
+     * Deletes a Squad from sections. If the Squad has Nikkes, dump them into Bench.
+     * If attempting to remove the last Squad, reset Squad section information including squadCnt.
+     * @param {string} sectionId ID value of the Squad to be deleted.
+     */
     const handleRemoveSquad = (sectionId) => {
         // Unload nikkeIds so that we don't lose any units. Place them into bench.
         nikkeLists.sections[sectionId].nikkeIds.forEach(nikkeId =>
@@ -487,14 +553,19 @@ function NikkeTeamBuilder(props) {
         }
     }
 
+    /**
+     * Swaps the position of the given Squad upward (towards index 0) or downward (towards index N).
+     * @param {string} sectionId ID value of the section being moved.
+     * @param {boolean} ifMoveUp true if moving 'upward' (towards index 0), false otherwise.
+     */
     const handleMoveSquad = (sectionId, ifMoveUp) => {
         let sectOrder = nikkeLists.sectionOrder;
 
-        // If only squad, return
+        // If only squad, return.
         if (sectOrder.length === 1)
             return;
 
-        // Grab initial indices
+        // Grab initial indices.
         let srcIndex = sectOrder.indexOf(sectionId);
         let dstIndex = ifMoveUp ? srcIndex - 1 : srcIndex + 1;
 
@@ -504,16 +575,22 @@ function NikkeTeamBuilder(props) {
         else if (dstIndex === sectOrder.length)
             dstIndex = 0;
 
-        // Perform simple array swap
+        // Perform simple array swap.
         sectOrder[srcIndex] = sectOrder[dstIndex];
         sectOrder[dstIndex] = sectionId;
 
+        // Update sectionOrder.
         setNikkeLists({
             ...nikkeLists,
             'sectionOrder': sectOrder
         })
     }
 
+    /**
+     * Updates the title to be displayed on a given Squad.
+     * @param {string} sectionId ID value of the Squad whose name is being changed. 
+     * @param {string} title String value to update the title.
+     */
     const handleSquadTitleChange = (sectionId, title) => {
         setNikkeLists({
             sections: {
@@ -527,6 +604,12 @@ function NikkeTeamBuilder(props) {
         })
     }
 
+    /**
+     * Sets the minimization of a given section.
+     * Boolean is a parameter for the potential update to have a Collapse All and Minimize All button.
+     * @param {string} sectionId ID value of the affected Squad.
+     * @param {*} bool true if Squad is to be minimized.
+     */
     const handleSetSquadMinimized = (sectionId, bool) => {
         setNikkeLists({
             sections: {
@@ -544,7 +627,7 @@ function NikkeTeamBuilder(props) {
         <div className="page" style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
             {/* Page Title: prints states if debugMode is enabled */}
             <h1
-                onClick={() => debugMode ? console.log(nikkeLists, settings)
+                onClick={() => settings.debugMode ? console.log(nikkeLists, settings)
                     : null
                 }
             >
@@ -559,15 +642,21 @@ function NikkeTeamBuilder(props) {
                     placement='top'
                 >
                     <IconButton
-                        onClick={() => setHelp(true)}
+                        onClick={() => setSettings({
+                            ...settings,
+                            openHelp: true
+                        })}
                         sx={{ backgroundColor: '#1976d2', }}
                     >
                         <QuestionMark />
                     </IconButton>
                 </Tooltip>
                 <NikkeHelp
-                    open={help}
-                    onClose={() => setHelp(false)}
+                    open={settings.openHelp}
+                    onClose={() => setSettings({
+                        ...settings,
+                        openHelp: false
+                    })}
                 />
                 {/* Edit Button */}
                 <Tooltip
@@ -575,8 +664,11 @@ function NikkeTeamBuilder(props) {
                     placement='top'
                 >
                     <Button
-                        onClick={() => setEditable(!editable)}
-                        startIcon={editable ? <DriveFileRenameOutlineSharpIcon /> : <Edit />}
+                        onClick={() => setSettings({
+                            ...settings,
+                            editable: !settings.editable
+                        })}
+                        startIcon={settings.editable ? <DriveFileRenameOutlineSharpIcon /> : <Edit />}
                         color='inherit'
                         sx={{
                             height: '2.5rem',
@@ -586,11 +678,11 @@ function NikkeTeamBuilder(props) {
                             fontSize: 'large',
                             textTransform: 'none',
 
-                            paddingRight: editable ? '6px' : '8px',
-                            paddingLeft: editable ? '6px' : '8px',
-                            border: editable ? '2px solid  #ffffff77' : '0',
-                            backgroundColor: editable ? props.theme.palette.pumpkin.main : '#1976d2',
-                            textDecoration: editable ? 'underline 3px' : 'none'
+                            paddingRight: settings.editable ? '6px' : '8px',
+                            paddingLeft: settings.editable ? '6px' : '8px',
+                            border: settings.editable ? '2px solid  #ffffff77' : '0',
+                            backgroundColor: settings.editable ? props.theme.palette.pumpkin.main : '#1976d2',
+                            textDecoration: settings.editable ? 'underline 3px' : 'none'
                         }}
                     >
                         Edit
@@ -605,7 +697,7 @@ function NikkeTeamBuilder(props) {
                         sx={{ backgroundColor: '#1976d2' }}
                         onClick={() => setSettings({
                             ...settings,
-                            open: true
+                            openSettings: true
                         })}
                     >
                         <Settings />
@@ -615,14 +707,12 @@ function NikkeTeamBuilder(props) {
                 <NikkeSettings
                     onClose={() => setSettings({
                         ...settings,
-                        open: false
+                        openSettings: false
                     })}
                     settings={settings}
                     setSettings={setSettings}
                     visibility={visibility}
                     setVisibility={setVisibility}
-                    debugMode={debugMode}
-                    setDebugMode={setDebugMode}
                     icons={Icons}
                 />
             </div>
@@ -642,7 +732,7 @@ function NikkeTeamBuilder(props) {
                         >
                             {
                                 // Left edit buttons: Move Squad Up op Down
-                                editable ?
+                                settings.editable ?
                                     <div className='grid-column'>
                                         <Tooltip title='Move Squad up' placement='top'>
                                             <IconButton
@@ -675,7 +765,7 @@ function NikkeTeamBuilder(props) {
                                 windowSmall={props.windowSmall}
                                 visibility={visibility}
                                 onMoveNikke={handleMoveNikke}
-                                editable={editable}
+                                editable={settings.editable}
                                 onSquadTitleChange={handleSquadTitleChange}
                                 targetCode={settings.targetCode}
                                 enableRatings={settings.enableRatings}
@@ -683,7 +773,7 @@ function NikkeTeamBuilder(props) {
                                 theme={props.theme}
                             />
                             {
-                                editable ?
+                                settings.editable ?
                                     <div className='grid-column'>
                                         <Tooltip title='Delete Squad' placement='top'>
                                             <IconButton
@@ -735,7 +825,7 @@ function NikkeTeamBuilder(props) {
                             tags={Tags}
                             visibility={visibility}
                             setVisibility={setVisibility}
-                            debugMode={debugMode}
+                            debugMode={settings.debugMode}
                         />
                         : null
                 }

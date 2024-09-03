@@ -29,7 +29,7 @@ import Burst3Icon from '../../assets/images/Nikke/icons/NikkeBurst3.png';
 import BurstVIcon from '../../assets/images/Nikke/icons/NikkeBurstV.png';
 import BlankIcon from '../../assets/images/Nikke/icons/NikkeIconBase.png';
 
-import { lazy } from 'react';
+// Import Nikke Data for getting avatar images
 import NikkeData from '../../assets/data/NikkeData.json';
 
 /**
@@ -72,10 +72,12 @@ const icons = {
     },
     'Blank': BlankIcon
 };
-
 export { icons as Icons };
 
-
+/**
+ * Dynamically imports image assets using paths created by Nikke Names to get their avatars.
+ * @returns Dictionary of image assets for Nikke avatars
+ */
 function getNikkeAvatars() {
     let nikkeAvatars = {};
     let imgContext = require.context('../../assets/images/Nikke/avatars', true);
@@ -96,5 +98,4 @@ function getNikkeAvatars() {
 
     return nikkeAvatars;
 }
-
 export { getNikkeAvatars };
