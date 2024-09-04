@@ -19,7 +19,12 @@ import TicTacToe from './games/tictactoe.js';
 
 import About from './pages/about.js'
 
+import Fab from '@mui/material/Fab';
+import Slide from '@mui/material/Slide';
+import Tooltip from '@mui/material/Tooltip';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
 import { alpha, createTheme, getContrastRatio, ThemeProvider } from '@mui/material';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp.js';
 
 const theme = createTheme({
   palette: {
@@ -78,24 +83,60 @@ function App() {
   }
   window.onresize = handleResize;
 
+  // Mui function that returns true after the user scrolls enough to reach threshold (default=100)
+  const scrollTrigger = useScrollTrigger({ threshold: 1000 });
+
+  /**
+   * Scrolls window to the top of the page, smoothly.
+   */
+  const handleScrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+  }
+
   return (
-    <div id="App">
+    <div id='App'>
       <ThemeProvider theme={theme}>
-        <Navbar />
+        <Navbar scrollTrigger={scrollTrigger} />
+        <Slide in={scrollTrigger} direction='up'>
+          <Tooltip>
+            <Fab
+              id='scroll-to-top-btn'
+              color='success'
+              aria-label='scroll-to-top'
+              onClick={handleScrollToTop}
+            >
+              <KeyboardArrowUpIcon />
+            </Fab>
+          </Tooltip>
+        </Slide>
         <Router>
           <Routes>
-            <Route exact path="/" element={<Home />} />
-            <Route exact path="/apps" element={<Home />} />
-            <Route exact path="/apps/clock" element={<Clock />} />
-            <Route exact path="/apps/calculator" element={<Calculator />} />
-            <Route exact path="/apps/nikkeTeamBuilder" element={<NikkeTB
+            <Route exact path='/' element={<Home />} />
+            <Route exact path='/apps' element={<Home />} />
+            <Route exact path='/apps/clock' element={<Clock />} />
+            <Route exact path='/apps/calculator' element={<Calculator />} />
+
+            <Route path='/apps/nikkeTeamBuilder/' element={<NikkeTB
               theme={theme}
               windowSmall={windowSmall}
-            />} />
-            <Route exact path="/apps/todo-list" element={<ToDo />}></Route>
-            <Route exact path="/games" element={<Home />} />
-            <Route exact path="/games/tictactoe" element={<TicTacToe />} />
-            <Route exact path="/about" element={<About />} />
+            />} >
+
+              {/* Route below takes dynamic URL data */}
+              <Route path=':urlId' element={<NikkeTB
+                theme={theme}
+                windowSmall={windowSmall}
+              />} />
+
+            </Route>
+
+            <Route exact path='/apps/todo-list' element={<ToDo />}></Route>
+            <Route exact path='/games' element={<Home />} />
+            <Route exact path='/games/tictactoe' element={<TicTacToe />} />
+            <Route exact path='/about' element={<About />} />
           </Routes>
         </Router>
         <Footer />

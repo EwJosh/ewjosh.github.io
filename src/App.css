@@ -20,6 +20,12 @@
   align-items: center;
 }
 
+#scroll-to-top-btn {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+}
+
 #footer {
   min-width: 100%;
   flex-shrink: 0;

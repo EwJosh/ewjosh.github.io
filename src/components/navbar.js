@@ -14,7 +14,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListSubheader from '@mui/material/ListSubheader';
 
-import { styled } from '@mui/material';
+import { Slide, styled, useScrollTrigger } from '@mui/material';
 
 import MenuIcon from '@mui/icons-material/Menu';
 
@@ -39,22 +39,7 @@ const StyledListItemButton = styled(ListItemButton)({
     fontSize: '1.5rem'
 })
 
-function Navbar() {
-    // // Boolean for determining whether navbar should be using mobile or desktop versions of components and assets.
-    // const [small, setSmall] = useState(window.innerWidth <= 800);
-
-    // /**
-    //  * Event fired when window is resized. Updates boolean small.
-    //  */
-    // const handleResize = () => {
-    //     if (window.innerWidth <= 800)
-    //         setSmall(true);
-    //     else
-    //         setSmall(false);
-    // }
-    // window.onresize = handleResize;
-
-
+function Navbar(props) {
     // Boolean state for whether sidebar is open or not.
     const [open, setOpen] = useState(false);
 
@@ -62,121 +47,122 @@ function Navbar() {
         setOpen(false);
     }
 
-
     return (
-        <AppBar
-            id='heading'
-            elevation={0}
-        >
-            <Toolbar
-                id='navbar'
-                variant='dense'
-                disableGutters
+        <Slide in={!props.scrollTrigger}>
+            <AppBar
+                id='heading'
+                elevation={0}
             >
-                {/* Sidebar Button */}
-                <IconButton
-                    id='sidebar-btn'
-                    onClick={() => setOpen(true)}
-                    onMouseEnter={() => setOpen(true)}
-                    sx={{
-                        backgroundColor: 'rgb(190, 99, 13)'
-                    }}
+                <Toolbar
+                    id='navbar'
+                    variant='dense'
+                    disableGutters
                 >
-                    <MenuIcon />
-                </IconButton>
+                    {/* Sidebar Button */}
+                    <IconButton
+                        id='sidebar-btn'
+                        onClick={() => setOpen(true)}
+                        onMouseEnter={() => setOpen(true)}
+                        sx={{
+                            backgroundColor: 'rgb(190, 99, 13)'
+                        }}
+                    >
+                        <MenuIcon />
+                    </IconButton>
 
-                {/* Home Button w/ Picture */}
-                <Button
-                    id='navbar-title'
-                    href='/'
-                >
-                    <img
-                        src={false ? ppTitleVert : ppTitle}
-                        alt='Pumpkin Patchwork'
-                    />
-                </Button>
+                    {/* Home Button w/ Picture */}
+                    <Button
+                        id='navbar-title'
+                        href='/'
+                    >
+                        <img
+                            src={false ? ppTitleVert : ppTitle}
+                            alt='Pumpkin Patchwork'
+                        />
+                    </Button>
 
-                {/* Sidebar Menu */}
-                <Drawer
-                    open={open}
-                    onClose={handleCloseMenu}
-                    PaperProps={{
-                        sx: {
-                            minWidth: '20%'
-                        }
-                    }}
-                >
-                    <List>
-                        {/* Apps Section */}
-                        <StyledListItem disableGutters>
-                            <StyledListSubheader>
-                                Apps
-                            </StyledListSubheader>
-                        </StyledListItem>
-                        <StyledListItem disableGutters>
-                            <StyledListItemButton
-                                href='/#/apps/nikkeTeamBuilder'
-                                component='a'
-                                onClick={handleCloseMenu}
-                            >
-                                Nikke
-                            </StyledListItemButton>
-                        </StyledListItem>
-                        <StyledListItem>
-                            <StyledListItemButton
-                                href='/#/apps/todo-list'
-                                component='a'
-                                onClick={handleCloseMenu}
-                            >
-                                To-do List
-                            </StyledListItemButton>
-                        </StyledListItem>
-                        <StyledListItem>
-                            <StyledListItemButton
-                                href='/#/apps/clock'
-                                component='a'
-                                onClick={handleCloseMenu}
-                            >
-                                Clock
-                            </StyledListItemButton>
-                        </StyledListItem>
-                        <StyledListItem>
-                            <StyledListItemButton
-                                href='/#/apps/calculator'
-                                component='a'
-                                onClick={handleCloseMenu}
-                            >
-                                Calculator
-                            </StyledListItemButton>
-                        </StyledListItem>
+                    {/* Sidebar Menu */}
+                    <Drawer
+                        open={open}
+                        onClose={handleCloseMenu}
+                        PaperProps={{
+                            sx: {
+                                minWidth: '20%'
+                            }
+                        }}
+                    >
+                        <List>
+                            {/* Apps Section */}
+                            <StyledListItem disableGutters>
+                                <StyledListSubheader>
+                                    Apps
+                                </StyledListSubheader>
+                            </StyledListItem>
+                            <StyledListItem disableGutters>
+                                <StyledListItemButton
+                                    href='/#/apps/nikkeTeamBuilder'
+                                    component='a'
+                                    onClick={handleCloseMenu}
+                                >
+                                    Nikke
+                                </StyledListItemButton>
+                            </StyledListItem>
+                            <StyledListItem>
+                                <StyledListItemButton
+                                    href='/#/apps/todo-list'
+                                    component='a'
+                                    onClick={handleCloseMenu}
+                                >
+                                    To-do List
+                                </StyledListItemButton>
+                            </StyledListItem>
+                            <StyledListItem>
+                                <StyledListItemButton
+                                    href='/#/apps/clock'
+                                    component='a'
+                                    onClick={handleCloseMenu}
+                                >
+                                    Clock
+                                </StyledListItemButton>
+                            </StyledListItem>
+                            <StyledListItem>
+                                <StyledListItemButton
+                                    href='/#/apps/calculator'
+                                    component='a'
+                                    onClick={handleCloseMenu}
+                                >
+                                    Calculator
+                                </StyledListItemButton>
+                            </StyledListItem>
 
-                        {/* More Section */}
-                        <StyledListItem disableGutters>
-                            <StyledListSubheader>
-                                More
-                            </StyledListSubheader>
-                        </StyledListItem>
-                        <StyledListItem>
-                            <StyledListItemButton
-                                href='/#/about'
-                                component='a'
-                                onClick={handleCloseMenu}
-                            >
-                                About
-                            </StyledListItemButton>
-                        </StyledListItem>
-                        <StyledListItem>
-                            <StyledListItemButton
-                                onClick={handleCloseMenu}
-                                disabled
-                            >
-                                <span style={{ textDecoration: 'line-through' }}>Settings</span>
-                            </StyledListItemButton>
-                        </StyledListItem>
-                    </List>
-                </Drawer>
-            </Toolbar>
-        </AppBar>
+                            {/* More Section */}
+                            <StyledListItem disableGutters>
+                                <StyledListSubheader>
+                                    More
+                                </StyledListSubheader>
+                            </StyledListItem>
+                            <StyledListItem>
+                                <StyledListItemButton
+                                    href='/#/about'
+                                    component='a'
+                                    onClick={handleCloseMenu}
+                                >
+                                    About
+                                </StyledListItemButton>
+                            </StyledListItem>
+                            <StyledListItem>
+                                <StyledListItemButton
+                                    onClick={handleCloseMenu}
+                                    disabled
+                                >
+                                    <span style={{ textDecoration: 'line-through' }}>Settings</span>
+                                </StyledListItemButton>
+                            </StyledListItem>
+                        </List>
+                    </Drawer>
+                </Toolbar>
+            </AppBar>
+        </Slide>
     );
 }
 

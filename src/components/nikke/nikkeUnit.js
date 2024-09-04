@@ -55,6 +55,9 @@ function NikkeUnit(props) {
         if (!props.visibility.categoryIcons)
             className += ' nikke-unit-hidden-icons';
 
+        if (props.hasTargetCode)
+            className += ' highlight';
+
         return className;
     }
 
@@ -112,13 +115,14 @@ function NikkeUnit(props) {
     return (
         <Draggable
             className='nikke-unit-container'
-            // Draggable *has* to use initial unit name as ID, otherwise element gets eaten when dragged
+            // NOTE: Draggable *has* to use initial unit name as ID, otherwise element gets eaten when dragged
             draggableId={props.unit.Name}
             key={props.unit.Name}
             index={props.index}
             isDragDisabled={props.sectionId === 'roster'}
         >
             {(provided) => (
+                // NOTE: Do NOT add a MUI style prop to a Draggable child. Gets laggy/kinda broken.
                 <div
                     className={getUnitClassName()}
                     ref={provided.innerRef}
@@ -170,10 +174,27 @@ function NikkeUnit(props) {
                             < div className='nikke-icon-container'>
                                 {
                                     props.visibility.categories.map((category, index) => {
-                                        if (category !== 'Burst' && props.visibility[category])
+                                        if (category === 'Code' && props.visibility['Code'] && props.hasTargetCode)
+                                            return <div
+                                                key={category}
+                                                className='nikke-icon grid-row'
+                                            >
+                                                <img
+                                                    key={category}
+                                                    className='icon-overlay'
+                                                    src={props.highlightIcon}
+                                                    alt={'highlight'}
+                                                />
+                                                <img
+                                                    className='nikke-icon-base'
+                                                    src={props.icons[index]}
+                                                    alt={category + props.unit[category]}
+                                                />
+                                            </div>;
+                                        else if (category !== 'Burst' && props.visibility[category])
                                             return <img
                                                 key={category}
-                                                className={'nikke-icon nikke-' + category.toLowerCase()}
+                                                className='nikke-icon'
                                                 src={props.icons[index]}
                                                 alt={category + props.unit[category]}
                                             />;

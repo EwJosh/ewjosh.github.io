@@ -7,6 +7,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
@@ -14,6 +15,7 @@ import Switch from '@mui/material/Switch';
 
 // Import MUI icons
 import Close from '@mui/icons-material/Close';
+import ContentPaste from '@mui/icons-material/ContentPaste';
 
 function NikkeSettings(props) {
     return (
@@ -28,7 +30,7 @@ function NikkeSettings(props) {
             }}
         >
             {/* Header */}
-            <DialogTitle className='dialog-header' style={{}}>
+            <DialogTitle className='dialog-header'>
                 Settings
                 <IconButton onClick={props.onClose}>
                     <Close />
@@ -43,7 +45,13 @@ function NikkeSettings(props) {
             >
                 {/* Code Weakness */}
                 <FormControl>
-                    <InputLabel id='sett-code-weak-label'>Code Weakness</InputLabel>
+                    <InputLabel
+                        id='sett-code-weak-label'
+                        sx={{
+                            backgroundColor: '#383838',
+                            padding: '0 0.5rem'
+                        }}
+                    >Code Weakness</InputLabel>
                     <Select
                         labelId='sett-code-weak-label'
                         value={props.settings.targetCode}
@@ -51,8 +59,11 @@ function NikkeSettings(props) {
                             ...props.settings,
                             targetCode: event.target.value
                         })}
-                        sx={{
-                            // minWidth: '100%'
+                        SelectDisplayProps={{
+                            style: {
+                                display: 'flex',
+                                alignItems: 'center'
+                            }
                         }}
                     >
                         <MenuItem value='None'>
@@ -105,6 +116,16 @@ function NikkeSettings(props) {
                         </MenuItem>
                     </Select>
                 </FormControl>
+                <Button
+                    id='sett-export-btn'
+                    onClick={props.getSquadId}
+                    startIcon={<ContentPaste />}
+                    color='primary'
+                    sx={{
+                    }}
+                >
+                    Copy Team Link
+                </Button>
                 {/* Enable Ratings */}
                 <FormControlLabel
                     control={<Switch

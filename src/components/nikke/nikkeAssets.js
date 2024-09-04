@@ -27,7 +27,10 @@ import Burst1RIcon from '../../assets/images/Nikke/icons/NikkeBurst1R.png';
 import Burst2Icon from '../../assets/images/Nikke/icons/NikkeBurst2.png';
 import Burst3Icon from '../../assets/images/Nikke/icons/NikkeBurst3.png';
 import BurstVIcon from '../../assets/images/Nikke/icons/NikkeBurstV.png';
+
+// Import Base and Overlay
 import BlankIcon from '../../assets/images/Nikke/icons/NikkeIconBase.png';
+import HighlightIcon from '../../assets/images/Nikke/icons/NikkeIconHighlight.png';
 
 // Import Nikke Data for getting avatar images
 import NikkeData from '../../assets/data/NikkeData.json';
@@ -70,7 +73,8 @@ const icons = {
         'SMG': WeaponSMGIcon,
         'SR': WeaponSRIcon
     },
-    'Blank': BlankIcon
+    'Blank': BlankIcon,
+    'Highlight': HighlightIcon
 };
 export { icons as Icons };
 

@@ -288,16 +288,23 @@ function NikkeHelp(props) {
                 </DropdownButton>
                 <Collapse in={open.settings}>
                     <ul className='dropdown-body'>
+                        <li>
+                            Code Weakness can be selected.
+                            <ul>
+                                <li>Code-effective Nikkes will be highlighted.</li>
+                                <li>When selected, Squad Rating will check if your squad has at least one unit with the selected code.</li>
+                                <li>Important for getting that 10% bonus damage or when Raid bosses have code immunity.</li>
+                            </ul>
+                        </li>
+                        <li>
+                            Your Squad can be converted into a shareable link. This copies the link to your clipboard.
+                        </li>
                         <li>Ratings can be fully disabled.</li>
                         <li>
                             Duplicate Nikkes can be enabled.&nbsp;&nbsp;&nbsp;&nbsp;(Re-disabling
                             duplicates doesn't delete duplicates in Squads and Bench)
                         </li>
-                        <li>The filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(But will still be active, however)</li>
-                        <li>
-                            Code Weakness can be selected. When selected, Squad Rating will check if your squad has at least one unit with the selected code.
-                            Important for getting that 10% bonus damage or when Raid bosses have code immunity.
-                        </li>
+                        <li>The Filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(But will still be active, however)</li>
                     </ul>
                 </Collapse>
                 <hr />
@@ -310,8 +317,6 @@ function NikkeHelp(props) {
                         Used for filtering and rating in regards to Nikke attributes
                         such as healing, shielding, pierce, true damage, cleansing, etc.
                     </li>
-                    <li>Add button to move to top.</li>
-                    <li>Save and share teams.</li>
                 </ul>
                 <hr />
 

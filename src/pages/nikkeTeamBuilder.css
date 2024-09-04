@@ -9,12 +9,29 @@ h4 {
   text-decoration: underline;
 }
 
+.highlight {
+  outline: 3px solid #ffd500;
+  z-index: 1;
+}
+
+.MuiTooltip-tooltip {
+  font-size: large;
+}
+
 #tb-header {
   margin: 0.5rem 0;
 
   box-sizing: border-box;
   gap: 1rem;
   align-items: center;
+}
+
+#edit-btn {
+  height: 2.5rem;
+  color: white;
+  font-weight: bold;
+  font-size: large;
+  text-transform: none;
 }
 
 .dialog-header {
@@ -81,17 +98,39 @@ h4 {
 #settings-dialog-body {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 2rem;
 }
 
-#settings-dialog-body > .grid-row {
-  justify-content: space-between;
-}
-
 .sett-select-icon {
-  max-height: 1rem;
+  max-height: 1.5rem;
   margin-right: 0.5rem;
   color: #70809069;
+}
+
+#quick-code-select .sett-select-icon,
+#quick-code-menu .sett-select-icon {
+  max-height: 3rem;
+  margin: 0;
+}
+
+#quick-code-menu ul {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#quick-code-menu li {
+  padding: 0;
+}
+
+#sett-export-btn {
+  height: 2.5rem;
+  font-weight: bold;
+  font-size: large;
+  text-transform: none;
+  outline: 2px dashed #90caf9;
+  padding: 0 2rem;
 }
 
 .section-badge {
@@ -272,7 +311,7 @@ h4 {
 .nikke-unit {
   margin: 0.25rem;
   border-radius: 1rem;
-  background-color: rgb(93, 93, 93);
+  background-color: #5d5d5d;
   padding: 0.25rem;
   width: 6rem;
   height: 10rem;
@@ -359,4 +398,22 @@ h4 {
 .nikke-icon {
   object-fit: contain;
   width: 25%;
+  z-index: 1;
+}
+
+div.nikke-icon {
+  position: relative;
+  justify-content: center;
+}
+
+div.nikke-icon > .nikke-icon-base {
+  object-fit: contain;
+  width: 100%;
+  position: inherit;
+}
+
+.icon-overlay {
+  position: absolute;
+  max-width: 100%;
+  z-index: 1;
 }

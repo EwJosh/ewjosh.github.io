@@ -40,9 +40,11 @@ function NikkeList(props) {
                         props.icons.Manufacturer[item.Manufacturer],
                         props.icons.Weapon[item.Weapon]
                     ]}
+                    highlightIcon={props.icons.Highlight}
                     avatar={props.avatars[item.Name]}
                     visibility={props.visibility}
                     onMoveNikke={onMoveNikke}
+                    hasTargetCode={item.Code === props.targetCode}
                 />
             )
         });

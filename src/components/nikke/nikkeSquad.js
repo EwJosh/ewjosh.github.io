@@ -307,7 +307,7 @@ function NikkeSquad(props) {
                 <Button
                     onClick={() => props.onSetSquadMinimized(props.section.id, !props.section.minimized)}
                     variant='contained'
-                    color={props.section.minimized ? 'info' : 'pumpkin'}
+                    color={props.section.minimized ? 'success' : 'pumpkin'}
                     style={{
                         height: '70%',
                         borderTopRightRadius: '1rem',
@@ -367,9 +367,11 @@ function NikkeSquad(props) {
                                                         props.icons.Manufacturer[item.Manufacturer],
                                                         props.icons.Weapon[item.Weapon]
                                                     ]}
+                                                    highlightIcon={props.icons.Highlight}
                                                     avatar={props.avatars[item.Name]}
                                                     visibility={props.visibility}
                                                     onMoveNikke={onMoveNikke}
+                                                    hasTargetCode={item.Code === props.targetCode}
                                                 />)
                                         }
                                         )

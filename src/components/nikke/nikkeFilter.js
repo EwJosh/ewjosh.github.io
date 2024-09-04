@@ -138,18 +138,51 @@ function NikkeFilter(props) {
     /** 
      * Checks whether a filtered tag is selected or not.
      * @param {string} category The filter category of the tag.
-     * @param {string} target The tag being filtered.
+     * @param {string} tag The tag being filtered.
      * @returns true if the target tag exists inside the filtered category.
      */
-    const isSelected = (category, target) => {
+    const isSelected = (category, tag) => {
         if (props.filter[category] == null)
             return false;
 
-        let index = props.filter[category].indexOf(target);
+        let index = props.filter[category].indexOf(tag);
         if (index < 0)
             return false;
         else
             return true;
+    }
+
+    /**
+     * Builds a React component (<span> or <img>) depending on the input.
+     * If the tag doesn't have a corresponding icon, returns a <span> of the tag.
+     * If the tag matches the targetCode, return a render of a highlighted icon.
+     * Otherwise, return an <img> of the tag's icon.
+     * @param {*} category The filter category of the tag.
+     * @param {*} tag The tag being filtered.
+     * @param {*} selectState Whether the tag is selected or not.
+     * @returns A React component to display the filtered tag.
+     */
+    const getTagIcon = (category, tag, selectState) => {
+        if (props.icons[category] == null)
+            return <span>{tag}</span>;
+        else if (category === 'Code' && tag === props.targetCode)
+            return [
+                <img
+                    src={props.icons.Highlight}
+                    alt={'Highlight'}
+                    className={'filter-icon icon-overlay' + (selectState ? ' filter-icon-selected' : ' filter-icon-unselected')}
+                />,
+                <img
+                    src={props.icons[category][tag]}
+                    alt={tag}
+                    className={'filter-icon' + (selectState ? ' filter-icon-selected' : ' filter-icon-unselected')}
+                />];
+        else
+            return <img
+                src={props.icons[category][tag]}
+                alt={tag}
+                className={'filter-icon' + (selectState ? ' filter-icon-selected' : ' filter-icon-unselected')}
+            />;
     }
 
     return (
@@ -179,10 +212,7 @@ function NikkeFilter(props) {
                     }}
                 >
                     <SettingsBackupRestoreIcon sx={{ marginRight: '0.25rem' }} />
-                    {props.windowSmall ?
-                        'Filter'
-                        : 'Reset Filter'
-                    }
+                    {props.windowSmall ? 'Filter' : 'Reset Filter'}
                 </Button>
             </div>
             {/* Body */}
@@ -256,23 +286,13 @@ function NikkeFilter(props) {
                                                         backgroundColor: '#70809069',
                                                         fontWeight: selectState ? 'bold' : 'normal',
                                                         textDecoration: selectState ? 'inherit' : 'line-through',
-                                                        padding: selectState ? '10px' : '9px'
+                                                        padding: selectState ? '10px' : '9px',
+                                                        outline: tag === props.targetCode ? '3px solid #ffd500' : 0,
+                                                        zIndex: tag === props.targetCode ? 1 : 0
                                                     }}
                                                 >
                                                     {
-                                                        (props.icons[category] == null) ?
-                                                            <span>{tag}</span> :
-                                                            <img
-                                                                src={props.icons[category][tag]}
-                                                                alt={tag}
-                                                                className={
-                                                                    'filter-icon' + (
-                                                                        selectState ?
-                                                                            ' filter-icon-selected'
-                                                                            : ' filter-icon-unselected'
-                                                                    )
-                                                                }
-                                                            />
+                                                        getTagIcon(category, tag, selectState)
                                                     }
                                                 </StyledToggleButton>
                                             )
