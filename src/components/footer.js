@@ -7,7 +7,7 @@ function Footer() {
     return (
         <div id='footer' className='grid-column'>
             <nav id='footer-links'>
-                <a className='footer-link' href='/about'>About</a>
+                <a className='footer-link' href='#/about'>About</a>
             </nav>
             <div className='grid-row'>
                 <span>Website made by Edward Josh Hermano</span>

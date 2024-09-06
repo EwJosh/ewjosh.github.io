@@ -226,7 +226,7 @@
   {
     "Id": "113",
     "Name": "D: Killer Wife",
-    "Title": "Diana",
+    "Title": "\"Diana\"",
     "Rarity": "SSR",
     "Burst": "1",
     "Burst Cooldown": "20",
@@ -381,6 +381,7 @@
   {
     "Id": "34",
     "Name": "Guillotine",
+    "Title": "Guillotine de Mephisto",
     "Rarity": "SSR",
     "Burst": "3",
     "Burst Cooldown": "40",

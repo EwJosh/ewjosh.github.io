@@ -20,6 +20,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 // Restyled MUI ToggleButton for coloring them orange when selected.
 const StyledToggleButton = styled(ToggleButton)({
@@ -186,175 +188,221 @@ function NikkeFilter(props) {
     }
 
     return (
-        <div id='filter-container' className='paper-back grid-column'>
+        <div
+            id='filter-container'
+            className='grid-column'
+            style={{
+                maxWidth: props.windowSmall ? '100%' : '80vw',
+                minWidth: '80vw'
+            }}
+        >
             {/* Header */}
             <div
                 id='filter-header'
-                className={props.windowSmall ? 'grid-column' : null}
-                style={{
-                    gap: props.windowSmall ? '0.5rem' : 0
-                }}
             >
-                <FilterAltIcon className='section-badge' />
+                <FilterAltIcon
+                    className='section-badge'
+                    onClick={() => handleToggleVisibility('filterMin')}
+                />
                 <h2
                     onClick={() => props.debugMode ? console.log(props.filter) : null}
                 >
                     Filter
                 </h2>
+                {
+                    (props.visibility.filterMin) ?
+                        null :
+                        <Button
+                            onClick={handleResetFilter}
+                            variant='contained'
+                            color='error'
+                            sx={{
+                                height: props.windowSmall ? '1.5rem' : '100%',
+                                minWidth: 'auto',
+                                maxWidth: '50%',
+                                marginRight: '0rem',
+                                borderRadius: '0',
+                                position: 'absolute',
+                                top: 0,
+                                right: '4rem'
+                            }}
+                        >
+                            <SettingsBackupRestoreIcon sx={{ marginRight: props.windowSmall ? 0 : '0.25rem' }} />
+                            {props.windowSmall ? null : 'Reset'}
+                        </Button>
+                }
                 <Button
-                    onClick={handleResetFilter}
+                    onClick={() => handleToggleVisibility('filterMin')}
                     variant='contained'
-                    color='error'
-                    style={{
-                        position: props.windowSmall ? 'inherit' : 'absolute',
+                    disableTouchRipple
+                    color={props.visibility.filterMin ? 'success' : 'pumpkin'}
+                    sx={{
+                        height: props.windowSmall ? '1.5rem' : '100%',
+                        minWidth: 'auto',
+                        maxWidth: '50%',
+                        borderRadius: props.visibility.filterMin ? '0 0.5rem 0.5rem 0' : '0 0.5rem 0 0',
+                        position: 'absolute',
                         top: 0,
                         right: 0
                     }}
                 >
-                    <SettingsBackupRestoreIcon sx={{ marginRight: '0.25rem' }} />
-                    {props.windowSmall ? 'Filter' : 'Reset Filter'}
+                    {
+                        props.visibility.filterMin ?
+                            <ArrowDropUpIcon />
+                            : <ArrowDropDownIcon />
+                    }
                 </Button>
             </div>
             {/* Body */}
-            <div
-                id='filter-body'
-                className={props.windowSmall ? 'grid-column' : 'grid-row'}
-                style={{
-                    flexWrap: props.windowSmall ? 'initial' : 'wrap',
-                    marginTop: props.windowSmall ? 0 : '0.5rem'
-
-                }}
-            >
-                {
-                    // * Main tags *
-                    // For each category in tags, create a ToggleButtonGroup
-                    props.tags.categories.map(category => {
-                        return (
-                            <div className='filter-category grid-column' key={'category-' + category}>
-                                {
-
-                                    (props.visibility.categories.indexOf(category) !== -1) ?
-                                        <div className='filter-category-visibility-container grid-row'>
-                                            <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
-                                            {/* Create IconButton for toggling visibility */}
-                                            <Tooltip
-                                                title={props.visibility[category] ?
-                                                    'Hide Icons'
-                                                    : 'Show Icons'
-                                                }
-                                                placement='top'
-                                            >
-                                                <IconButton
-                                                    onClick={() => handleToggleVisibility(category)}
-                                                    sx={{ padding: '0', maxWidth: '1rem', maxHeight: '1rem' }}
-                                                >
-                                                    {
-                                                        props.visibility[category] ?
-                                                            <Visibility sx={{ maxWidth: '1rem', maxHeight: '1rem' }} />
-                                                            : <VisibilityOff sx={{ maxWidth: '1rem', maxHeight: '1rem' }} />
-                                                    }
-                                                </IconButton>
-                                            </Tooltip>
-                                        </div>
-                                        : <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
-                                }
-
-                                <ToggleButtonGroup
-                                    className='filter-btn-group'
-                                    value={props.filter[category]}
-                                    onChange={(event, value) => onFilter(category, value)}
-                                    sx={{
-                                        width: '100%',
-                                        boxSizing: 'border-box',
-                                        justifyContent: 'center'
-                                    }}
-                                >
-                                    {
-                                        // For each tag in a given category, create a ToggleButton with its value
-                                        props.tags[category].map(tag => {
-                                            if (tag == null)
-                                                return;
-
-                                            let selectState = isSelected(category, tag);
-
-                                            return (
-                                                <StyledToggleButton
-                                                    value={tag}
-                                                    key={'tag-' + tag}
-                                                    sx={{
-                                                        // maxWidth: props.windowSmall ? '20%' : 'none',
-                                                        backgroundColor: '#70809069',
-                                                        fontWeight: selectState ? 'bold' : 'normal',
-                                                        textDecoration: selectState ? 'inherit' : 'line-through',
-                                                        padding: selectState ? '10px' : '9px',
-                                                        outline: tag === props.targetCode ? '3px solid #ffd500' : 0,
-                                                        zIndex: tag === props.targetCode ? 1 : 0
-                                                    }}
-                                                >
-                                                    {
-                                                        getTagIcon(category, tag, selectState)
-                                                    }
-                                                </StyledToggleButton>
-                                            )
-                                        })
-                                    }
-                                </ToggleButtonGroup>
-                            </div>
-                        )
-                    })
-                }
-
-                {/* Misc tags, WIP */}
-                <FormControl
-                    id='filter-misc'
-                    size='small'
-                    sx={{
-                        minWidth: props.windowSmall ? '80%' : '50%',
-                        maxWidth: '100%',
-                        marginTop: '1rem',
-                        flexGrow: 4,
-                        boxSizing: 'border-box'
-                    }}
-                    InputProps={{
-                    }}
-                >
-                    <InputLabel id='filter-misc-input-label'>Tags (WIP)</InputLabel>
-                    <Select
-                        labelId='filter-misc-input-label'
+            {
+                props.visibility.filterMin ?
+                    null :
+                    <div
+                        id='filter-body'
+                        className={props.windowSmall ? 'grid-column' : 'grid-row'}
+                        style={{
+                            flexWrap: props.windowSmall ? 'initial' : 'wrap'
+                        }}
                     >
-                        <MenuItem disabled>Coming soon</MenuItem>
-                    </Select>
-                </FormControl>
-            </div>
+                        {
+                            // * Main tags *
+                            // For each category in tags, create a ToggleButtonGroup
+                            props.tags.categories.map(category => {
+                                return (
+                                    <div
+                                        className='filter-category grid-column'
+                                        key={'category-' + category}
+                                        style={{
+                                            minWidth: props.windowWide ? 'revert' : '20%'
+                                        }}
+                                    >
+                                        {
+
+                                            (props.visibility.categories.indexOf(category) !== -1) ?
+                                                <div className='filter-category-visibility-container grid-row'>
+                                                    <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
+                                                    {/* Create IconButton for toggling visibility */}
+                                                    <Tooltip
+                                                        title={props.visibility[category] ?
+                                                            'Hide Icons'
+                                                            : 'Show Icons'
+                                                        }
+                                                        placement='top'
+                                                    >
+                                                        <IconButton
+                                                            onClick={() => handleToggleVisibility(category)}
+                                                            sx={{ padding: '0', maxWidth: '1rem', maxHeight: '1rem' }}
+                                                        >
+                                                            {
+                                                                props.visibility[category] ?
+                                                                    <Visibility sx={{ maxWidth: '1rem', maxHeight: '1rem' }} />
+                                                                    : <VisibilityOff sx={{ maxWidth: '1rem', maxHeight: '1rem' }} />
+                                                            }
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </div>
+                                                : <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
+                                        }
+
+                                        <ToggleButtonGroup
+                                            className='filter-btn-group'
+                                            value={props.filter[category]}
+                                            onChange={(event, value) => onFilter(category, value)}
+                                            sx={{
+                                                maxWidth: '100%',
+                                                boxSizing: 'border-box',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            {
+                                                // For each tag in a given category, create a ToggleButton with its value
+                                                props.tags[category].map(tag => {
+                                                    if (tag == null)
+                                                        return;
+
+                                                    let selectState = isSelected(category, tag);
+
+                                                    return (
+                                                        <StyledToggleButton
+                                                            value={tag}
+                                                            key={'tag-' + tag}
+                                                            sx={{
+                                                                // maxWidth: props.windowSmall ? '20%' : 'none',
+                                                                backgroundColor: '#70809069',
+                                                                fontWeight: selectState ? 'bold' : 'normal',
+                                                                textDecoration: selectState ? 'inherit' : 'line-through',
+                                                                padding: selectState ? '10px' : '9px',
+                                                                outline: tag === props.targetCode ? '3px solid #ffd500' : 0,
+                                                                zIndex: tag === props.targetCode ? 1 : 0
+                                                            }}
+                                                        >
+                                                            {
+                                                                getTagIcon(category, tag, selectState)
+                                                            }
+                                                        </StyledToggleButton>
+                                                    )
+                                                })
+                                            }
+                                        </ToggleButtonGroup>
+                                    </div>
+                                )
+                            })
+                        }
+                    </div>
+            }
 
             {/* Footer */}
-            <div
-                id='filter-footer'
-                className={props.windowSmall ? 'grid-column' : 'grid-row'}
-            >
-                {/* Search by Name */}
-                <TextField
-                    id='filter-name'
-                    label='Nikke Name'
-                    value={props.filter.Name}
-                    onChange={(event) => handleSearchedNameChange(event.target.value)}
-                    sx={{
-                        minWidth: '35%',
-                    }}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() => handleSearchedNameChange('')}
-                                >
-                                    <Close />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                        style: { paddingRight: 0 }
-                    }}
-                />
-            </div>
+            {
+                props.visibility.filterMin ?
+                    null :
+                    <div
+                        id='filter-footer'
+                        className={props.windowSmall ? 'grid-column' : 'grid-row'}
+                    >
+                        {/* Search by Name */}
+                        <TextField
+                            id='filter-name'
+                            label='Nikke Name'
+                            value={props.filter.Name}
+                            onChange={(event) => handleSearchedNameChange(event.target.value)}
+                            sx={{
+                                minWidth: props.windowSmall ? '100%' : '35%'
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={() => handleSearchedNameChange('')}
+                                        >
+                                            <Close />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                                style: { paddingRight: 0 }
+                            }}
+                        />
+
+                        {/* Misc tags, WIP */}
+                        <FormControl
+                            id='filter-misc'
+                            // size='small'
+                            sx={{
+                                minWidth: props.windowSmall ? '100%' : '50%',
+                                maxWidth: '100%',
+                                boxSizing: 'border-box'
+                            }}
+                            InputProps={{
+                            }}
+                        >
+                            <InputLabel id='filter-misc-input-label'>Tags (WIP)</InputLabel>
+                            <Select
+                                labelId='filter-misc-input-label'
+                            >
+                                <MenuItem disabled>Coming soon</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+            }
         </div >
     );
 }

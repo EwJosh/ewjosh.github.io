@@ -14,7 +14,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListSubheader from '@mui/material/ListSubheader';
 
-import { Slide, styled, useScrollTrigger } from '@mui/material';
+import Slide from '@mui/material/Slide';
+import { styled } from '@mui/material';
 
 import MenuIcon from '@mui/icons-material/Menu';
 
@@ -52,6 +53,11 @@ function Navbar(props) {
             <AppBar
                 id='heading'
                 elevation={0}
+                sx={{
+                    width: 'fit-content',
+                    left: 0,
+                    right: 'auto'
+                }}
             >
                 <Toolbar
                     id='navbar'

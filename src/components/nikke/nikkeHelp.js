@@ -86,8 +86,10 @@ function NikkeHelp(props) {
                 {/* Basic Instructions */}
                 <h2>How to use Nikke Team Builder:</h2>
                 <ul>
-                    <li>Press the <Add fontSize='inherit' className='menu-icon-text' /> Add button
-                        to move a Nikke from Roster (or Squad) to the Bench.</li>
+                    <li>
+                        Press the <Add fontSize='inherit' className='menu-icon-text' /> Add button
+                        to move a Nikke from the Roster to the Bench.
+                    </li>
                     <li>Drag and drop Nikkes into the dark box of a Squad.</li>
                     <li>
                         More squads can be added after toggling
@@ -270,6 +272,10 @@ function NikkeHelp(props) {
                             &nbsp;The filter tags can be reset.
                         </li>
                         <li>
+                            Toggling the <ArrowDropDownIcon fontSize='inherit' className='menu-icon-text' /> Dropdown button
+                            will minimize the Filter.
+                        </li>
+                        <li>
                             Toggling the <Visibility fontSize='inherit' className='menu-icon-text' /> Visibility buttons
                             next to certain categories will toggle the visibility of their respective icons.
                         </li>
@@ -298,6 +304,8 @@ function NikkeHelp(props) {
                         </li>
                         <li>
                             Your Squad can be converted into a shareable link. This copies the link to your clipboard.
+                            Squad sizes up to 5 Nikkes are supported, anything beyond will be truncated.
+                            Up to 10 Squads are supported, anything beyond or empty will be truncated.
                         </li>
                         <li>Ratings can be fully disabled.</li>
                         <li>
@@ -326,7 +334,13 @@ function NikkeHelp(props) {
                     <li>
                         <i>Nikke: Goddess of Victory</i> and their assets are owned by Shift Up, Level Infinite, and Tencent.
                     </li>
-                    <li>Collab characters are owned by their respective IP owners.</li>
+                    <li>
+                        Collab characters are owned the respective IP owners of&nbsp;
+                        <i>Chainsaw Man</i>,&nbsp;
+                        <i>NieR: Automata</i>,&nbsp;
+                        <i>Re: Zero − Starting Life in Another World</i>, and&nbsp;
+                        <i>Neon Genesis Evangelion</i>.
+                    </li>
                     <li>The Nikke Unit Avatars are screenshots edited by me. Nikke's hexagonal icons were recreated by me.</li>
                     <li>Special thanks to my friend for motivating me to make this website more mobile-friendly.</li>
                     <li>And thanks to you for using my team builder</li>

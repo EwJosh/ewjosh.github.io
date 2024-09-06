@@ -11,38 +11,12 @@ import Remove from '@mui/icons-material/Remove';
 
 function NikkeUnit(props) {
     /**
-     * Abbreviates the instance's name, if necessary.
-     * 
-     * Names without a colon (:) will be return as normal.
-     * Otherwise, words post-colon will be converted into initials and returned.
-     * (e.g. 'Anis: Sparkling Summer' => 'Anis: SS', 'Snow White' => 'Snow White')
-     * @returns an abbreviated version of the name, or the original Name if not necessary.
-     */
-    const getName = () => {
-        let check = props.unit.Name.split(':');
-
-        if (check.length === 1)
-            return props.unit.Name;
-
-        else if (check.length === 2) {
-            var altName = check[1].substring(1).split(' ');
-            let temp = ': ';
-            altName.forEach(element => {
-                temp += element.substring(0, 1)
-            });
-            return check[0] + temp;
-        }
-    }
-    // Sets name so that we don't have to call getName a bunch.
-    const name = getName();
-
-    /**
-     * Returns the className this Unit should have depending on the circumstances.
-     * All units have 'nikke-unit'.
-     * If windowSmall is active, append ' nikke-unit-small' to enable shrunken styling choices.
-     * If bottom tag icons are hidden, append ' nikke-unit-hidden-icons' to skip the icons' div.
-     * @returns React prop className that fits the Unit.
-     */
+         * Returns the className this Unit should have depending on the circumstances.
+         * All units have 'nikke-unit'.
+         * If windowSmall is active, append ' nikke-unit-small' to enable shrunken styling choices.
+         * If bottom tag icons are hidden, append ' nikke-unit-hidden-icons' to skip the icons' div.
+         * @returns React prop className that fits the Unit.
+         */
     const getUnitClassName = () => {
         // Always have nikke-unit as a base.
         let className = 'nikke-unit';
@@ -67,8 +41,10 @@ function NikkeUnit(props) {
      * @returns React prop className that fits the name span.
      */
     const getNameClassName = () => {
-        if (name === null)
-            return '=ERR='
+        let name = props.unit.Title;
+        if (name == null)
+            name = props.unit.Name;
+
         if (name.length >= 12)
             return ' nikke-name-xlong';
         else if (name.length >= 8)
@@ -165,7 +141,7 @@ function NikkeUnit(props) {
 
                     {/* Name Container */}
                     <div className='nikke-name-container'>
-                        <span className={'nikke-name' + getNameClassName()}>{getName()}</span>
+                        <span className={'nikke-name' + getNameClassName()}>{props.unit.Title || props.unit.Name}</span>
                     </div>
 
                     {/* Tag Container */}

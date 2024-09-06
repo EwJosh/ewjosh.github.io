@@ -76,7 +76,7 @@ function NikkeList(props) {
                         <PersonSearchIcon className='section-badge' />
                         : <ChairAltIcon className='section-badge' />
                 }
-                <h1>{props.section.title}</h1>
+                <h2>{props.section.title}</h2>
             </div>
             {/* Body */}
             <Droppable

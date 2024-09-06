@@ -71,20 +71,29 @@ const theme = createTheme({
 function App() {
   // Boolean for determining whether navbar should be using mobile or desktop versions of components and assets.
   const [windowSmall, setWindowSmall] = useState(window.innerWidth <= 500);
+  const [windowWide, setWindowWide] = useState(window.innerWidth > 1920);
 
   /**
    * Event fired when window is resized. Updates boolean small.
    */
   const handleResize = () => {
-    if (window.innerWidth <= 500)
+    if (window.innerWidth <= 600) {
       setWindowSmall(true);
-    else
+      setWindowWide(false)
+    }
+    else if (window.innerWidth > 1920) {
       setWindowSmall(false);
+      setWindowWide(true)
+    }
+    else {
+      setWindowSmall(false);
+      setWindowWide(false);
+    }
   }
   window.onresize = handleResize;
 
   // Mui function that returns true after the user scrolls enough to reach threshold (default=100)
-  const scrollTrigger = useScrollTrigger({ threshold: 1000 });
+  const scrollTrigger = useScrollTrigger({ threshold: 600 });
 
   /**
    * Scrolls window to the top of the page, smoothly.
@@ -123,12 +132,14 @@ function App() {
             <Route path='/apps/nikkeTeamBuilder/' element={<NikkeTB
               theme={theme}
               windowSmall={windowSmall}
+              windowWide={windowWide}
             />} >
 
               {/* Route below takes dynamic URL data */}
               <Route path=':urlId' element={<NikkeTB
                 theme={theme}
                 windowSmall={windowSmall}
+                windowWide={windowWide}
               />} />
 
             </Route>

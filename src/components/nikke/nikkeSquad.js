@@ -276,9 +276,26 @@ function NikkeSquad(props) {
     }
 
     return (
-        <div className='nikke-squad-container'>
+        <div
+            className='nikke-squad-container'
+            style={{
+                borderRadius: (props.variant === 'top') ?
+                    '0.5rem 0.5rem 0 0'
+                    : (props.variant === 'bottom') ?
+                        '0 0 0.5rem 0.5rem'
+                        : '0 0 0 0',
+                borderWidth: (props.variant === 'top') ?
+                    '3px 3px 0 3px'
+                    : (props.variant === 'bottom') ?
+                        '0 3px 3px 3px'
+                        : '0 3px 0 3px',
+            }}
+        >
             <div className='squad-header grid-row'
-                style={{ minWidth: props.windowSmall ? '20.25em' : '35.25rem', }}
+                style={{
+                    minWidth: props.windowSmall ? '20.25em' : '35.25rem',
+                    maxWidth: '100vw'
+                }}
             >
                 <RecentActorsIcon sx={{ color: '#fff' }} />
                 <InputBase
@@ -309,8 +326,10 @@ function NikkeSquad(props) {
                     variant='contained'
                     color={props.section.minimized ? 'success' : 'pumpkin'}
                     style={{
+                        minWidth: 'auto',
+                        maxWidth: '25%',
                         height: '70%',
-                        borderTopRightRadius: '1rem',
+                        borderRadius: props.section.minimized ? '0 0.5rem 0.5rem 0' : '0 0.5rem 0 0',
                         position: 'absolute',
                         right: 0,
                         top: props.windowSmall ? '0.25rem' : '0.5rem'
