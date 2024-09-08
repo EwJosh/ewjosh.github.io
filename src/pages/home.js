@@ -10,7 +10,7 @@ function Home() {
 
     return (
         <div className="page">
-            <div className="grid-row spacing-1">
+            <div className="flex-row spacing-1">
                 <div className="half-box paper-back">
                     <p>
                         Welcome, weary traveler, to the <i>Pumpkin Patchwork</i>!
@@ -30,7 +30,7 @@ function Home() {
                     </span>
                 </div>
             </div>
-            <div className="grid-row bgc-1 spacing-1 full-width">
+            <div className="flex-row bgc-1 spacing-1 full-width">
                 <div className="half-box center-items">
                     <img
                         id="cool-guy-img"

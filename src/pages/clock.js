@@ -80,87 +80,85 @@ function Clock() {
     }
 
     return (
-        <div className="page">
-            <div className="grid-row">
-                <div id="left-sidebar" className="paper-back">
-                    <FormGroup>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={!longOptions.hour12}
-                                    onChange={toggleTfHrFormat}
-                                />
-                            }
-                            label="24-hour Format"
-                        />
-
-                        <FormControl size="small">
-                            <InputLabel id="time-zone-select-label">Time Zone</InputLabel>
-                            <Select
-                                id="time-zone-select-btn"
-                                labelId="time-zone-select-label"
-                                onChange={setTimeZoneSelect}
-                                defaultValue={Intl.DateTimeFormat().resolvedOptions().timeZone}
-                            >
-                                <MenuItem value={"Pacific/Honolulu"}>Pacific/Honolulu</MenuItem>
-                                <MenuItem value={"America/Los_Angeles"}>America/Los_Angeles</MenuItem>
-                                <MenuItem value={"America/Phoenix"}>America/Phoenix</MenuItem>
-                                <MenuItem value={"America/Denver"}>America/Denver</MenuItem>
-                                <MenuItem value={"America/Chicago"}>America/Chicago</MenuItem>
-                                <MenuItem value={"America/New_York"}>America/New_York</MenuItem>
-                                <MenuItem value={"Europe/London"}>Europe/London</MenuItem>
-                                <MenuItem value={"Europe/Paris"}>Europe/Paris</MenuItem>
-                                <MenuItem value={"Asia/Dubai"}>Asia/Dubai</MenuItem>
-                                <MenuItem value={"Asia/Bangkok"}>Asia/Bangkok</MenuItem>
-                                <MenuItem value={"Asia/Manila"}>Asia/Manila</MenuItem>
-                                <MenuItem value={"Asia/Tokyo"}>Asia/Tokyo</MenuItem>
-                                <MenuItem value={"Australia/Sydney"}>Australia/Sydney</MenuItem>
-                                <MenuItem value={"XXX"}>Other</MenuItem>
-                            </Select>
-                        </FormControl>
-                        {useOtherTimeZone ?
-                            <TextField
-                                label="Other Time Zone"
-                                margin="normal"
-                                size="small"
-                                variant="standard"
-                                onChange={setTimeZoneOther}
+        <div className="page flex-row">
+            <div id="left-sidebar" className="paper-back">
+                <FormGroup>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={!longOptions.hour12}
+                                onChange={toggleTfHrFormat}
                             />
-                            :
-                            null
                         }
-                    </FormGroup>
+                        label="24-hour Format"
+                    />
 
-                </div>
-                <div id="main-block" className="paper-back">
-                    <span id="date">
-                        <span>
-                            {timeObj.find(element => element.type === "weekday").value},
-                        </span>
-                        <span>
+                    <FormControl size="small">
+                        <InputLabel id="time-zone-select-label">Time Zone</InputLabel>
+                        <Select
+                            id="time-zone-select-btn"
+                            labelId="time-zone-select-label"
+                            onChange={setTimeZoneSelect}
+                            defaultValue={Intl.DateTimeFormat().resolvedOptions().timeZone}
+                        >
+                            <MenuItem value={"Pacific/Honolulu"}>Pacific/Honolulu</MenuItem>
+                            <MenuItem value={"America/Los_Angeles"}>America/Los_Angeles</MenuItem>
+                            <MenuItem value={"America/Phoenix"}>America/Phoenix</MenuItem>
+                            <MenuItem value={"America/Denver"}>America/Denver</MenuItem>
+                            <MenuItem value={"America/Chicago"}>America/Chicago</MenuItem>
+                            <MenuItem value={"America/New_York"}>America/New_York</MenuItem>
+                            <MenuItem value={"Europe/London"}>Europe/London</MenuItem>
+                            <MenuItem value={"Europe/Paris"}>Europe/Paris</MenuItem>
+                            <MenuItem value={"Asia/Dubai"}>Asia/Dubai</MenuItem>
+                            <MenuItem value={"Asia/Bangkok"}>Asia/Bangkok</MenuItem>
+                            <MenuItem value={"Asia/Manila"}>Asia/Manila</MenuItem>
+                            <MenuItem value={"Asia/Tokyo"}>Asia/Tokyo</MenuItem>
+                            <MenuItem value={"Australia/Sydney"}>Australia/Sydney</MenuItem>
+                            <MenuItem value={"XXX"}>Other</MenuItem>
+                        </Select>
+                    </FormControl>
+                    {useOtherTimeZone ?
+                        <TextField
+                            label="Other Time Zone"
+                            margin="normal"
+                            size="small"
+                            variant="standard"
+                            onChange={setTimeZoneOther}
+                        />
+                        :
+                        null
+                    }
+                </FormGroup>
 
-                            {timeObj.find(element => element.type === "month").value}
-                        </span>
-                        <span>
-
-                            {timeObj.find(element => element.type === "day").value},
-                        </span>
-                        <span>
-                            {timeObj.find(element => element.type === "year").value}
-                        </span>
+            </div>
+            <div id="main-block" className="paper-back">
+                <span id="date">
+                    <span>
+                        {timeObj.find(element => element.type === "weekday").value},
                     </span>
-                    <span id="time">
-                        <span>
-                            {timeObj.find(element => element.type === "hour").value}:
-                            {timeObj.find(element => element.type === "minute").value}:
-                            {timeObj.find(element => element.type === "second").value}
-                        </span>
-                        <span>
-                            {timeObj.find(element => element.type === "timeZoneName").value}
-                        </span>
+                    <span>
 
+                        {timeObj.find(element => element.type === "month").value}
                     </span>
-                </div>
+                    <span>
+
+                        {timeObj.find(element => element.type === "day").value},
+                    </span>
+                    <span>
+                        {timeObj.find(element => element.type === "year").value}
+                    </span>
+                </span>
+                <span id="time">
+                    <span>
+                        {timeObj.find(element => element.type === "hour").value}:
+                        {timeObj.find(element => element.type === "minute").value}:
+                        {timeObj.find(element => element.type === "second").value}
+                    </span>
+                    <span>
+                        {timeObj.find(element => element.type === "timeZoneName").value}
+                    </span>
+
+                </span>
             </div>
         </div >
     );

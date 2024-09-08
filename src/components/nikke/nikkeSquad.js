@@ -17,6 +17,33 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 function NikkeSquad(props) {
+    const renderDroppable = (provided) => {
+        return props.nikkes.map((item, index) => {
+            return (
+                <NikkeUnit
+                    key={'unit-' + item.Name}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                    unit={item}
+                    sectionId={props.section.id}
+                    index={index}
+                    windowSmall={props.windowSmall}
+                    icons={[
+                        props.icons.Burst[item.Burst],
+                        props.icons.Class[item.Class],
+                        props.icons.Code[item.Code],
+                        props.icons.Manufacturer[item.Manufacturer],
+                        props.icons.Weapon[item.Weapon]
+                    ]}
+                    highlightIcon={props.icons.Highlight}
+                    avatar={props.avatars[item.Name]}
+                    visibility={props.visibility}
+                    onMoveNikke={onMoveNikke}
+                    hasTargetCode={item.Code === props.targetCode}
+                />)
+        });
+    }
+
     // State for current ratings.
     const [rating, setRating] = useState({});
 
@@ -111,7 +138,12 @@ function NikkeSquad(props) {
             let bcd = parseInt(props.nikkes[i]['Burst Cooldown']);
 
             // Search for Noir and Blanc
-            if (props.nikkes[i].Name === 'Noir' || props.nikkes[i].Name === 'Blanc') {
+            if (props.nikkes[i].Name === 'Noir') {
+                if (squad777)
+                    minBSI['2'] = 20;
+                squad777 = true;
+            }
+            if (props.nikkes[i].Name === 'Blanc') {
                 if (squad777)
                     bcd = 20;
                 squad777 = true;
@@ -279,19 +311,13 @@ function NikkeSquad(props) {
         <div
             className='nikke-squad-container'
             style={{
-                borderRadius: (props.variant === 'top') ?
-                    '0.5rem 0.5rem 0 0'
-                    : (props.variant === 'bottom') ?
-                        '0 0 0.5rem 0.5rem'
-                        : '0 0 0 0',
-                borderWidth: (props.variant === 'top') ?
-                    '3px 3px 0 3px'
-                    : (props.variant === 'bottom') ?
-                        '0 3px 3px 3px'
-                        : '0 3px 0 3px',
+                // margin: props.editable ?
+                //     0 : '0 1.5rem',
+                borderRadius: props.editable ?
+                    0 : '1rem'
             }}
         >
-            <div className='squad-header grid-row'
+            <div className='squad-header flex-row'
                 style={{
                     minWidth: props.windowSmall ? '20.25em' : '35.25rem',
                     maxWidth: '100vw'
@@ -368,39 +394,13 @@ function NikkeSquad(props) {
                                     {...provided.droppableProps}
                                 >
                                     {
-                                        props.nikkes &&
-                                        props.nikkes.map((item, index) => {
-                                            return (
-                                                <NikkeUnit
-                                                    key={'unit-' + item.Name}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                    unit={item}
-                                                    sectionId={props.section.id}
-                                                    index={index}
-                                                    windowSmall={props.windowSmall}
-                                                    icons={[
-                                                        props.icons.Burst[item.Burst],
-                                                        props.icons.Class[item.Class],
-                                                        props.icons.Code[item.Code],
-                                                        props.icons.Manufacturer[item.Manufacturer],
-                                                        props.icons.Weapon[item.Weapon]
-                                                    ]}
-                                                    highlightIcon={props.icons.Highlight}
-                                                    avatar={props.avatars[item.Name]}
-                                                    visibility={props.visibility}
-                                                    onMoveNikke={onMoveNikke}
-                                                    hasTargetCode={item.Code === props.targetCode}
-                                                />)
-                                        }
-                                        )
-
+                                        renderDroppable(provided)
                                     }
                                     {provided.placeholder}
                                 </div>
                             )}
                         </Droppable>
-                        <div className='nikke-squad-info grid-row'>
+                        <div className='nikke-squad-info flex-row'>
                             {props.enableRatings ? buildRatingNotes() : null}
                         </div>
                     </div>

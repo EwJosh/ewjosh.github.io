@@ -14,10 +14,6 @@ h4 {
   z-index: 1;
 }
 
-.MuiTooltip-tooltip {
-  font-size: large;
-}
-
 #tb-header {
   margin: 0.5rem 0;
 
@@ -79,11 +75,22 @@ h4 {
   text-indent: 0;
 }
 
+.dropdown-btn-nested {
+  position: relative;
+  left: -0.5rem;
+}
+
 .dropdown-body {
   margin-top: 0;
   padding: 1rem 0 1rem 2rem;
   border-width: 0 1px 1px 1px;
   border-style: solid;
+}
+
+.dropdown-body-nested {
+  position: relative;
+  left: -0.5rem;
+  margin-right: 1rem;
 }
 
 .dropdown-body > li {
@@ -100,10 +107,15 @@ h4 {
 }
 
 #settings-dialog-body {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2rem;
+  min-width: fit-content;
+
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: auto;
+  gap: 1rem 0.5rem;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .sett-select-icon {
@@ -128,13 +140,19 @@ h4 {
   padding: 0;
 }
 
+#sett-export {
+  width: 100%;
+  gap: 0.5em;
+}
+
 #sett-export-btn {
+  /* min-width: 15rem; */
   height: 2.5rem;
   font-weight: bold;
   font-size: large;
   text-transform: none;
   outline: 2px dashed #90caf9;
-  padding: 0 2rem;
+  padding: 0;
 }
 
 .section-badge {
@@ -206,32 +224,34 @@ h4 {
 }
 
 #squad-megacontainer {
+  display: grid;
   gap: 4px;
+  grid-auto-flow: column;
 }
 
 .squad-supercontainer {
+  height: fit-content;
   max-width: 100vw;
   box-sizing: border-box;
-  gap: 0.5rem;
 }
 
-.squad-supercontainer > .grid-column {
+.squad-supercontainer > .flex-column {
+  padding-top: 2px;
+  gap: 4px;
   box-sizing: border-box;
-  justify-content: space-evenly;
+  justify-content: flex-start;
 }
 
 .nikke-squad-container {
-  border-radius: 1rem;
+  height: fit-content;
   padding: 0 0.5rem 0.5rem;
-  min-height: 2rem;
   box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   background-color: #deb887;
-  border-color: #766d62;
-  border-style: solid;
+  border: 3px solid #766d62;
 }
 
 .nikke-squad-container > div {

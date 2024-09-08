@@ -110,18 +110,6 @@ function App() {
     <div id='App'>
       <ThemeProvider theme={theme}>
         <Navbar scrollTrigger={scrollTrigger} />
-        <Slide in={scrollTrigger} direction='up'>
-          <Tooltip>
-            <Fab
-              id='scroll-to-top-btn'
-              color='success'
-              aria-label='scroll-to-top'
-              onClick={handleScrollToTop}
-            >
-              <KeyboardArrowUpIcon />
-            </Fab>
-          </Tooltip>
-        </Slide>
         <Router>
           <Routes>
             <Route exact path='/' element={<Home />} />
@@ -150,6 +138,18 @@ function App() {
             <Route exact path='/about' element={<About />} />
           </Routes>
         </Router>
+        <Slide in={scrollTrigger} direction='up'>
+          <Tooltip>
+            <Fab
+              id='scroll-to-top-btn'
+              color='success'
+              aria-label='scroll-to-top'
+              onClick={handleScrollToTop}
+            >
+              <KeyboardArrowUpIcon />
+            </Fab>
+          </Tooltip>
+        </Slide>
         <Footer />
       </ThemeProvider>
     </div>

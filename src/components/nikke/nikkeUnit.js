@@ -62,7 +62,7 @@ function NikkeUnit(props) {
     const getAddRemoveButton = () => {
         // If in Roster: Say 'Move to Bench' and use a (+) icon.
         if (props.sectionId === 'roster')
-            return <Tooltip title='Move to Bench' placement='top'>
+            return <Tooltip title='Move to Bench' placement='top' arrow>
                 <Add fontSize='small' sx={{
                     width: '1em',
                     height: '1em'
@@ -71,7 +71,7 @@ function NikkeUnit(props) {
 
         // If in Bench: Say 'Move to Roster' and use a (-) icon.
         else if (props.sectionId === 'bench')
-            return <Tooltip title='Move to Roster' placement='top'>
+            return <Tooltip title='Move to Roster' placement='top' arrow>
                 <Remove fontSize='small' sx={{
                     width: '1em',
                     height: '1em'
@@ -80,7 +80,7 @@ function NikkeUnit(props) {
 
         // If in Squad: Say 'Move to Bench' and use a (-) icon.
         else
-            return <Tooltip title='Move to Bench' placement='top'>
+            return <Tooltip title='Move to Bench' placement='top' arrow>
                 <Remove fontSize='small' sx={{
                     width: '1em',
                     height: '1em'
@@ -153,7 +153,7 @@ function NikkeUnit(props) {
                                         if (category === 'Code' && props.visibility['Code'] && props.hasTargetCode)
                                             return <div
                                                 key={category}
-                                                className='nikke-icon grid-row'
+                                                className='nikke-icon flex-row'
                                             >
                                                 <img
                                                     key={category}

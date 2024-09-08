@@ -203,12 +203,12 @@ function Calculator() {
         return !isNaN(parseFloat(value));
     }
 
-    const printDebug = () => {
-        console.log("comp: " + expression);
-        console.log("rest: " + result);
-        // console.log("cpu: " + recurseCompute(computation));
-        console.log(expression.substring(0, expression.length - 2));
-    }
+    // const printDebug = () => {
+    //     console.log("comp: " + expression);
+    //     console.log("rest: " + result);
+    //     // console.log("cpu: " + recurseCompute(computation));
+    //     console.log(expression.substring(0, expression.length - 2));
+    // }
 
     const operate = (base, operation, variable) => {
         if (operation === "+")
@@ -261,193 +261,191 @@ function Calculator() {
     }
 
     return (
-        <div className="page">
-            <div className="grid-column">
-                <div id="result" className="paper-back">
-                    {result}
-                </div>
-                <TextField
-                    onChange={directExpression}
-                    value={expression}
-                    sx={{ backgroundColor: '#deb887c0;' }}
-                >
+        <div className="page flex-column">
+            <div id="result" className="paper-back">
+                {result}
+            </div>
+            <TextField
+                onChange={directExpression}
+                value={expression}
+                sx={{ backgroundColor: '#deb887c0', minWidth: '50%' }}
+            >
 
-                </TextField>
-                {/* <Button
+            </TextField>
+            {/* <Button
                     onClick={printDebug}
                     centerRipple
                     variant="outlined"
                 >
                     Print Computation
                 </Button> */}
-                <div id="calculator-input" className="paper-back">
-                    <div />
-                    <Button
-                        onClick={() => updateExpression(1)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        1
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(4)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        4
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(7)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        7
-                    </Button>
-                    <div />
-                    <Button
-                        onClick={() => updateExpression("(")}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        {"("}
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(2)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        2
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(5)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        5
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(8)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        8
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(0)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        0
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(")")}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        {")"}
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(3)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        3
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(6)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        6
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(9)}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        9
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression(".")}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        .
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression("^")}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        ^
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression("+")}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        +
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression("-")}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        -
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression("*")}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        *
-                    </Button>
-                    <Button
-                        onClick={() => updateExpression("/")}
-                        centerRipple
-                        variant="outlined"
-                    >
-                        /
-                    </Button>
-                    <Button
-                        className="two-tall"
-                        onClick={() => tryClear()}
-                        centerRipple
-                        variant={clear ? "contained" : "outlined"}
-                        color="error"
-                    >
-                        C
-                    </Button>
-                    <Button
-                        className="three-tall"
-                        onClick={() => compute()}
-                        centerRipple
-                        variant="contained"
-                        color="success"
-                    >
-                        =
-                    </Button>
-                </div>
-                <div id="notes" className="paper-back">
-                    <h1>Features</h1>
-                    <ul>
-                        <li>Follows order of operations: PEMDAS</li>
-                        <li>Works with multiple and nested parantheses</li>
-                        <li>Clear button needs to be clicked twice</li>
-                    </ul>
-                    <h1>To-do</h1>
-                    <ul>
-                        <li>Add cursor functionality</li>
-                        <li>Add button to replace expression with result</li>
-                        <li>Add show/hide comma seperators in results (i.e. 1000 vs 1,000)</li>
-                    </ul>
-                    <ul>
-                        <li>Add absolute function</li>
-                        <li>Add trig functions</li>
-                        <li>Add some calculus functions</li>
-                        <li>Add number theory functions (mod, rounding, permutations, combinations)</li>
-                    </ul>
-                </div>
+            <div id="calculator-input" className="paper-back">
+                <div />
+                <Button
+                    onClick={() => updateExpression(1)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    1
+                </Button>
+                <Button
+                    onClick={() => updateExpression(4)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    4
+                </Button>
+                <Button
+                    onClick={() => updateExpression(7)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    7
+                </Button>
+                <div />
+                <Button
+                    onClick={() => updateExpression("(")}
+                    centerRipple
+                    variant="outlined"
+                >
+                    {"("}
+                </Button>
+                <Button
+                    onClick={() => updateExpression(2)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    2
+                </Button>
+                <Button
+                    onClick={() => updateExpression(5)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    5
+                </Button>
+                <Button
+                    onClick={() => updateExpression(8)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    8
+                </Button>
+                <Button
+                    onClick={() => updateExpression(0)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    0
+                </Button>
+                <Button
+                    onClick={() => updateExpression(")")}
+                    centerRipple
+                    variant="outlined"
+                >
+                    {")"}
+                </Button>
+                <Button
+                    onClick={() => updateExpression(3)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    3
+                </Button>
+                <Button
+                    onClick={() => updateExpression(6)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    6
+                </Button>
+                <Button
+                    onClick={() => updateExpression(9)}
+                    centerRipple
+                    variant="outlined"
+                >
+                    9
+                </Button>
+                <Button
+                    onClick={() => updateExpression(".")}
+                    centerRipple
+                    variant="outlined"
+                >
+                    .
+                </Button>
+                <Button
+                    onClick={() => updateExpression("^")}
+                    centerRipple
+                    variant="outlined"
+                >
+                    ^
+                </Button>
+                <Button
+                    onClick={() => updateExpression("+")}
+                    centerRipple
+                    variant="outlined"
+                >
+                    +
+                </Button>
+                <Button
+                    onClick={() => updateExpression("-")}
+                    centerRipple
+                    variant="outlined"
+                >
+                    -
+                </Button>
+                <Button
+                    onClick={() => updateExpression("*")}
+                    centerRipple
+                    variant="outlined"
+                >
+                    *
+                </Button>
+                <Button
+                    onClick={() => updateExpression("/")}
+                    centerRipple
+                    variant="outlined"
+                >
+                    /
+                </Button>
+                <Button
+                    className="two-tall"
+                    onClick={() => tryClear()}
+                    centerRipple
+                    variant={clear ? "contained" : "outlined"}
+                    color="error"
+                >
+                    C
+                </Button>
+                <Button
+                    className="three-tall"
+                    onClick={() => compute()}
+                    centerRipple
+                    variant="contained"
+                    color="success"
+                >
+                    =
+                </Button>
+            </div>
+            <div id="notes" className="paper-back">
+                <h1>Features</h1>
+                <ul>
+                    <li>Follows order of operations: PEMDAS</li>
+                    <li>Works with multiple and nested parantheses</li>
+                    <li>Clear button needs to be clicked twice</li>
+                </ul>
+                <h1>To-do</h1>
+                <ul>
+                    <li>Add cursor functionality</li>
+                    <li>Add button to replace expression with result</li>
+                    <li>Add show/hide comma seperators in results (i.e. 1000 vs 1,000)</li>
+                </ul>
+                <ul>
+                    <li>Add absolute function</li>
+                    <li>Add trig functions</li>
+                    <li>Add some calculus functions</li>
+                    <li>Add number theory functions (mod, rounding, permutations, combinations)</li>
+                </ul>
             </div>
         </div>
     );

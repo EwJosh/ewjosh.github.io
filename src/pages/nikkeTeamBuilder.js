@@ -59,6 +59,10 @@ function NikkeTeamBuilder(props) {
 
         openSettings: false,    // Settings dialog is open
         enableRatings: true,    // Ratings is enabled
+        squadsPerRow: (window.innerWidth <= 1290) ? // Squads displayed per row. Initialized value depends on window size.
+            1 : (window.innerWidth > 1920) ?
+                3
+                : 2,
         allowDuplicates: false, // Duplicate Nikkes are allowed
         targetCode: 'None',     // The selected Code weakness (for ratings)
         debugMode: false        // Debug mode is enabled (for console printing data)
@@ -653,19 +657,20 @@ function NikkeTeamBuilder(props) {
      * - The Nikke numerical IDs are seperated by '-'.
      * - Squads are separated by '&'.
      * - Example: s0=97-111-20&s1=23-121-114-112-21&s2=27-83
+     * - Example: s0=83-53-98-93-68&s1=38-85-86-97&s2=20-99-100-102&s3=118
      * 
      * Returns null if the dynamic URL is invalid.
      * @returns A new nikkeLists based on the dynamic URL, if possible. If dynamic URL is invalid, returns null.
      */
-    const readSquadId = () => {
+    const readSquadId = (squadId) => {
         // Try/catch block in case split fails or something unexpected occurs.
         try {
             // Minimum length of a valid Squad ID would be 4 (e.g. s0=0)
-            if (!urlId || urlId.length < 4)
+            if (!squadId || squadId.length < 4)
                 return null;
 
             // Separate url id by '&'.
-            let squads = urlId.split('&');
+            let squads = squadId.split('&');
             // Squad counter for ids and titles.
             let squadIndex = 1;
             // Force-limit squad parsing at 10 to limit parsing issues. (Arbitrary)
@@ -673,11 +678,9 @@ function NikkeTeamBuilder(props) {
 
             // Temp information for building the new nikkeLists
             let newSections = {
-                'bench': {
-                    ...initNikkeLists.sections['bench']
-                }
             };
             let newSectionOrder = [];
+            let newBenchIds = initNikkeLists.sections.bench.nikkeIds;
             let newRosterIds = initNikkeLists.sections.roster.nikkeIds;
 
             // Loop through Squad strings
@@ -702,6 +705,12 @@ function NikkeTeamBuilder(props) {
                     // Push Nikke's Name (in order) to array
                     newNikkeIds.push(nikkeName);
 
+                    if (newBenchIds.length > 0) {
+                        let nikkeIndex = newBenchIds.indexOf(nikkeName);
+                        if (nikkeIndex !== -1)
+                            newBenchIds.splice(nikkeIndex, 1);
+                    }
+
                     // Remove from Roster, if it exists
                     let nikkeIndex = newRosterIds.indexOf(nikkeName);
                     if (nikkeIndex !== -1)
@@ -721,11 +730,31 @@ function NikkeTeamBuilder(props) {
                 newSectionOrder.push('squad-' + squadIndex);
                 squadIndex += 1;
             }
+            setSquadCnt(newSectionOrder.length)
+
+            setNikkeLists({
+                sections: {
+                    ...newSections,
+                    bench: {
+                        ...initNikkeLists.sections.bench,
+                        nikkeIds: newBenchIds
+                    },
+                    roster: {
+                        ...initNikkeLists.sections.roster,
+                        nikkeIds: newRosterIds
+                    }
+                },
+                sectionOrder: newSectionOrder
+            })
 
             // After looping though Squads, return newNikkeLists
             return {
                 sections: {
                     ...newSections,
+                    bench: {
+                        ...initNikkeLists.sections.bench,
+                        nikkeIds: newBenchIds
+                    },
                     roster: {
                         ...initNikkeLists.sections.roster,
                         nikkeIds: newRosterIds
@@ -737,11 +766,11 @@ function NikkeTeamBuilder(props) {
         // If we ever throw/catch an error, log it and return null.
         catch (error) {
             console.log(error);
+            return null;
         }
-        return null;
     }
     // Initialize nikkeList through dynamic URL upon page startup.
-    let listById = readSquadId();
+    let listById = readSquadId(urlId);
 
     // Collection of Nikkes to be used and altered.
     const [nikkeLists, setNikkeLists] = useState(listById !== null ? listById : initNikkeLists);
@@ -787,8 +816,13 @@ function NikkeTeamBuilder(props) {
             squadIndex++;
         }
 
-        // After looping through Squads, copy to clipboard.
-        navigator.clipboard.writeText('https://ewjosh.github.io//#/apps/nikkeTeamBuilder/' + squadId);
+        // After looping through Squads, return SquadId.
+        return squadId;
+    }
+
+    const copySquadIdToClipboard = () => {
+        // Add this when dynamic url is fixed: 'https://ewjosh.github.io//#/apps/nikkeTeamBuilder/'
+        navigator.clipboard.writeText(getSquadId());
     }
 
     // useLayoutEffect is like useEffect, except it waits for the browser to paint.
@@ -809,11 +843,12 @@ function NikkeTeamBuilder(props) {
             </h1>
 
             {/* Page Header */}
-            <div id='tb-header' className='grid-row'>
+            <div id='tb-header' className='flex-row'>
                 {/* Help Button */}
                 <Tooltip
                     title='Help'
                     placement='top'
+                    arrow
                 >
                     <IconButton
                         onClick={() => setSettings({
@@ -872,46 +907,23 @@ function NikkeTeamBuilder(props) {
                             alt='sett-select-None'
                         />
                     </MenuItem>
-                    <MenuItem value='Electric'>
-                        <img
-                            className='sett-select-icon'
-                            src={Icons.Code.Electric}
-                            alt='sett-select-Electric'
-                        />
-                    </MenuItem>
-                    <MenuItem value='Fire'>
-                        <img
-                            className='sett-select-icon'
-                            src={Icons.Code.Fire}
-                            alt='sett-select-Fire'
-                        />
-                    </MenuItem>
-                    <MenuItem value='Iron'>
-                        <img
-                            className='sett-select-icon'
-                            src={Icons.Code.Iron}
-                            alt='sett-select-Iron'
-                        />
-                    </MenuItem>
-                    <MenuItem value='Water'>
-                        <img
-                            className='sett-select-icon'
-                            src={Icons.Code.Water}
-                            alt='sett-select-Water'
-                        />
-                    </MenuItem>
-                    <MenuItem value='Wind'>
-                        <img
-                            className='sett-select-icon'
-                            src={Icons.Code.Wind}
-                            alt='sett-select-Wind'
-                        />
-                    </MenuItem>
+                    {
+                        Tags.Code.map(code => {
+                            return <MenuItem key={code} value={code}>
+                                <img
+                                    className={'sett-select-icon'}
+                                    src={Icons.Code[code]}
+                                    alt={'sett-select-' + code}
+                                />
+                            </MenuItem>
+                        })
+                    }
                 </Select>
                 {/* Edit Button */}
                 <Tooltip
                     title='Edit Squads'
                     placement='top'
+                    arrow
                 >
                     <Button
                         id='edit-btn'
@@ -939,6 +951,7 @@ function NikkeTeamBuilder(props) {
                 <Tooltip
                     title='Settings'
                     placement='top'
+                    arrow
                 >
                     <IconButton
                         sx={{
@@ -964,17 +977,25 @@ function NikkeTeamBuilder(props) {
                     })}
                     settings={settings}
                     setSettings={setSettings}
+                    windowSmall={props.windowSmall}
                     visibility={visibility}
                     setVisibility={setVisibility}
                     icons={Icons}
                     getSquadId={getSquadId}
+                    copySquadIdToClipboard={copySquadIdToClipboard}
+                    readSquadId={readSquadId}
                 />
             </div>
 
             {/* Main Content */}
-            <DragDropContext
-                onDragEnd={onDragEnd}>
-                <div id='squad-megacontainer' className='grid-column'>
+            <DragDropContext onDragEnd={onDragEnd}>
+                <div
+                    id='squad-megacontainer'
+                    style={{
+                        gridTemplateColumns: 'repeat(' + settings.squadsPerRow + ', 1fr)',
+                        gridTemplateRows: 'repeat(' + Math.ceil(nikkeLists.sectionOrder.length / settings.squadsPerRow) + ', min-content)',
+                    }}
+                >
                     {
                         nikkeLists.sectionOrder.map((sectionId, index) => {
                             let section = nikkeLists.sections[sectionId];
@@ -982,31 +1003,37 @@ function NikkeTeamBuilder(props) {
                             let nikkes = collectNikkes(section.nikkeIds);
 
                             return <div
-                                className='squad-supercontainer grid-row'
+                                className='squad-supercontainer flex-row'
                                 key={sectionId}
                             >
                                 {
                                     // Left edit buttons: Move Squad Up op Down
                                     settings.editable ?
-                                        <div className='grid-column'>
-                                            <Tooltip title='Move Squad up' placement='top'>
+                                        <div
+                                            className='flex-column'
+                                        >
+                                            <Tooltip title='Move Squad up' placement='right' arrow>
                                                 <IconButton
                                                     onClick={() => handleMoveSquad(sectionId, true)}
                                                     sx={{
                                                         maxWidth: '1.5rem',
                                                         maxHeight: '1.5rem',
                                                         backgroundColor: 'gray',
-                                                        border: '1px solid #ffffff77'
+                                                        border: 'solid #ffffff77',
+                                                        borderWidth: '1px 0 1px 1px',
+                                                        borderRadius: '50% 0 0 50%'
                                                     }}
                                                 ><KeyboardDoubleArrowUpIcon fontSize='small' /></IconButton></Tooltip>
-                                            <Tooltip title='Move Squad down' placement='top'>
+                                            <Tooltip title='Move Squad down' placement='right' arrow>
                                                 <IconButton
                                                     onClick={() => handleMoveSquad(sectionId, false)}
                                                     sx={{
                                                         maxWidth: '1.5rem',
                                                         maxHeight: '1.5rem',
                                                         backgroundColor: 'gray',
-                                                        border: '1px solid #ffffff77'
+                                                        border: 'solid #ffffff77',
+                                                        borderWidth: '1px 0 1px 1px',
+                                                        borderRadius: '50% 0 0 50%'
                                                     }}
                                                 ><KeyboardDoubleArrowDownIcon fontSize='small' /></IconButton></Tooltip>
                                         </div>
@@ -1037,25 +1064,30 @@ function NikkeTeamBuilder(props) {
                                 />
                                 {
                                     settings.editable ?
-                                        <div className='grid-column'>
-                                            <Tooltip title='Delete Squad' placement='top'>
+                                        <div className='flex-column'
+                                        >
+                                            <Tooltip title='Delete Squad' placement='left' arrow>
                                                 <IconButton
                                                     onClick={() => handleRemoveSquad(sectionId)}
                                                     sx={{
                                                         maxWidth: '1.5rem',
                                                         maxHeight: '1.5rem',
                                                         backgroundColor: '#c32020',
-                                                        border: '1px solid #ffffff77'
+                                                        border: 'solid #ffffff77',
+                                                        borderWidth: '1px 1px 1px 0',
+                                                        borderRadius: '0 50% 50% 0'
                                                     }}
                                                 ><DeleteForever fontSize='small' /></IconButton></Tooltip>
-                                            <Tooltip title='Add Squad below' placement='top'>
+                                            <Tooltip title='Add Squad below' placement='left' arrow>
                                                 <IconButton
                                                     onClick={() => handleAddSquad(index)}
                                                     sx={{
                                                         maxWidth: '1.5rem',
                                                         maxHeight: '1.5rem',
                                                         backgroundColor: '#209320',
-                                                        border: '1px solid #ffffff77'
+                                                        border: 'solid #ffffff77',
+                                                        borderWidth: '1px 1px 1px 0',
+                                                        borderRadius: '0 50% 50% 0'
                                                     }}
                                                 ><Add /></IconButton></Tooltip>
                                         </div>

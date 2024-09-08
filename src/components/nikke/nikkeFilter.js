@@ -190,7 +190,7 @@ function NikkeFilter(props) {
     return (
         <div
             id='filter-container'
-            className='grid-column'
+            className='flex-column'
             style={{
                 maxWidth: props.windowSmall ? '100%' : '80vw',
                 minWidth: '80vw'
@@ -259,7 +259,7 @@ function NikkeFilter(props) {
                     null :
                     <div
                         id='filter-body'
-                        className={props.windowSmall ? 'grid-column' : 'grid-row'}
+                        className={props.windowSmall ? 'flex-column' : 'flex-row'}
                         style={{
                             flexWrap: props.windowSmall ? 'initial' : 'wrap'
                         }}
@@ -270,7 +270,7 @@ function NikkeFilter(props) {
                             props.tags.categories.map(category => {
                                 return (
                                     <div
-                                        className='filter-category grid-column'
+                                        className='filter-category flex-column'
                                         key={'category-' + category}
                                         style={{
                                             minWidth: props.windowWide ? 'revert' : '20%'
@@ -279,7 +279,7 @@ function NikkeFilter(props) {
                                         {
 
                                             (props.visibility.categories.indexOf(category) !== -1) ?
-                                                <div className='filter-category-visibility-container grid-row'>
+                                                <div className='filter-category-visibility-container flex-row'>
                                                     <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
                                                     {/* Create IconButton for toggling visibility */}
                                                     <Tooltip
@@ -357,7 +357,7 @@ function NikkeFilter(props) {
                     null :
                     <div
                         id='filter-footer'
-                        className={props.windowSmall ? 'grid-column' : 'grid-row'}
+                        className={props.windowSmall ? 'flex-column' : 'flex-row'}
                     >
                         {/* Search by Name */}
                         <TextField

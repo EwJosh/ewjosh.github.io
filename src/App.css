@@ -10,7 +10,7 @@
 }
 
 .page {
-  margin: 5rem 0 3rem;
+  margin: 3rem 0 3rem;
   /* padding: 1rem 1rem; */
   max-width: 100vw;
   min-height: 85vh;
@@ -31,13 +31,13 @@
   flex-shrink: 0;
 }
 
-.grid-row {
+.flex-row {
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
 
-.grid-column {
+.flex-column {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -60,4 +60,36 @@
   border-radius: 1rem;
   background-color: #deb88771;
   padding: 1rem;
+}
+
+.grid-column-span-1 {
+  grid-column: span 1;
+}
+
+.grid-column-span-2 {
+  grid-column: span 2;
+}
+
+.grid-column-span-3 {
+  grid-column: span 3;
+}
+
+.grid-column-span-4 {
+  grid-column: span 4;
+}
+
+.grid-column-full {
+  grid-column: start end;
+}
+
+.justify-self-start {
+  justify-self: flex-start;
+}
+
+.justify-self-center {
+  justify-self: center;
+}
+
+.justify-self-end {
+  justify-self: flex-end;
 }

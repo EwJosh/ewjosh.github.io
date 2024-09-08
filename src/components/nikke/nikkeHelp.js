@@ -22,6 +22,8 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import Close from '@mui/icons-material/Close';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import Visibility from '@mui/icons-material/Visibility';
+import ContentPaste from '@mui/icons-material/ContentPaste';
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 
 /**
  * Restyled <h3> for being used as a dropdown/accordion button
@@ -45,6 +47,7 @@ function NikkeHelp(props) {
     // State used for the opening of certain sections.
     const [open, setOpen] = useState({
         'squads': true,
+        'rating': false,
         'broster': true,
         'filter': true,
         'settings': true
@@ -106,7 +109,7 @@ function NikkeHelp(props) {
                 {/* More detailed specifications */}
                 <hr />
                 <h2>Available features</h2>
-                <span>Click to expand sections.</span>
+                <span>Click to collapse sections.</span>
 
                 {/* Squads Details */}
                 <DropdownButton
@@ -140,41 +143,60 @@ function NikkeHelp(props) {
                             will minimize the Squad.
                         </li>
                         <li>
+                            The layout of Squads can be configured in the <Settings fontSize='inherit' className='menu-icon-text' /> Settings.
+                            The amount of Squads displayed per row can be selected between 1-3.
+                            For mobile, it's recommended to stay at 1 Squad per row.
+                        </li>
+                        <li>
                             Has a 'rating system'. I don't plan on rating things like damage calcs and breakpoints.
                             They're just mainly to check if you have a stable team. Can be disabled via Settings
                         </li>
                         <li>If you hover over the rating (or hold press on mobile), you'll see a tooltip about the rating.</li>
-                        <li>
-                            Rating system covers...
-                        </li>
-                        <ul>
+                        {/* Rating sub-section */}
+                        <DropdownButton
+                            className={open.rating ?
+                                'dropdown-btn dropdown-btn-nested dropdown-btn-open'
+                                : 'dropdown-btn dropdown-btn-nested dropdown-btn-closed'
+                            }
+                            onClick={() => handleClick('rating')}
+                            sx={{ borderWidth: '2px', marginRight: '1rem' }}
+                        >
+                            {open.rating ? <ArrowDropDownIcon fontSize='large' /> : <ArrowDropUpIcon fontSize='large' />}
+                            <span> Rating</span>
+                        </DropdownButton>
+                        <Collapse in={open.rating} className={open.rating ? 'dropdown-body dropdown-body-nested' : ''}>
                             <li>
-                                Squad size (Simply whether your squad is at a full legal size, 5 Nikkes)
+                                Rating system covers...
                             </li>
-                            <li>
-                                Full Burst potential (Can your squad reach Full Burst, and preferrably do so every 20 seconds?)
-                            </li>
-                            <ul>
+                            <ul >
                                 <li>
-                                    Covers edge cases for B1-Recast, Red Hood's BV, and Blanc's special burst cooldown.
+                                    Squad size (Simply whether your squad is at a full legal size, 5 Nikkes)
+                                </li>
+                                <li>
+                                    Full Burst potential (Can your squad reach Full Burst, and preferrably do so every 20 seconds?)
+                                </li>
+                                <ul>
+                                    <li>
+                                        Covers edge cases for B1-Recast, Red Hood's BV, and Blanc's special burst cooldown.
+                                    </li>
+                                </ul>
+                                <li>
+                                    Matches Code Weakness (If set in <Settings fontSize='inherit' className='menu-icon-text' /> Settings,
+                                    does your squad have at least one matching Nikke?)
                                 </li>
                             </ul>
                             <li>
-                                Matches Code Weakness (If set in <Settings fontSize='inherit' className='menu-icon-text' /> Settings,
-                                does your squad have at least one matching Nikke?)
+                                WIP Rating features...
                             </li>
-                        </ul>
-                        <li>
-                            WIP Rating features...
-                        </li>
-                        <ul>
-                            <li>
-                                Has or lacks Sustain (Healer/Shielder)
-                            </li>
-                            <li>
-                                Has [other kinds of such tags]
-                            </li>
-                        </ul>
+                            <ul>
+                                <li>
+                                    Has or lacks Sustain (Healer/Shielder)
+                                </li>
+                                <li>
+                                    Has [other kinds of such tags]
+                                </li>
+                            </ul>
+                        </Collapse>
                     </ul>
                 </Collapse>
 
@@ -303,9 +325,23 @@ function NikkeHelp(props) {
                             </ul>
                         </li>
                         <li>
-                            Your Squad can be converted into a shareable link. This copies the link to your clipboard.
-                            Squad sizes up to 5 Nikkes are supported, anything beyond will be truncated.
-                            Up to 10 Squads are supported, anything beyond or empty will be truncated.
+                            Your Squad can be converted into or be created by a shareable url/code.
+                            <ul>
+                                <li>The <ContentPaste fontSize='inherit' className='menu-icon-text' /> Copy button will copy the shareable <s>&nbsp;url&nbsp;</s> <u>code</u> to your system's clipboard.</li>
+                                <li>
+                                    If the dynamic URL is used to launch the page, your Squads will be pre-built with the corresponding Nikkes.
+                                </li>
+                                <li>
+                                    <i><b>Bug:</b> Nikkes initialized in squads via a dynamic URL cannot be dragged until moved to the Bench
+                                        via the <Remove fontSize='inherit' className='menu-icon-text' /> Remove button.
+                                        For now, it's recommended to use the text field and <KeyboardReturnIcon fontSize='inherit' className='menu-icon-text' /> Import button</i>.</li>
+                                <li>
+                                    Inputting a valid code to the text field and pressing the <KeyboardReturnIcon fontSize='inherit' className='menu-icon-text' /> Import button will update
+                                    your Squads to have the corresponding Nikkes.
+                                </li>
+                                <li>Squad sizes up to 5 Nikkes are supported, anything beyond will be truncated.</li>
+                                <li>Up to 10 Squads are supported, anything beyond or empty will be truncated.</li>
+                            </ul>
                         </li>
                         <li>Ratings can be fully disabled.</li>
                         <li>
@@ -324,6 +360,12 @@ function NikkeHelp(props) {
                         Miscellaneous Tag System.
                         Used for filtering and rating in regards to Nikke attributes
                         such as healing, shielding, pierce, true damage, cleansing, etc.
+                    </li>
+                    <li>
+                        Add hightlight system. An alternate filter that highlights tagged Nikkes like similar to Code Weakness.
+                    </li>
+                    <li>
+                        Extend filter/highlight system to Bench and Squads.
                     </li>
                 </ul>
                 <hr />
