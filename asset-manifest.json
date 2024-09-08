@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.4247c499.css",
-    "main.js": "/static/js/main.24d95ec4.js",
+    "main.css": "/static/css/main.20b237ba.css",
+    "main.js": "/static/js/main.19236dc1.js",
     "static/js/787.2083b764.chunk.js": "/static/js/787.2083b764.chunk.js",
     "static/media/Neve.png": "/static/media/Neve.b2afeae60536fdc76029.png",
     "static/media/Rupee Winter Shopper.png": "/static/media/Rupee Winter Shopper.150a9a1f4a5a49e68a19.png",
@@ -98,6 +98,7 @@
     "static/media/Dorothy.png": "/static/media/Dorothy.a247fb1fcae9f1c5edc4.png",
     "static/media/Maiden.png": "/static/media/Maiden.26003299374e3bac1a61.png",
     "static/media/Vesti.png": "/static/media/Vesti.3c875aaf6fe636eef425.png",
+    "static/media/Marian.png": "/static/media/Marian.5145bc08e26b994ceab1.png",
     "static/media/Marciana.png": "/static/media/Marciana.aa337cec486721107bce.png",
     "static/media/Mihara.png": "/static/media/Mihara.3728153647c4f142300e.png",
     "static/media/Product 08.png": "/static/media/Product 08.9874ae98fef24f2b77fc.png",
@@ -147,12 +148,12 @@
     "static/media/NikkeClassSupporter.png": "/static/media/NikkeClassSupporter.b494d6f3afbd869baebd.png",
     "static/media/NikkeWeaponSG.png": "/static/media/NikkeWeaponSG.e96d23e8ae7edbde33e5.png",
     "index.html": "/index.html",
-    "main.4247c499.css.map": "/static/css/main.4247c499.css.map",
-    "main.24d95ec4.js.map": "/static/js/main.24d95ec4.js.map",
+    "main.20b237ba.css.map": "/static/css/main.20b237ba.css.map",
+    "main.19236dc1.js.map": "/static/js/main.19236dc1.js.map",
     "787.2083b764.chunk.js.map": "/static/js/787.2083b764.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4247c499.css",
-    "static/js/main.24d95ec4.js"
+    "static/css/main.20b237ba.css",
+    "static/js/main.19236dc1.js"
   ]
 }
