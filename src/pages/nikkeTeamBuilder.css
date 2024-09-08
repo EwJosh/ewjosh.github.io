@@ -110,7 +110,7 @@ h4 {
   min-width: fit-content;
 
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: [start] repeat(6, 1fr) [end];
   grid-template-rows: auto;
   gap: 1rem 0.5rem;
   justify-content: center;
@@ -274,7 +274,7 @@ h4 {
   flex-wrap: wrap;
   justify-content: flex-start;
 
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   background-color: #b59872;
   border: 2px solid #766d62;
   align-self: center;
@@ -346,7 +346,7 @@ h4 {
   width: 6rem;
   height: 10rem;
   margin: 0.25rem;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   background-color: #5d5d5d;
   padding: 0.25rem;
 
@@ -365,7 +365,12 @@ h4 {
 .nikke-image-container {
   position: relative;
   width: 100%;
-  min-height: 3em;
+  min-height: 96px;
+  align-content: center;
+}
+
+.nikke-unit-small > .nikke-image-container {
+  min-height: 48px;
 }
 
 .nikke-image {

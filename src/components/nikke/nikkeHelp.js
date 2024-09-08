@@ -328,13 +328,14 @@ function NikkeHelp(props) {
                             Your Squad can be converted into or be created by a shareable url/code.
                             <ul>
                                 <li>The <ContentPaste fontSize='inherit' className='menu-icon-text' /> Copy button will copy the shareable <s>&nbsp;url&nbsp;</s> <u>code</u> to your system's clipboard.</li>
+                                {/* 
                                 <li>
                                     If the dynamic URL is used to launch the page, your Squads will be pre-built with the corresponding Nikkes.
                                 </li>
                                 <li>
-                                    <i><b>Bug:</b> Nikkes initialized in squads via a dynamic URL cannot be dragged until moved to the Bench
-                                        via the <Remove fontSize='inherit' className='menu-icon-text' /> Remove button.
-                                        For now, it's recommended to use the text field and <KeyboardReturnIcon fontSize='inherit' className='menu-icon-text' /> Import button</i>.</li>
+                                    <i><b>Bug:</b> Dynamic URL feature doesn't work. Will be disabled until fixed. </>
+                                </li>
+                                 */}
                                 <li>
                                     Inputting a valid code to the text field and pressing the <KeyboardReturnIcon fontSize='inherit' className='menu-icon-text' /> Import button will update
                                     your Squads to have the corresponding Nikkes.
@@ -366,6 +367,9 @@ function NikkeHelp(props) {
                     </li>
                     <li>
                         Extend filter/highlight system to Bench and Squads.
+                    </li>
+                    <li>
+                        Allow squad codes to work with dynamic URLs.
                     </li>
                 </ul>
                 <hr />

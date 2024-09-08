@@ -26,7 +26,7 @@ function NikkeList(props) {
         return list.map((item, index) => {
             return (
                 <NikkeUnit
-                    key={'unit-' + item.Name}
+                    key={'unit-' + item.id + '-' + index}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                     unit={item}

@@ -92,8 +92,8 @@ function NikkeUnit(props) {
         <Draggable
             className='nikke-unit-container'
             // NOTE: Draggable *has* to use initial unit name as ID, otherwise element gets eaten when dragged
-            draggableId={props.unit.Name}
-            key={props.unit.Name}
+            draggableId={props.unit.Id + '-' + props.sectionId + '-' + props.index}
+            key={props.unit.Id}
             index={props.index}
             isDragDisabled={props.sectionId === 'roster'}
         >
@@ -110,7 +110,7 @@ function NikkeUnit(props) {
                         {
                             (props.sectionId === 'bench' || props.sectionId === 'roster' || props.visibility.quickMove) ?
                                 <IconButton
-                                    onClick={() => props.onMoveNikke(props.unit.Name, props.index)}
+                                    onClick={() => props.onMoveNikke(props.unit.Id, props.index)}
                                     variant='outlined'
                                     size='small'
                                     color={props.sectionId !== 'bench' ? 'success' : 'error'}
@@ -129,7 +129,11 @@ function NikkeUnit(props) {
                                 : null
                         }
 
-                        <img className='nikke-image' src={props.avatar} alt='Nikke' />
+                        <img
+                            className='nikke-image'
+                            src={props.avatar}
+                            alt={props.unit.Name}
+                        />
 
                         {
                             props.visibility['Burst'] ?

@@ -35,7 +35,7 @@ import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrow
 const NikkeAvatars = { ...getNikkeAvatars() };
 
 function NikkeTeamBuilder(props) {
-    let { urlId } = useParams();
+    // let { urlId } = useParams();
     // How many squads have been created? Different than how many squads are there currently.
     const [squadCnt, setSquadCnt] = useState(3);
 
@@ -69,12 +69,12 @@ function NikkeTeamBuilder(props) {
     });
 
     /**
-     * Gets ALL Nikke IDs/Names from NikkeData.
-     * @returns Returns an Array of only Nikke IDs/Names.
+     * Gets ALL Nikke IDs from NikkeData.
+     * @returns Returns an Array of only Nikke IDs.
      */
     const getAllNikkeIds = () => {
         // For each object in NikkeData, grab name
-        let ids = NikkeData.map(item => item.Name);
+        let ids = NikkeData.map(item => item.Id);
 
         return ids;
     }
@@ -159,7 +159,7 @@ function NikkeTeamBuilder(props) {
             return;
 
         // Handle movement
-        handleMoveNikke(draggableId, source.droppableId, destination.droppableId, source.index, destination.index);
+        handleMoveNikke(draggableId.split('-')[0], source.droppableId, destination.droppableId, source.index, destination.index);
     }
 
     /**
@@ -170,8 +170,8 @@ function NikkeTeamBuilder(props) {
      * @param {string} nikkeId ID of the moving Nikke.
      * @param {string} srcSectionId ID of the Nikke's starting section.
      * @param {string} dstSectionId ID of the Nikke's designated section.
-     * @param {number} srcIndex index of the NIkke in the starting section.
-     * @param {number} dstIndex index of the NIkke in the designated section. If -1, Nikke will be moved to the end of the list.
+     * @param {number} srcIndex index of the Nikke in the starting section.
+     * @param {number} dstIndex index of the Nikke in the designated section. If -1, Nikke will be moved to the end of the list.
      */
     const handleMoveNikke = (nikkeId, srcSectionId, dstSectionId, srcIndex, dstIndex) => {
         // Check if destination exists and that a change has been made, if not then return.
@@ -225,7 +225,7 @@ function NikkeTeamBuilder(props) {
             // srcNikke is the moving Nikke in object form (used for comparing with Rarity)
             let left = 0;
             let right = dstNikkeIds.length - 1;
-            let srcNikke = getNikkeByName(nikkeId);
+            let srcNikke = getNikkeById(nikkeId);
 
             // Perform binary search
             while (left < right) {
@@ -239,7 +239,7 @@ function NikkeTeamBuilder(props) {
                 }
                 else {
                     // Get middle Nikke object
-                    let midNikke = getNikkeByName(dstNikkeIds[mid]);
+                    let midNikke = getNikkeById(dstNikkeIds[mid]);
 
                     // Binary compare
                     if (lessThan(srcNikke, midNikke))
@@ -371,7 +371,7 @@ function NikkeTeamBuilder(props) {
 
         nikkeIds.forEach(nikkeId => {
             NikkeData.forEach(nikke => {
-                if (nikke.Name === nikkeId)
+                if (nikke.Id === nikkeId)
                     nikkes.push(nikke);
             })
         });
@@ -381,12 +381,12 @@ function NikkeTeamBuilder(props) {
 
     /**
      * Gets the specified Nikke object via its Name value through the original NikkeData list, if it exists.
-     * @param {string} nikkeId ID (Name) value of the desired Nikke.
+     * @param {string} nikkeName Full name value of the desired Nikke.
      * @returns The specified Nikke if found in the original list, null otherwise.
      */
-    const getNikkeByName = (nikkeId) => {
+    const getNikkeByName = (nikkeName) => {
         for (let i = 0; i < NikkeData.length; i++) {
-            if (NikkeData[i].Name === nikkeId)
+            if (NikkeData[i].Name === nikkeName)
                 return NikkeData[i];
 
         }
@@ -434,7 +434,7 @@ function NikkeTeamBuilder(props) {
         }
         else if (inputFilter.Name.toLowerCase() === 'real best girl') {
             setFilteredNikkes([
-                'Scarlet', 'Scarlet: Black Shadow'
+                53, 107 //Scarlet and Scarlet: BS
             ]);
             return;
         }
@@ -442,14 +442,14 @@ function NikkeTeamBuilder(props) {
         // Run Nikke roster through filter
         // - return true if nikke matches filter
         let newFilteredNikkes = inputIds.filter(nikkeId => {
-            let nikke = getNikkeByName(nikkeId);
+            let nikke = getNikkeById(nikkeId);
 
             // If Name is being filtered, check if Nikke's name matches
             if (inputFilter.Name != null && inputFilter.Name.length > 0) {
                 // Create RegExp using filter. Using Start of String (^) and forcing filter to lowercase
                 let regex = new RegExp('^' + inputFilter.Name.toLowerCase())
                 // Check regex to nikkeId, if nothing is returned then reject Nikke
-                if (regex.exec(nikkeId.toLowerCase()) == null)
+                if (regex.exec(nikke.Name.toLowerCase()) == null)
                     return false;
             }
 
@@ -697,22 +697,22 @@ function NikkeTeamBuilder(props) {
 
                 // Loop through Nikke Id strings
                 for (let j = 0; j < maxSquad; j++) {
-                    // Fetch Nikke Name by Id No. Throw exception if not found.
-                    let nikkeName = getNikkeById(nikkeList[j]).Name;
-                    if (nikkeName == null)
+                    // Check to see if Nikke ID exists. Throw exception if not found.
+                    let nikkeId = getNikkeById(nikkeList[j]).Id;
+                    if (nikkeId == null)
                         throw new Error('Nikke not found');
 
                     // Push Nikke's Name (in order) to array
-                    newNikkeIds.push(nikkeName);
+                    newNikkeIds.push(nikkeId);
 
                     if (newBenchIds.length > 0) {
-                        let nikkeIndex = newBenchIds.indexOf(nikkeName);
+                        let nikkeIndex = newBenchIds.indexOf(nikkeId);
                         if (nikkeIndex !== -1)
                             newBenchIds.splice(nikkeIndex, 1);
                     }
 
                     // Remove from Roster, if it exists
-                    let nikkeIndex = newRosterIds.indexOf(nikkeName);
+                    let nikkeIndex = newRosterIds.indexOf(nikkeId);
                     if (nikkeIndex !== -1)
                         newRosterIds.splice(nikkeIndex, 1);
                 }
@@ -730,6 +730,8 @@ function NikkeTeamBuilder(props) {
                 newSectionOrder.push('squad-' + squadIndex);
                 squadIndex += 1;
             }
+
+            // After looping through Squads, update Squad Count and Nikke Lists
             setSquadCnt(newSectionOrder.length)
 
             setNikkeLists({
@@ -770,7 +772,7 @@ function NikkeTeamBuilder(props) {
         }
     }
     // Initialize nikkeList through dynamic URL upon page startup.
-    let listById = readSquadId(urlId);
+    let listById = null; //readSquadId(urlId);
 
     // Collection of Nikkes to be used and altered.
     const [nikkeLists, setNikkeLists] = useState(listById !== null ? listById : initNikkeLists);
@@ -805,7 +807,7 @@ function NikkeTeamBuilder(props) {
             let maxSquad = Math.min(squad.nikkeIds.length, 5)
             for (let j = 0; j < maxSquad; j++) {
                 // Fetch Nikke Id
-                let nikkeId = getNikkeByName(squad.nikkeIds[j]).Id;
+                let nikkeId = getNikkeById(squad.nikkeIds[j]).Id;
 
                 // Append Nikke ID. Seperate Nikkes by '-'.
                 if (j !== 0)

@@ -21,7 +21,7 @@ function NikkeSquad(props) {
         return props.nikkes.map((item, index) => {
             return (
                 <NikkeUnit
-                    key={'unit-' + item.Name}
+                    key={'unit-' + item.id + '-' + index}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                     unit={item}

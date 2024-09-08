@@ -217,9 +217,9 @@ function NikkeSettings(props) {
                         <KeyboardReturnIcon />
                     </Button>
                 </Tooltip>
-                {/* </div> */}
                 {/* Debug Mode */}
-                {/* <FormControlLabel
+                <FormControlLabel
+                    className='grid-column-full justify-self-center'
                     control={<Switch
                         checked={props.settings.debugMode}
                         onChange={() => props.setSettings({
@@ -230,7 +230,7 @@ function NikkeSettings(props) {
                         color='warning'
                     />}
                     label='Debug Mode'
-                /> */}
+                />
 
             </DialogContent>
         </Dialog >
