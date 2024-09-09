@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.20b237ba.css",
-    "main.js": "/static/js/main.19236dc1.js",
+    "main.js": "/static/js/main.5737f3df.js",
     "static/js/787.2083b764.chunk.js": "/static/js/787.2083b764.chunk.js",
     "static/media/Neve.png": "/static/media/Neve.b2afeae60536fdc76029.png",
     "static/media/Rupee Winter Shopper.png": "/static/media/Rupee Winter Shopper.150a9a1f4a5a49e68a19.png",
@@ -149,11 +149,11 @@
     "static/media/NikkeWeaponSG.png": "/static/media/NikkeWeaponSG.e96d23e8ae7edbde33e5.png",
     "index.html": "/index.html",
     "main.20b237ba.css.map": "/static/css/main.20b237ba.css.map",
-    "main.19236dc1.js.map": "/static/js/main.19236dc1.js.map",
+    "main.5737f3df.js.map": "/static/js/main.5737f3df.js.map",
     "787.2083b764.chunk.js.map": "/static/js/787.2083b764.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.20b237ba.css",
-    "static/js/main.19236dc1.js"
+    "static/js/main.5737f3df.js"
   ]
 }
