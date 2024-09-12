@@ -31,6 +31,8 @@ import DeleteForever from '@mui/icons-material/DeleteForever';
 import DriveFileRenameOutlineSharpIcon from '@mui/icons-material/DriveFileRenameOutlineSharp';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import { Drawer } from '@mui/material';
 
 const NikkeAvatars = { ...getNikkeAvatars() };
 
@@ -54,19 +56,32 @@ function NikkeTeamBuilder(props) {
      * Could be separated into their own variables/states, but this way it's easier to manage them all.
      */
     const [settings, setSettings] = useState({
-        editable: false,        // Can edit Squads
-        openHelp: false,        // Help dialog is open
+        editable: false,        // Can edit Squads.
+        openSideRoster: false,  // Side menu (Filter+Rostera) is open.
+        openHelp: false,        // Help dialog is open.
 
-        openSettings: false,    // Settings dialog is open
-        enableRatings: true,    // Ratings is enabled
+        openSettings: false,    // Settings dialog is open.
+        targetCode: 'None',     // The selected Code weakness (for reviews).
+        enableReviews: true,    // Reviews is enabled.
+        allowDuplicates: false, // Duplicate Nikkes are allowed.
         squadsPerRow: (window.innerWidth <= 1290) ? // Squads displayed per row. Initialized value depends on window size.
             1 : (window.innerWidth > 1920) ?
                 3
                 : 2,
-        allowDuplicates: false, // Duplicate Nikkes are allowed
-        targetCode: 'None',     // The selected Code weakness (for ratings)
-        debugMode: false        // Debug mode is enabled (for console printing data)
+        compactMode: false,  // Whether filter and roster are side menus (true) or at the bottom of the page (false).
+        debugMode: false        // Debug mode is enabled (for console printing data).
     });
+    /**
+     * Sets the selected setting to the given value.
+     * @param {string} setting Setting option being updated.
+     * @param {value} value Value to update the setting option.
+     */
+    const updateSettings = (setting, value) => {
+        setSettings({
+            ...settings,
+            [setting]: value
+        })
+    }
 
     /**
      * Gets ALL Nikke IDs from NikkeData.
@@ -84,7 +99,7 @@ function NikkeTeamBuilder(props) {
      * sections: Each section and their contained Nikkes.
      *  -Squads: Sections for Nikke game-deployment and rating.
      *      title: Name displayed for Squads.
-     *      minimized: If true, the Squad's Nikkes and ratings are hidden.
+     *      minimized: If true, the Squad's Nikkes and reviews are hidden.
      *  -Bench and Roster: Sections for Nikke management. Bench is for 'favorites' and Roster is for all.
      * sectionOrder: An ordered Array of squads.
      */
@@ -652,12 +667,10 @@ function NikkeTeamBuilder(props) {
     /**
      * Converts the dynamic URL into a list information. Called when page is loaded and used when lists are initialized.
      * SquadId format functions as follows
-     * - Squad IDs are prefixed with 's' and identified by a number.
-     * - Squad ID and the list of Nikke IDs are separated by '='.
      * - The Nikke numerical IDs are seperated by '-'.
      * - Squads are separated by '&'.
-     * - Example: s0=97-111-20&s1=23-121-114-112-21&s2=27-83
-     * - Example: s0=83-53-98-93-68&s1=38-85-86-97&s2=20-99-100-102&s3=118
+     * - Example: 97-111-20&23-121-114-112-21&27-83
+     * - Example: 83-53-98-93-68&38-85-86-97&20-99-100-102&118
      * 
      * Returns null if the dynamic URL is invalid.
      * @returns A new nikkeLists based on the dynamic URL, if possible. If dynamic URL is invalid, returns null.
@@ -665,8 +678,8 @@ function NikkeTeamBuilder(props) {
     const readSquadId = (squadId) => {
         // Try/catch block in case split fails or something unexpected occurs.
         try {
-            // Minimum length of a valid Squad ID would be 4 (e.g. s0=0)
-            if (!squadId || squadId.length < 4)
+            // Minimum length of a valid Squad ID would be 1 (e.g. 0)
+            if (!squadId || squadId.length < 1)
                 return null;
 
             // Separate url id by '&'.
@@ -686,7 +699,7 @@ function NikkeTeamBuilder(props) {
             // Loop through Squad strings
             for (let i = 0; i < squadMax; i++) {
                 // Remove squad indentifier and then split up Nikke IDs.
-                let nikkeList = squads[i].split('=')[1].split('-');
+                let nikkeList = squads[i].split('-');
                 // If a nikkeList is empty, skip squad.
                 if (nikkeList.length === 0)
                     continue;
@@ -798,10 +811,9 @@ function NikkeTeamBuilder(props) {
             if (squad.nikkeIds.length === 0)
                 continue;
 
-            // Append Squad identifier (e.g. 's0='). Separate Squads by '&'.
+            // Separate Squads by '&'.
             if (i !== 0)
                 squadId += '&';
-            squadId += 's' + squadIndex + '=';
 
             // Force-limit squads to 5 to limit parsing issues. (Arbitrary)
             let maxSquad = Math.min(squad.nikkeIds.length, 5)
@@ -822,6 +834,9 @@ function NikkeTeamBuilder(props) {
         return squadId;
     }
 
+    /**
+     * Converts the current Squads into a shareable code and copies the string onto the user's system's clipboard.
+     */
     const copySquadIdToClipboard = () => {
         // Add this when dynamic url is fixed: 'https://ewjosh.github.io//#/apps/nikkeTeamBuilder/'
         navigator.clipboard.writeText(getSquadId());
@@ -833,8 +848,65 @@ function NikkeTeamBuilder(props) {
         handleFilter(filter)
     }, [nikkeLists.sections['roster'].nikkeIds])
 
+    /**
+     * Function to get the NikkeFilter custom React component.
+     * Turned into a function to allow access to be built in multiple areas (e.g. main page and sidebar menu)
+     * without having to maintain two separate instances.
+     * @param {object} additionalProps Props to be added to the component in a JSON format. 
+     * @returns An instance of a custom React component NikkeFilter.
+     */
+    const getFilter = (additionalProps) => {
+        if (visibility.filter)
+            return <NikkeFilter
+                filter={filter}
+                onFilter={handleFilter}
+                icons={Icons}
+                windowSmall={props.windowSmall}
+                windowWide={props.windowWide}
+                tags={Tags}
+                visibility={visibility}
+                setVisibility={setVisibility}
+                targetCode={settings.targetCode}
+                debugMode={settings.debugMode}
+                {...additionalProps}
+            />;
+    }
+
+    /**
+     * Function to get the NikkeList (roster version) custom React component.
+     * Turned into a function to allow access to be built in multiple areas (e.g. main page and sidebar menu)
+     * without having to maintain two separate instances.
+     * @returns An instance of a custom React component NikkeList (roster version.)
+     */
+    const getRoster = () => {
+        return <NikkeList
+            key={'roster'}
+            section={nikkeLists.sections['roster']}
+            nikkes={collectNikkes(filteredNikkes)}
+            icons={Icons}
+            avatars={NikkeAvatars}
+            windowSmall={props.windowSmall}
+            visibility={visibility}
+            onMoveNikke={handleMoveNikke}
+            targetCode={settings.targetCode}
+            allowDuplicates={settings.allowDuplicates}
+            nikkeData={NikkeData}
+        />
+    }
+
     return (
         <div className="page" style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
+            {/* Side Menu Button */}
+            {
+                settings.compactMode ?
+                    <Button
+                        id='tb-side-roster-btn'
+                        onClick={() => updateSettings('openSideRoster', true)}
+                    >
+                        <PersonSearchIcon />
+                    </Button>
+                    : null
+            }
             {/* Page Title: prints states if debugMode is enabled */}
             <h1
                 onClick={() => settings.debugMode ? console.log(nikkeLists, settings)
@@ -853,10 +925,7 @@ function NikkeTeamBuilder(props) {
                     arrow
                 >
                     <IconButton
-                        onClick={() => setSettings({
-                            ...settings,
-                            openHelp: true
-                        })}
+                        onClick={() => updateSettings('openHelp', true)}
                         sx={{
                             backgroundColor: '#1976d2',
                             '&:hover': {
@@ -870,16 +939,13 @@ function NikkeTeamBuilder(props) {
                 </Tooltip>
                 <NikkeHelp
                     open={settings.openHelp}
-                    onClose={() => setSettings({
-                        ...settings,
-                        openHelp: false
-                    })}
+                    onClose={() => updateSettings('openHelp', false)}
                 />
                 {/* Code Weakness */}
                 <Select
                     id='quick-code-select'
                     value={settings.targetCode}
-                    onChange={(event) => setSettings({
+                    onChange={(event) => updateSettings({
                         ...settings,
                         targetCode: event.target.value
                     })}
@@ -929,10 +995,7 @@ function NikkeTeamBuilder(props) {
                 >
                     <Button
                         id='edit-btn'
-                        onClick={() => setSettings({
-                            ...settings,
-                            editable: !settings.editable
-                        })}
+                        onClick={() => updateSettings('editable', !settings.editable)}
                         startIcon={settings.editable ? <DriveFileRenameOutlineSharpIcon /> : <Edit />}
                         color='inherit'
                         sx={{
@@ -963,22 +1026,16 @@ function NikkeTeamBuilder(props) {
                                 filter: 'saturate(60%)'
                             }
                         }}
-                        onClick={() => setSettings({
-                            ...settings,
-                            openSettings: true
-                        })}
+                        onClick={() => updateSettings('openSettings', true)}
                     >
                         <Settings />
                     </IconButton>
                 </Tooltip>
                 {/* Settings Dialog */}
                 <NikkeSettings
-                    onClose={() => setSettings({
-                        ...settings,
-                        openSettings: false
-                    })}
+                    onClose={() => updateSettings('openSettings', false)}
                     settings={settings}
-                    setSettings={setSettings}
+                    updateSettings={updateSettings}
                     windowSmall={props.windowSmall}
                     visibility={visibility}
                     setVisibility={setVisibility}
@@ -1060,7 +1117,7 @@ function NikkeTeamBuilder(props) {
                                     editable={settings.editable}
                                     onSquadTitleChange={handleSquadTitleChange}
                                     targetCode={settings.targetCode}
-                                    enableRatings={settings.enableRatings}
+                                    enableReviews={settings.enableReviews}
                                     onSetSquadMinimized={handleSetSquadMinimized}
                                     theme={props.theme}
                                 />
@@ -1113,38 +1170,26 @@ function NikkeTeamBuilder(props) {
                     targetCode={settings.targetCode}
                 />
 
-                {/* Filter */}
-                {
-                    visibility.filter ?
-                        <NikkeFilter
-                            filter={filter}
-                            onFilter={handleFilter}
-                            icons={Icons}
-                            windowSmall={props.windowSmall}
-                            windowWide={props.windowWide}
-                            tags={Tags}
-                            visibility={visibility}
-                            setVisibility={setVisibility}
-                            targetCode={settings.targetCode}
-                            debugMode={settings.debugMode}
-                        />
-                        : null
-                }
 
-                {/* Roster Section */}
-                <NikkeList
-                    key={'roster'}
-                    section={nikkeLists.sections['roster']}
-                    nikkes={collectNikkes(filteredNikkes)}
-                    icons={Icons}
-                    avatars={NikkeAvatars}
-                    windowSmall={props.windowSmall}
-                    visibility={visibility}
-                    onMoveNikke={handleMoveNikke}
-                    targetCode={settings.targetCode}
-                    allowDuplicates={settings.allowDuplicates}
-                    nikkeData={NikkeData}
-                />
+                {/* Filter Section, Main */}
+                {settings.compactMode ? null : getFilter()}
+
+                {/* Roster Section, Main */}
+                {settings.compactMode ? null : getRoster()}
+
+                <Drawer
+                    id='tb-side-roster-menu'
+                    open={settings.openSideRoster}
+                    onClose={() => updateSettings('openSideRoster', false)}
+                    PaperProps={{
+                        sx: {
+                            maxWidth: props.windowSmall ? '90vw' : '50vw'
+                        }
+                    }}
+                >
+                    {getFilter({ mainPage: true })}
+                    {getRoster()}
+                </Drawer>
 
             </DragDropContext >
         </div >

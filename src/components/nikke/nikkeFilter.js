@@ -193,7 +193,7 @@ function NikkeFilter(props) {
             className='flex-column'
             style={{
                 maxWidth: props.windowSmall ? '100%' : '80vw',
-                minWidth: '80vw'
+                minWidth: props.mainPage ? '100%' : '80vw'
             }}
         >
             {/* Header */}
@@ -331,7 +331,11 @@ function NikkeFilter(props) {
                                                                 backgroundColor: '#70809069',
                                                                 fontWeight: selectState ? 'bold' : 'normal',
                                                                 textDecoration: selectState ? 'inherit' : 'line-through',
-                                                                padding: selectState ? '10px' : '9px',
+
+                                                                padding: selectState ?
+                                                                    (props.windowSmall ? '1px 5px' : '10px')
+                                                                    : (props.windowSmall ? '1px 4px' : '9px'),
+
                                                                 outline: tag === props.targetCode ? '3px solid #ffd500' : 0,
                                                                 zIndex: tag === props.targetCode ? 1 : 0
                                                             }}
@@ -365,6 +369,7 @@ function NikkeFilter(props) {
                             label='Nikke Name'
                             value={props.filter.Name}
                             onChange={(event) => handleSearchedNameChange(event.target.value)}
+                            size={props.windowSmall ? 'small' : 'medium'}
                             sx={{
                                 minWidth: props.windowSmall ? '100%' : '35%'
                             }}
@@ -378,7 +383,9 @@ function NikkeFilter(props) {
                                         </IconButton>
                                     </InputAdornment>
                                 ),
-                                style: { paddingRight: 0 }
+                                style: {
+                                    paddingRight: 0
+                                }
                             }}
                         />
 
@@ -394,9 +401,13 @@ function NikkeFilter(props) {
                             InputProps={{
                             }}
                         >
-                            <InputLabel id='filter-misc-input-label'>Tags (WIP)</InputLabel>
+                            <InputLabel
+                                id='filter-misc-input-label'
+                                size={props.windowSmall ? 'small' : 'normal'}
+                            >Tags (WIP)</InputLabel>
                             <Select
                                 labelId='filter-misc-input-label'
+                                size={props.windowSmall ? 'small' : 'medium'}
                             >
                                 <MenuItem disabled>Coming soon</MenuItem>
                             </Select>

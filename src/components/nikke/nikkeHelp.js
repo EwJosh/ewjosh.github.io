@@ -47,7 +47,7 @@ function NikkeHelp(props) {
     // State used for the opening of certain sections.
     const [open, setOpen] = useState({
         'squads': true,
-        'rating': false,
+        'reviews': false,
         'broster': true,
         'filter': true,
         'settings': true
@@ -148,25 +148,25 @@ function NikkeHelp(props) {
                             For mobile, it's recommended to stay at 1 Squad per row.
                         </li>
                         <li>
-                            Has a 'rating system'. I don't plan on rating things like damage calcs and breakpoints.
+                            Has a 'review system'. I don't plan on reviewing things like damage calcs and breakpoints.
                             They're just mainly to check if you have a stable team. Can be disabled via Settings
                         </li>
-                        <li>If you hover over the rating (or hold press on mobile), you'll see a tooltip about the rating.</li>
-                        {/* Rating sub-section */}
+                        <li>If you hover over the review note (or hold press on mobile), you'll see a tooltip about the review.</li>
+                        {/* Review sub-section */}
                         <DropdownButton
-                            className={open.rating ?
+                            className={open.reviews ?
                                 'dropdown-btn dropdown-btn-nested dropdown-btn-open'
                                 : 'dropdown-btn dropdown-btn-nested dropdown-btn-closed'
                             }
-                            onClick={() => handleClick('rating')}
+                            onClick={() => handleClick('reviews')}
                             sx={{ borderWidth: '2px', marginRight: '1rem' }}
                         >
-                            {open.rating ? <ArrowDropDownIcon fontSize='large' /> : <ArrowDropUpIcon fontSize='large' />}
-                            <span> Rating</span>
+                            {open.reviews ? <ArrowDropDownIcon fontSize='large' /> : <ArrowDropUpIcon fontSize='large' />}
+                            <span> Review</span>
                         </DropdownButton>
-                        <Collapse in={open.rating} className={open.rating ? 'dropdown-body dropdown-body-nested' : ''}>
+                        <Collapse in={open.reviews} className={open.reviews ? 'dropdown-body dropdown-body-nested' : ''}>
                             <li>
-                                Rating system covers...
+                                Review system covers...
                             </li>
                             <ul >
                                 <li>
@@ -186,7 +186,7 @@ function NikkeHelp(props) {
                                 </li>
                             </ul>
                             <li>
-                                WIP Rating features...
+                                WIP Review features...
                             </li>
                             <ul>
                                 <li>
@@ -320,9 +320,23 @@ function NikkeHelp(props) {
                             Code Weakness can be selected.
                             <ul>
                                 <li>Code-effective Nikkes will be highlighted.</li>
-                                <li>When selected, Squad Rating will check if your squad has at least one unit with the selected code.</li>
+                                <li>When selected, Squad Review will check if your squad has at least one unit with the selected code.</li>
                                 <li>Important for getting that 10% bonus damage or when Raid bosses have code immunity.</li>
                             </ul>
+                        </li>
+                        <li>Reviews can be fully disabled.</li>
+                        <li>
+                            Duplicate Nikkes can be enabled.&nbsp;&nbsp;&nbsp;&nbsp;(Note: Re-disabling
+                            duplicates doesn't delete duplicates in Squads and Bench)
+                        </li>
+                        <li>
+                            'Compact Mode' can be enabled which moves the Filter and Roster into a menu that can be opened via a side button.
+                            This should help reduce side-scrolling.
+                        </li>
+                        <li>The Filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(But will still be active, however)</li>
+                        <li>
+                            For a nice screenshot or to reduce noise, you can also hide
+                            the <Remove fontSize='inherit' className='menu-icon-text' /> Remove button from Nikkes in Squads.
                         </li>
                         <li>
                             Your Squad can be converted into or be created by a shareable url/code.
@@ -344,12 +358,6 @@ function NikkeHelp(props) {
                                 <li>Up to 10 Squads are supported, anything beyond or empty will be truncated.</li>
                             </ul>
                         </li>
-                        <li>Ratings can be fully disabled.</li>
-                        <li>
-                            Duplicate Nikkes can be enabled.&nbsp;&nbsp;&nbsp;&nbsp;(Re-disabling
-                            duplicates doesn't delete duplicates in Squads and Bench)
-                        </li>
-                        <li>The Filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(But will still be active, however)</li>
                     </ul>
                 </Collapse>
                 <hr />
@@ -359,7 +367,7 @@ function NikkeHelp(props) {
                 <ul>
                     <li>
                         Miscellaneous Tag System.
-                        Used for filtering and rating in regards to Nikke attributes
+                        Used for filtering and reviews in regards to Nikke attributes
                         such as healing, shielding, pierce, true damage, cleansing, etc.
                     </li>
                     <li>
@@ -370,6 +378,9 @@ function NikkeHelp(props) {
                     </li>
                     <li>
                         Allow squad codes to work with dynamic URLs.
+                    </li>
+                    <li>
+                        Adjust component positions and Compact Mode features to be more intuitive.
                     </li>
                 </ul>
                 <hr />

@@ -23,11 +23,13 @@ import { styled, Tooltip } from '@mui/material';
 
 const StyledSelect = styled(Select)({
     minWidth: '3.75rem',
+    maxHeight: '2.5rem',
     backgroundColor: '#ffffff0f'
 })
 
 const StyledSwitch = styled(Switch)({
     minWidth: '3.75rem',
+    maxHeight: '2.5rem',
     borderRadius: '0.5rem',
     border: '1px solid #767676',
     backgroundColor: '#ffffff0f'
@@ -68,14 +70,17 @@ function NikkeSettings(props) {
                     padding: props.windowSmall ? '2rem 0' : '2rem'
                 }}
             >
+
+                {/* === General Category === */}
+                <div className='grid-column-full justify-self-left'>
+                    <h3 >General</h3>
+                    <hr />
+                </div>
                 {/* Code Weakness */}
                 <StyledSelect
                     className='grid-column-span-2 justify-self-end'
                     value={props.settings.targetCode}
-                    onChange={(event) => props.setSettings({
-                        ...props.settings,
-                        targetCode: event.target.value
-                    })}
+                    onChange={(event) => props.updateSettings('targetCode', event.target.value)}
                     SelectDisplayProps={{
                         style: {
                             display: 'flex',
@@ -105,14 +110,35 @@ function NikkeSettings(props) {
                     }
                 </StyledSelect>
                 <span className='grid-column-span-4 justify-self-start'>Code Weakness</span>
+                {/* Enable Reviews */}
+                <StyledSwitch
+                    className='grid-column-span-2 justify-self-end'
+                    checked={props.settings.enableReviews}
+                    onChange={() => props.updateSettings('enableReviews', !props.settings.enableReviews)}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                    color='warning'
+                />
+                <span className='grid-column-span-4 justify-self-start'>Enable Reviews</span>
+                {/* Allow Duplicates */}
+                <StyledSwitch
+                    className='grid-column-span-2 justify-self-end'
+                    checked={props.settings.allowDuplicates}
+                    onChange={() => props.updateSettings('allowDuplicates', !props.settings.allowDuplicates)}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                    color='warning'
+                />
+                <span className='grid-column-span-4 justify-self-start'> Allow Duplicate Nikkes </span>
+
+                {/* === Visibility Category === */}
+                <div className='grid-column-full justify-self-left'>
+                    <h3 >Visibility</h3>
+                    <hr />
+                </div>
                 {/* Squads Displayed Per Row */}
                 <StyledSelect
                     className='grid-column-span-2 justify-self-end'
                     value={props.settings.squadsPerRow}
-                    onChange={(event) => props.setSettings({
-                        ...props.settings,
-                        squadsPerRow: event.target.value
-                    })}
+                    onChange={(event) => props.updateSettings('squadsPerRow', event.target.value)}
                 >
                     <MenuItem value={1}>
                         1
@@ -129,30 +155,15 @@ function NikkeSettings(props) {
                 >
                     Squads Displayed per Row
                 </span>
-                {/* Enable Ratings */}
+                {/* Compact Mode */}
                 <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
-                    checked={props.settings.enableRatings}
-                    onChange={(event) => props.setSettings({
-                        ...props.settings,
-                        enableRatings: !props.settings.enableRatings
-                    })}
+                    checked={props.settings.compactMode}
+                    onChange={() => props.updateSettings('compactMode', !props.settings.compactMode)}
                     inputProps={{ 'aria-label': 'controlled' }}
                     color='warning'
                 />
-                <span className='grid-column-span-4 justify-self-start'>Enable Ratings</span>
-                {/* Allow Duplicates */}
-                <StyledSwitch
-                    className='grid-column-span-2 justify-self-end'
-                    checked={props.settings.allowDuplicates}
-                    onChange={(event) => props.setSettings({
-                        ...props.settings,
-                        allowDuplicates: !props.settings.allowDuplicates
-                    })}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    color='warning'
-                />
-                <span className='grid-column-span-4 justify-self-start'> Allow Duplicate Nikkes </span>
+                <span className='grid-column-span-4 justify-self-start'> Compact Mode </span>
                 {/* Hide Filter */}
                 <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
@@ -177,6 +188,12 @@ function NikkeSettings(props) {
                     color='warning'
                 />
                 <span className='grid-column-span-4 justify-self-start'>Hide Quick-move in Squads</span>
+
+                {/* === Visibility Category === */}
+                <div className='grid-column-full justify-self-left'>
+                    <h3 >Share</h3>
+                    <hr />
+                </div>
                 {/* Export/Import Section s0=83-53-98-93-68&s1=38-85-86-97&s2=20-99-100-102&s3=118 */}
                 <Tooltip title='Copy Team Code' placement='top' arrow>
                     <Button
@@ -222,10 +239,7 @@ function NikkeSettings(props) {
                     className='grid-column-full justify-self-center'
                     control={<Switch
                         checked={props.settings.debugMode}
-                        onChange={() => props.setSettings({
-                            ...props.settings,
-                            debugMode: !props.debugMode
-                        })}
+                        onChange={() => props.updateSettings('debugMode', !props.debugMode)}
                         inputProps={{ 'aria-label': 'controlled' }}
                         color='warning'
                     />}

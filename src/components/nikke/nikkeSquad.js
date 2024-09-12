@@ -1,8 +1,8 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import NikkeUnit from './nikkeUnit.js';
-// Import Review responses for rating
-import Reviews from '../../assets/data/NikkeSquadReviews.json';
+// Import Review responses for review
+import ReviewDescriptions from '../../assets/data/NikkeSquadReviews.json';
 
 // Import MUI components
 import Button from '@mui/material/Button';
@@ -44,19 +44,19 @@ function NikkeSquad(props) {
         });
     }
 
-    // State for current ratings.
-    const [rating, setRating] = useState({});
+    // State for current reviews.
+    const [reviews, setReviews] = useState({});
 
-    // Updates Squad ratings when its Nikke list is updated.
+    // Updates Squad reviews when its Nikke list is updated.
     useLayoutEffect(() => {
-        // If empty, set to ratings to empty
+        // If empty, set to reviews to empty
         if (props.nikkes.length === 0) {
-            setRating({})
+            setReviews({})
             return;
         }
 
-        // Begin ratings.
-        rateSquad();
+        // Begin reviews.
+        reviewSquad();
     }, [props.nikkes])
 
     /**
@@ -73,15 +73,15 @@ function NikkeSquad(props) {
      * #### Missing healer/shielder
      * #### Missing BCD reduction
      */
-    const rateSquad = () => {
-        let newRating = { ...rating };
+    const reviewSquad = () => {
+        let newReview = { ...reviews };
 
-        // Pull a return from each check instead of rewriting rating inside each check.
+        // Pull a return from each check instead of rewriting reviews inside each check.
         // Doing the latter results in concurrency errors.
-        newRating = checkSize(newRating);
-        newRating = checkBurst(newRating);
-        newRating = checkCode(newRating);
-        setRating({ ...newRating });
+        newReview = checkSize(newReview);
+        newReview = checkBurst(newReview);
+        newReview = checkCode(newReview);
+        setReviews({ ...newReview });
     }
 
     /**
@@ -89,24 +89,24 @@ function NikkeSquad(props) {
      * 
      * If the Squad is less than 5, tag as a warning.
      * If the Squad is greater than 5, tag as an error.
-     * @param {Dictionary} newRating Dictionary containing current rating tags for the judged categories.
-     * @returns the updated newRating to be reused or set.
+     * @param {Dictionary} newReview Dictionary containing current reviews tags for the judged categories.
+     * @returns the updated newReview to be reused or set.
      */
-    const checkSize = (newRating) => {
+    const checkSize = (newReview) => {
         if (props.nikkes.length < 5) {
             return {
-                ...newRating,
+                ...newReview,
                 'Size': 'warning'
             };
         }
         else if (props.nikkes.length > 5)
             return {
-                ...newRating,
+                ...newReview,
                 'Size': 'error'
             };
         else
             return {
-                ...newRating,
+                ...newReview,
                 'Size': null
             };
     }
@@ -119,10 +119,10 @@ function NikkeSquad(props) {
      * 
      * Covers the simple cases of Bursts 1, 2, and 3 and cooldowns of 20sec, 40sec, 60sec.
      * Covers the edge cases of Burst 1 Re-enter (e.g. Rupee: Winter and Tia), Red Hood's Burst V, and Noir & Blanc.
-     * @param {Dictionary} newRating Dictionary containing current rating tags for the judged categories.
-     * @returns the updated newRating to be reused or set.
+     * @param {Dictionary} newReview Dictionary containing current reviews tags for the judged categories.
+     * @returns the updated newReview to be reused or set.
      */
-    const checkBurst = (newRating) => {
+    const checkBurst = (newReview) => {
         // Stages that are covered by the squad
         let burstStages = [];
         // Burst Stage Interval: The interval (in seconds) between burst activations per stage.
@@ -149,8 +149,8 @@ function NikkeSquad(props) {
                 squad777 = true;
             }
 
-            // Burst 1M affects neither reaching full burst nor BSI, so can skip
-            if (burst === '1M') {
+            // Burst 1R affects neither reaching full burst nor BSI, so can skip
+            if (burst === '1R') {
                 continue;
             }
             // Burst V is technically always possible (only applicable to Red Hood so far)
@@ -177,21 +177,21 @@ function NikkeSquad(props) {
         // If Full Burst is impossible, error
         if (burstStages.length !== 3) {
             return {
-                ...newRating,
+                ...newReview,
                 'Burst': 'error'
             };
         }
         // If Full Burst rotation is possible but poor, warn
         else if (minBSI['1'] !== 20 || minBSI['2'] !== 20 || minBSI['3'] !== 20) {
             return {
-                ...newRating,
+                ...newReview,
                 'Burst': 'warning'
             };
         }
         // Otherwise if Full Burst rotation is possible and stable, pass
         else {
             return {
-                ...newRating,
+                ...newReview,
                 'Burst': null
             };
         }
@@ -223,14 +223,14 @@ function NikkeSquad(props) {
      * 
      * If the target Code is set AND the Squad lacks a matching Nikke, tag as an error.
      * 
-     * @param {Dictionary} newRating Dictionary containing current rating tags for the judged categories.
-     * @returns the updated newRating to be reused or set.
+     * @param {Dictionary} newReview Dictionary containing current reviews tags for the judged categories.
+     * @returns the updated newReview to be reused or set.
      */
-    const checkCode = (newRating) => {
+    const checkCode = (newReview) => {
         // If no code is set, set Code to null and skip this check
         if (props.targetCode === 'None')
             return {
-                ...newRating,
+                ...newReview,
                 Code: null
             };
 
@@ -238,9 +238,9 @@ function NikkeSquad(props) {
         for (let i = 0; i < props.nikkes.length; i++) {
             // Compare Nikke code to target code
             if (props.nikkes[i].Code === props.targetCode)
-                // If found, nullify rating for Code
+                // If found, nullify reviews for Code
                 return {
-                    ...newRating,
+                    ...newReview,
                     Code: null
                 }
 
@@ -248,36 +248,36 @@ function NikkeSquad(props) {
 
         // If never found, rate Code as error
         return {
-            ...newRating,
+            ...newReview,
             Code: 'error'
         };
     }
 
     /**
-     * Builds an array of React components to display the Squad ratings.
+     * Builds an array of React components to display the Squad reviews.
      * Each component consists of a Tooltip, an icon, and its category. (Which are colored depending on the case.)
      * Currently supported tags are null, 'warning', and 'error'.
-     * @returns An array of React components that echo the Squad ratings.
+     * @returns An array of React components that echo the Squad reviews.
      */
-    const buildRatingNotes = () => {
-        return Reviews.categories.map(category => {
-            let ratingCase = rating[category];
+    const buildReviewNotes = () => {
+        return ReviewDescriptions.categories.map(category => {
+            let reviewCase = reviews[category];
             // Skip category if no case is found.
-            if (ratingCase == null) {
+            if (reviewCase == null) {
                 return null;
             }
 
             return <Tooltip
-                title={Reviews[category][ratingCase]}
+                title={ReviewDescriptions[category][reviewCase]}
                 key={category}
             >
                 {
                     <div
-                        className={'squad-rating-tip rating-' + ratingCase}
+                        className={'squad-review-tip review-' + reviewCase}
                         style={{ fontSize: props.windowSmall ? 'medium' : 'x-large' }}
                     >
-                        {(ratingCase === 'error') ? <Error /> : null}
-                        {(ratingCase === 'warning') ? <ReportProblemOutlined /> : null}
+                        {(reviewCase === 'error') ? <Error /> : null}
+                        {(reviewCase === 'warning') ? <ReportProblemOutlined /> : null}
                         <span>{category}</span>
                     </div>
                 }
@@ -401,7 +401,7 @@ function NikkeSquad(props) {
                             )}
                         </Droppable>
                         <div className='nikke-squad-info flex-row'>
-                            {props.enableRatings ? buildRatingNotes() : null}
+                            {props.enableReviews ? buildReviewNotes() : null}
                         </div>
                     </div>
             }
