@@ -574,7 +574,7 @@
     "Name": "Mari",
     "Title": "Mari",
     "Rarity": "SSR",
-    "Burst": "3",
+    "Burst": "2",
     "Burst Cooldown": "20",
     "Code": "Electric",
     "Weapon": "SR",
@@ -733,7 +733,7 @@
     "Rarity": "SSR",
     "Burst": "2",
     "Burst Cooldown": "40",
-    "Code": "Water",
+    "Code": "Wind",
     "Weapon": "RL",
     "Class": "Defender",
     "Manufacturer": "Pilgrim"
@@ -957,7 +957,7 @@
     "Rarity": "SSR",
     "Burst": "1",
     "Burst Cooldown": "40",
-    "Code": "Iron",
+    "Code": "Wind",
     "Weapon": "SR",
     "Class": "Supporter",
     "Manufacturer": "Tetra"
@@ -992,7 +992,7 @@
     "Rarity": "SSR",
     "Burst": "3",
     "Burst Cooldown": "40",
-    "Code": "Water",
+    "Code": "Wind",
     "Weapon": "RL",
     "Class": "Attacker",
     "Manufacturer": "Pilgrim"
