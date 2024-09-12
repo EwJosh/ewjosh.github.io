@@ -69,7 +69,7 @@ function NikkeFilter(props) {
 
     /**
      * Toggles visibility of a tag category to influence the rendering of icons on NikkeUnits.
-     * If the categories [Class, Code, Manufacturer, Weapon] are invisible, visibility.categoryIcons will be false
+     * If the categories [Class, Code, Company, Weapon] are invisible, visibility.categoryIcons will be false
      * to skip the rendering of the icon div in NikkeUnits.
      * @param {string} category Filterable tag category.
      */

@@ -8,7 +8,7 @@
     "Code": "Fire",
     "Weapon": "AR",
     "Class": "Defender",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "97",
@@ -19,7 +19,7 @@
     "Code": "Fire",
     "Weapon": "RL",
     "Class": "Attacker",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "111",
@@ -30,7 +30,7 @@
     "Code": "Wind",
     "Weapon": "AR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "19",
@@ -41,7 +41,7 @@
     "Code": "Wind",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "20",
@@ -52,7 +52,7 @@
     "Code": "Fire",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "121",
@@ -64,7 +64,7 @@
     "Code": "Water",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "93",
@@ -76,19 +76,19 @@
     "Code": "Electric",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "66",
     "Name": "Anne: Miracle Fairy",
-    "Title": "Anne: MF",
+    "Title": "XAnne",
     "Rarity": "SSR",
     "Burst": "2",
     "Burst Cooldown": "60",
     "Code": "Wind",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "21",
@@ -99,7 +99,7 @@
     "Code": "Water",
     "Weapon": "MG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "129",
@@ -111,7 +111,7 @@
     "Code": "Fire",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "117",
@@ -122,7 +122,7 @@
     "Code": "Fire",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "79",
@@ -133,7 +133,7 @@
     "Code": "Electric",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "85",
@@ -144,7 +144,7 @@
     "Code": "Wind",
     "Weapon": "AR",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "22",
@@ -155,7 +155,7 @@
     "Code": "Water",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "23",
@@ -166,7 +166,7 @@
     "Code": "Iron",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "123",
@@ -177,7 +177,7 @@
     "Code": "Electric",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "74",
@@ -188,7 +188,7 @@
     "Code": "Fire",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "24",
@@ -199,7 +199,7 @@
     "Code": "Fire",
     "Weapon": "SMG",
     "Class": "Defender",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "118",
@@ -210,7 +210,7 @@
     "Code": "Iron",
     "Weapon": "MG",
     "Class": "Defender",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "82",
@@ -221,7 +221,7 @@
     "Code": "Wind",
     "Weapon": "SMG",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "113",
@@ -233,7 +233,7 @@
     "Code": "Fire",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "25",
@@ -244,7 +244,7 @@
     "Code": "Wind",
     "Weapon": "MG",
     "Class": "Defender",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "26",
@@ -255,7 +255,7 @@
     "Code": "Wind",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "83",
@@ -266,7 +266,7 @@
     "Code": "Water",
     "Weapon": "AR",
     "Class": "Supporter",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "27",
@@ -277,7 +277,7 @@
     "Code": "Fire",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "126",
@@ -288,7 +288,7 @@
     "Code": "Electric",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "112",
@@ -299,7 +299,7 @@
     "Code": "Electric",
     "Weapon": "MG",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "114",
@@ -310,7 +310,7 @@
     "Code": "Water",
     "Weapon": "RL",
     "Class": "Attacker",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "28",
@@ -321,7 +321,7 @@
     "Code": "Fire",
     "Weapon": "MG",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "29",
@@ -332,7 +332,7 @@
     "Code": "Wind",
     "Weapon": "SMG",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "30",
@@ -343,7 +343,7 @@
     "Code": "Fire",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "31",
@@ -354,7 +354,7 @@
     "Code": "Electric",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "32",
@@ -365,7 +365,7 @@
     "Code": "Water",
     "Weapon": "AR",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "33",
@@ -376,7 +376,7 @@
     "Code": "Iron",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "34",
@@ -388,7 +388,7 @@
     "Code": "Electric",
     "Weapon": "MG",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "69",
@@ -399,7 +399,7 @@
     "Code": "Wind",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "35",
@@ -410,7 +410,7 @@
     "Code": "Electric",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "63",
@@ -421,7 +421,7 @@
     "Code": "Water",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "94",
@@ -433,7 +433,7 @@
     "Code": "Iron",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "36",
@@ -444,7 +444,7 @@
     "Code": "Electric",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "70",
@@ -455,7 +455,7 @@
     "Code": "Iron",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "37",
@@ -466,7 +466,7 @@
     "Code": "Iron",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "119",
@@ -478,7 +478,7 @@
     "Code": "Fire",
     "Weapon": "MG",
     "Class": "Defender",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "64",
@@ -489,7 +489,7 @@
     "Code": "Iron",
     "Weapon": "RL",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "108",
@@ -500,7 +500,7 @@
     "Code": "Water",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "38",
@@ -511,7 +511,7 @@
     "Code": "Iron",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "39",
@@ -522,7 +522,7 @@
     "Code": "Water",
     "Weapon": "SMG",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "104",
@@ -534,7 +534,7 @@
     "Code": "Water",
     "Weapon": "MG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "40",
@@ -545,7 +545,7 @@
     "Code": "Electric",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "77",
@@ -556,7 +556,7 @@
     "Code": "Water",
     "Weapon": "SMG",
     "Class": "Defender",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "98",
@@ -567,7 +567,7 @@
     "Code": "Iron",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "130",
@@ -579,7 +579,7 @@
     "Code": "Electric",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "41",
@@ -590,7 +590,7 @@
     "Code": "Water",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "89",
@@ -602,7 +602,7 @@
     "Code": "Water",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "91",
@@ -613,7 +613,7 @@
     "Code": "Electric",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "42",
@@ -624,7 +624,7 @@
     "Code": "Iron",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "106",
@@ -636,7 +636,7 @@
     "Code": "Iron",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "43",
@@ -647,7 +647,7 @@
     "Code": "Water",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "44",
@@ -658,7 +658,7 @@
     "Code": "Fire",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "68",
@@ -669,7 +669,7 @@
     "Code": "Fire",
     "Weapon": "MG",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "109",
@@ -680,7 +680,7 @@
     "Code": "Electric",
     "Weapon": "AR",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "99",
@@ -691,7 +691,7 @@
     "Code": "Electric",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "90",
@@ -703,7 +703,7 @@
     "Code": "Water",
     "Weapon": "MG",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "88",
@@ -714,7 +714,7 @@
     "Code": "Fire",
     "Weapon": "SMG",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "80",
@@ -725,7 +725,7 @@
     "Code": "Fire",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "45",
@@ -736,7 +736,7 @@
     "Code": "Wind",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "86",
@@ -747,7 +747,7 @@
     "Code": "Wind",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "46",
@@ -758,7 +758,7 @@
     "Code": "Electric",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "47",
@@ -769,7 +769,7 @@
     "Code": "Iron",
     "Weapon": "SMG",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "48",
@@ -780,7 +780,7 @@
     "Code": "Wind",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "49",
@@ -791,7 +791,7 @@
     "Code": "Water",
     "Weapon": "SG",
     "Class": "Defender",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "78",
@@ -802,7 +802,7 @@
     "Code": "Fire",
     "Weapon": "RL",
     "Class": "Attacker",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "50",
@@ -813,7 +813,7 @@
     "Code": "Water",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "110",
@@ -825,7 +825,7 @@
     "Code": "Electric",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "71",
@@ -836,7 +836,7 @@
     "Code": "Electric",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "101",
@@ -847,7 +847,7 @@
     "Code": "Wind",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "51",
@@ -858,7 +858,7 @@
     "Code": "Iron",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "102",
@@ -869,7 +869,7 @@
     "Code": "Iron",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "84",
@@ -880,7 +880,7 @@
     "Code": "Water",
     "Weapon": "SMG",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "131",
@@ -892,7 +892,7 @@
     "Code": "Fire",
     "Weapon": "MG",
     "Class": "Attacker",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "116",
@@ -903,7 +903,7 @@
     "Code": "Water",
     "Weapon": "MG",
     "Class": "Supporter",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "87",
@@ -914,7 +914,7 @@
     "Code": "Electric",
     "Weapon": "MG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "124",
@@ -926,7 +926,7 @@
     "Code": "Wind",
     "Weapon": "AR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "52",
@@ -937,19 +937,19 @@
     "Code": "Iron",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "67",
     "Name": "Rupee: Winter Shopper",
-    "Title": "Rupee: WS",
+    "Title": "XRupee",
     "Rarity": "SSR",
     "Burst": "1R",
     "Burst Cooldown": "20",
     "Code": "Electric",
     "Weapon": "AR",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "81",
@@ -960,7 +960,7 @@
     "Code": "Wind",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "125",
@@ -972,7 +972,7 @@
     "Code": "Wind",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "53",
@@ -983,7 +983,7 @@
     "Code": "Electric",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "107",
@@ -995,7 +995,7 @@
     "Code": "Wind",
     "Weapon": "RL",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "54",
@@ -1006,7 +1006,7 @@
     "Code": "Fire",
     "Weapon": "SMG",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "72",
@@ -1017,7 +1017,7 @@
     "Code": "Electric",
     "Weapon": "AR",
     "Class": "Defender",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "55",
@@ -1028,19 +1028,19 @@
     "Code": "Iron",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "103",
     "Name": "Snow White: Innocent Days",
-    "Title": "Snow White: ID",
+    "Title": "Smol White",
     "Rarity": "SSR",
     "Burst": "3",
     "Burst Cooldown": "40",
     "Code": "Iron",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Pilgrim"
+    "Company": "Pilgrim"
   },
   {
     "Id": "75",
@@ -1051,7 +1051,7 @@
     "Code": "Fire",
     "Weapon": "MG",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "122",
@@ -1063,7 +1063,7 @@
     "Code": "Iron",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "56",
@@ -1074,7 +1074,7 @@
     "Code": "Iron",
     "Weapon": "SMG",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "57",
@@ -1085,7 +1085,7 @@
     "Code": "Iron",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "100",
@@ -1096,7 +1096,7 @@
     "Code": "Iron",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "105",
@@ -1107,7 +1107,7 @@
     "Code": "Water",
     "Weapon": "AR",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "120",
@@ -1118,7 +1118,7 @@
     "Code": "Fire",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "58",
@@ -1129,7 +1129,7 @@
     "Code": "Water",
     "Weapon": "RL",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "73",
@@ -1140,7 +1140,7 @@
     "Code": "Water",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "59",
@@ -1151,7 +1151,7 @@
     "Code": "Wind",
     "Weapon": "SMG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "60",
@@ -1162,7 +1162,7 @@
     "Code": "Fire",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "61",
@@ -1173,7 +1173,7 @@
     "Code": "Fire",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "62",
@@ -1184,7 +1184,7 @@
     "Code": "Fire",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "127",
@@ -1195,7 +1195,7 @@
     "Code": "Electric",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "92",
@@ -1206,7 +1206,7 @@
     "Code": "Wind",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "9",
@@ -1217,7 +1217,7 @@
     "Code": "Iron",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "10",
@@ -1228,7 +1228,7 @@
     "Code": "Electric",
     "Weapon": "RL",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "11",
@@ -1239,7 +1239,7 @@
     "Code": "Wind",
     "Weapon": "SR",
     "Class": "Defender",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "12",
@@ -1250,7 +1250,7 @@
     "Code": "Electric",
     "Weapon": "SG",
     "Class": "Defender",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "76",
@@ -1261,7 +1261,7 @@
     "Code": "Wind",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "13",
@@ -1272,7 +1272,7 @@
     "Code": "Water",
     "Weapon": "SR",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "14",
@@ -1283,7 +1283,7 @@
     "Code": "Wind",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "15",
@@ -1294,7 +1294,7 @@
     "Code": "Water",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "128",
@@ -1306,7 +1306,7 @@
     "Code": "Iron",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "16",
@@ -1318,7 +1318,7 @@
     "Code": "Water",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "17",
@@ -1329,7 +1329,7 @@
     "Code": "Fire",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "65",
@@ -1340,7 +1340,7 @@
     "Code": "Water",
     "Weapon": "SG",
     "Class": "Attacker",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "95",
@@ -1351,7 +1351,7 @@
     "Code": "Iron",
     "Weapon": "RL",
     "Class": "Supporter",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "115",
@@ -1362,7 +1362,7 @@
     "Code": "Wind",
     "Weapon": "SR",
     "Class": "Defender",
-    "Manufacturer": "Abnormal"
+    "Company": "Abnormal"
   },
   {
     "Id": "18",
@@ -1373,7 +1373,7 @@
     "Code": "Fire",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "0",
@@ -1384,7 +1384,7 @@
     "Code": "Wind",
     "Weapon": "RL",
     "Class": "Defender",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "1",
@@ -1395,7 +1395,7 @@
     "Code": "Water",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "2",
@@ -1406,7 +1406,7 @@
     "Code": "Iron",
     "Weapon": "AR",
     "Class": "Supporter",
-    "Manufacturer": "Tetra"
+    "Company": "Tetra"
   },
   {
     "Id": "3",
@@ -1417,7 +1417,7 @@
     "Code": "Electric",
     "Weapon": "SR",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "4",
@@ -1428,7 +1428,7 @@
     "Code": "Fire",
     "Weapon": "MG",
     "Class": "Attacker",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "5",
@@ -1439,7 +1439,7 @@
     "Code": "Wind",
     "Weapon": "SG",
     "Class": "Supporter",
-    "Manufacturer": "Missilis"
+    "Company": "Missilis"
   },
   {
     "Id": "6",
@@ -1450,7 +1450,7 @@
     "Code": "Electric",
     "Weapon": "AR",
     "Class": "Attacker",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "7",
@@ -1461,7 +1461,7 @@
     "Code": "Iron",
     "Weapon": "SG",
     "Class": "Defender",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   },
   {
     "Id": "8",
@@ -1472,6 +1472,6 @@
     "Code": "Fire",
     "Weapon": "SMG",
     "Class": "Supporter",
-    "Manufacturer": "Elysion"
+    "Company": "Elysion"
   }
 ]

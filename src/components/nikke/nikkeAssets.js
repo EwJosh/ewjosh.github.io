@@ -1,9 +1,9 @@
-// Import Manufacturer
-import ManufacturerElysionIcon from '../../assets/images/Nikke/icons/NikkeManufacturerElysion.png';
-import ManufacturerMissilisIcon from '../../assets/images/Nikke/icons/NikkeManufacturerMissilis.png';
-import ManufacturerTetraIcon from '../../assets/images/Nikke/icons/NikkeManufacturerTetra.png';
-import ManufacturerPilgrimIcon from '../../assets/images/Nikke/icons/NikkeManufacturerPilgrim.png';
-import ManufacturerAbnormalIcon from '../../assets//images/Nikke/icons/NikkeManufacturerAbnormal.png';
+// Import Company
+import CompanyElysionIcon from '../../assets/images/Nikke/icons/NikkeCompanyElysion.png';
+import CompanyMissilisIcon from '../../assets/images/Nikke/icons/NikkeCompanyMissilis.png';
+import CompanyTetraIcon from '../../assets/images/Nikke/icons/NikkeCompanyTetra.png';
+import CompanyPilgrimIcon from '../../assets/images/Nikke/icons/NikkeCompanyPilgrim.png';
+import CompanyAbnormalIcon from '../../assets//images/Nikke/icons/NikkeCompanyAbnormal.png';
 // Import Weapon
 import WeaponARIcon from '../../assets/images/Nikke/icons/NikkeWeaponAR.png';
 import WeaponMGIcon from '../../assets/images/Nikke/icons/NikkeWeaponMG.png';
@@ -58,12 +58,12 @@ const icons = {
         'Water': CodeWaterIcon,
         'Wind': CodeWindIcon
     },
-    'Manufacturer': {
-        'Elysion': ManufacturerElysionIcon,
-        'Missilis': ManufacturerMissilisIcon,
-        'Tetra': ManufacturerTetraIcon,
-        'Abnormal': ManufacturerAbnormalIcon,
-        'Pilgrim': ManufacturerPilgrimIcon
+    'Company': {
+        'Elysion': CompanyElysionIcon,
+        'Missilis': CompanyMissilisIcon,
+        'Tetra': CompanyTetraIcon,
+        'Abnormal': CompanyAbnormalIcon,
+        'Pilgrim': CompanyPilgrimIcon
     },
     'Weapon': {
         'AR': WeaponARIcon,

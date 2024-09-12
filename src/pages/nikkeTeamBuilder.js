@@ -145,7 +145,7 @@ function NikkeTeamBuilder(props) {
     // States for rendering icons and other components.
     const [visibility, setVisibility] = useState({
         // Iterable list of visibility keys for NikkeUnit.
-        'categories': ['Burst', 'Class', 'Code', 'Manufacturer', 'Weapon'],
+        'categories': ['Burst', 'Code', 'Weapon', 'Class', 'Company'],
 
         'filter': true,         // Whether the filter component is rendered at all.
         'filterMin': false,     // Whether the filter component is minimized.
@@ -156,7 +156,7 @@ function NikkeTeamBuilder(props) {
         'Burst': true,
         'Class': true,
         'Code': true,
-        'Manufacturer': true,
+        'Company': true,
         'Weapon': true
     });
 

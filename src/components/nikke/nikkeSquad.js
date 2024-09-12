@@ -30,10 +30,10 @@ function NikkeSquad(props) {
                     windowSmall={props.windowSmall}
                     icons={[
                         props.icons.Burst[item.Burst],
-                        props.icons.Class[item.Class],
                         props.icons.Code[item.Code],
-                        props.icons.Manufacturer[item.Manufacturer],
-                        props.icons.Weapon[item.Weapon]
+                        props.icons.Weapon[item.Weapon],
+                        props.icons.Class[item.Class],
+                        props.icons.Company[item.Company]
                     ]}
                     highlightIcon={props.icons.Highlight}
                     avatar={props.avatars[item.Name]}
