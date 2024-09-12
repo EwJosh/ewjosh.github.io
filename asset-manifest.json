@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.5307bc96.css",
-    "main.js": "/static/js/main.7d05f4bb.js",
+    "main.css": "/static/css/main.49433a1d.css",
+    "main.js": "/static/js/main.458d555a.js",
     "static/js/787.f10dde0b.chunk.js": "/static/js/787.f10dde0b.chunk.js",
     "static/media/Neve.png": "/static/media/Neve.b2afeae60536fdc76029.png",
     "static/media/Rupee Winter Shopper.png": "/static/media/Rupee Winter Shopper.150a9a1f4a5a49e68a19.png",
@@ -148,12 +148,12 @@
     "static/media/NikkeClassSupporter.png": "/static/media/NikkeClassSupporter.e88fce0b2d97e50cf90b.png",
     "static/media/NikkeWeaponSG.png": "/static/media/NikkeWeaponSG.d43c4e3687063a7a84a7.png",
     "index.html": "/index.html",
-    "main.5307bc96.css.map": "/static/css/main.5307bc96.css.map",
-    "main.7d05f4bb.js.map": "/static/js/main.7d05f4bb.js.map",
+    "main.49433a1d.css.map": "/static/css/main.49433a1d.css.map",
+    "main.458d555a.js.map": "/static/js/main.458d555a.js.map",
     "787.f10dde0b.chunk.js.map": "/static/js/787.f10dde0b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5307bc96.css",
-    "static/js/main.7d05f4bb.js"
+    "static/css/main.49433a1d.css",
+    "static/js/main.458d555a.js"
   ]
 }
