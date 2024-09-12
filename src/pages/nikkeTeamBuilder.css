@@ -445,6 +445,9 @@ h4 {
   font-size: large;
 }
 .nikke-name-xlong {
+  font-size: medium;
+}
+.nikke-name-xxlong {
   font-size: small;
   text-wrap: wrap;
 }
@@ -453,10 +456,11 @@ h4 {
   font-size: medium;
 }
 
-.nikke-unit-small .nikke-name-long {
-  font-size: small;
-}
+.nikke-unit-small .nikke-name-long,
 .nikke-unit-small .nikke-name-xlong {
+  font-size: x-small;
+}
+.nikke-unit-small .nikke-name-xxlong {
   font-size: xx-small;
 }
 

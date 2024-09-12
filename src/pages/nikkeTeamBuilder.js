@@ -945,10 +945,7 @@ function NikkeTeamBuilder(props) {
                 <Select
                     id='quick-code-select'
                     value={settings.targetCode}
-                    onChange={(event) => updateSettings({
-                        ...settings,
-                        targetCode: event.target.value
-                    })}
+                    onChange={(event) => updateSettings('targetCode', event.target.value)}
                     // variant='standard'
                     // disableUnderline
                     IconComponent={null}

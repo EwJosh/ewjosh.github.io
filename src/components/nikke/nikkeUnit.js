@@ -36,8 +36,8 @@ function NikkeUnit(props) {
     }
 
     /**
-     * Returns the className this Unit's name span should have depending on the circumstances.
-     * Depending on the amount of characters in their name, they may additionally get ' nikke-name-long' or ' 'nikke-name-xlong'.
+     * Returns the className this Unit's name span should have depending on the amount of characters in their name.
+     * (e.g. 'nikke-name-long', 'nikke-name-xlong', 'nikke-name-xxlong')
      * @returns React prop className that fits the name span.
      */
     const getNameClassName = () => {
@@ -46,6 +46,8 @@ function NikkeUnit(props) {
             name = props.unit.Name;
 
         if (name.length >= 12)
+            return ' nikke-name-xxlong';
+        else if (name.length >= 11)
             return ' nikke-name-xlong';
         else if (name.length >= 8)
             return ' nikke-name-long';
