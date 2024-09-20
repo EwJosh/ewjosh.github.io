@@ -141,6 +141,8 @@ function NikkeHelp(props) {
                         <li>
                             Toggling the <ArrowDropDownIcon fontSize='inherit' className='menu-icon-text' /> Dropdown button
                             will minimize the Squad.
+                            Similarly, the <ArrowDropDownIcon fontSize='inherit' className='menu-icon-text' /> Dropdown button
+                            at the top of the page will minimize all Squads.
                         </li>
                         <li>
                             The layout of Squads can be configured in the <Settings fontSize='inherit' className='menu-icon-text' /> Settings.
@@ -339,23 +341,23 @@ function NikkeHelp(props) {
                             the <Remove fontSize='inherit' className='menu-icon-text' /> Remove button from Nikkes in Squads.
                         </li>
                         <li>
-                            Your Squad can be converted into or be created by a shareable url/code.
+                            Your Squad can be converted into a saveable/shareable URL.
                             <ul>
-                                <li>The <ContentPaste fontSize='inherit' className='menu-icon-text' /> Copy button will copy the shareable <s>&nbsp;url&nbsp;</s> <u>code</u> to your system's clipboard.</li>
-                                {/* 
+                                <li>This URL is a way to <b>save your teams</b> or <b>share them</b> with others without having to store cookies on your device or upload your data online.</li>
                                 <li>
-                                    If the dynamic URL is used to launch the page, your Squads will be pre-built with the corresponding Nikkes.
+                                    The <ContentPaste fontSize='inherit' className='menu-icon-text' /> Copy buttons will copy the saveable/shareable URL to your system's clipboard.
+
                                 </li>
                                 <li>
-                                    <i><b>Bug:</b> Dynamic URL feature doesn't work. Will be disabled until fixed. </>
+                                    If you want to include the Bench, use the 'Squads + Bench' button. Otherwise, you can use the link in the browser or the 'Squads Only' button.
                                 </li>
-                                 */}
+
                                 <li>
-                                    Inputting a valid code to the text field and pressing the <KeyboardReturnIcon fontSize='inherit' className='menu-icon-text' /> Import button will update
-                                    your Squads to have the corresponding Nikkes.
+                                    If the dynamic URL is used to launch the page, your Squads (and Bench) will be pre-built with the corresponding Nikkes.
                                 </li>
-                                <li>Squad sizes up to 5 Nikkes are supported, anything beyond will be truncated.</li>
+                                <li>Squad sizes up to 10 Nikkes are supported, anything beyond will be truncated.</li>
                                 <li>Up to 10 Squads are supported, anything beyond or empty will be truncated.</li>
+                                <li>Bench sizes up to 50 are are supported, anything beyond will be truncated.</li>
                             </ul>
                         </li>
                     </ul>

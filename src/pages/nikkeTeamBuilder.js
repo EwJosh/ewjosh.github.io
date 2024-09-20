@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { DragDropContext } from '@hello-pangea/dnd'; //'react-beautiful-dnd';
 
 // Import assets
@@ -21,6 +21,8 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
+import Drawer from '@mui/material/Drawer';
+import { styled } from '@mui/material';
 
 // Import MUI icons
 import Add from '@mui/icons-material/Add';
@@ -32,14 +34,46 @@ import DriveFileRenameOutlineSharpIcon from '@mui/icons-material/DriveFileRename
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
-import { Drawer } from '@mui/material';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
+import RecentActorsIcon from '@mui/icons-material/RecentActors';
 
+// Import assets (cont.)
 const NikkeAvatars = { ...getNikkeAvatars() };
+const WINDOW_WIDTH_2_SQUADS = 1290;
+const WINDOW_WIDTH_3_SQUADS = 1920
+// Force-limit Squad parsing amount at 10 to limit parsing issues.
+// (Arbitrary limit. Could be 5 (in-game max), but I bumped it up in case ppl want to share modifiable teams)
+const URI_SQUAD_COUNT_LIMIT = 10;
+// Force-limit Squad sizes to 10 to limit url length.
+// (Arbitrary limit. Could be 5 (in-game max), but I bumped it up in case ppl want to share modifiable teams)
+const URI_SQUAD_SIZE_LIMIT = 10;
+// Force-limit Bench size to 50 to limit url length. (Arbitrary limit)
+const URI_BENCH_SIZE_LIMIT = 50;
+
+const StyledButton = styled(Button)({
+    width: '5rem',
+    height: '2.5rem',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 'large',
+    textTransform: 'none',
+    '&:hover': {
+        backgroundColor: '#1976d2',
+        filter: 'saturate(60%)'
+    }
+})
+
+const StyledIconButton = styled(IconButton)({
+    backgroundColor: '#1976d2',
+    '&:hover': {
+        backgroundColor: '#1976d2',
+        filter: 'saturate(60%)'
+    }
+})
 
 function NikkeTeamBuilder(props) {
-    // let { urlId } = useParams();
-    // How many squads have been created? Different than how many squads are there currently.
-    const [squadCnt, setSquadCnt] = useState(3);
+    let [searchParams, setSearchParams] = useSearchParams();
 
     /**
     * Active set of tags to process user filtering and can be modified.
@@ -64,8 +98,8 @@ function NikkeTeamBuilder(props) {
         targetCode: 'None',     // The selected Code weakness (for reviews).
         enableReviews: true,    // Reviews is enabled.
         allowDuplicates: false, // Duplicate Nikkes are allowed.
-        squadsPerRow: (window.innerWidth <= 1290) ? // Squads displayed per row. Initialized value depends on window size.
-            1 : (window.innerWidth > 1920) ?
+        squadsPerRow: (window.innerWidth <= WINDOW_WIDTH_2_SQUADS) ? // Squads displayed per row. Initialized value depends on window size.
+            1 : (window.innerWidth > WINDOW_WIDTH_3_SQUADS) ?
                 3
                 : 2,
         compactMode: false,  // Whether filter and roster are side menus (true) or at the bottom of the page (false).
@@ -82,6 +116,22 @@ function NikkeTeamBuilder(props) {
             [setting]: value
         })
     }
+
+    /**
+   * Event fired when window is resized. Updates squadsPerRow in settings.
+   */
+    const handleResize = () => {
+        if (window.innerWidth <= WINDOW_WIDTH_2_SQUADS) {
+            updateSettings('squadsPerRow', 1);
+        }
+        else if (window.innerWidth > WINDOW_WIDTH_3_SQUADS) {
+            updateSettings('squadsPerRow', 3);
+        }
+        else {
+            updateSettings('squadsPerRow', 2);
+        }
+    }
+    // window.addEventListener('resize', handleResize);
 
     /**
      * Gets ALL Nikke IDs from NikkeData.
@@ -115,13 +165,13 @@ function NikkeTeamBuilder(props) {
                 id: 'squad-2',
                 title: 'Squad 2',
                 nikkeIds: [],
-                minimized: true
+                minimized: false
             },
             'squad-3': {
                 id: 'squad-3',
                 title: 'Squad 3',
                 nikkeIds: [],
-                minimized: true
+                minimized: false
             },
             'bench': {
                 id: 'bench',
@@ -143,10 +193,14 @@ function NikkeTeamBuilder(props) {
     const [filteredNikkes, setFilteredNikkes] = useState([...getAllNikkeIds()]);
 
     // States for rendering icons and other components.
+    // Visible components are rendered if true, and not rendered if false.
+    // Visible components are minimized if -Min is true.
     const [visibility, setVisibility] = useState({
         // Iterable list of visibility keys for NikkeUnit.
         'categories': ['Burst', 'Code', 'Weapon', 'Class', 'Company'],
 
+        'avatars': true,       // Whether Nikke Avatars are rendered or not.
+        'allSquadsMin': false,  // Whether ALL the squad components are minimized.
         'filter': true,         // Whether the filter component is rendered at all.
         'filterMin': false,     // Whether the filter component is minimized.
         'categoryIcons': true,  // If false, shrinks NikkeUnit and skips rendering of the bottom four icons.
@@ -257,7 +311,7 @@ function NikkeTeamBuilder(props) {
                     let midNikke = getNikkeById(dstNikkeIds[mid]);
 
                     // Binary compare
-                    if (lessThan(srcNikke, midNikke))
+                    if (compareNikkeObjects(srcNikke, midNikke))
                         right = mid - 1;
                     else
                         left = mid;
@@ -362,7 +416,7 @@ function NikkeTeamBuilder(props) {
      * @param {object} nikke2 Right-side Nikke object.
      * @returns true if nikke1 should be considered 'less than' nikke2.
      */
-    const lessThan = (nikke1, nikke2) => {
+    const compareNikkeObjects = (nikke1, nikke2) => {
         // Compare Rarities such that (SSR < SR < R).
         if (nikke1.Rarity > nikke2.Rarity)
             return true;
@@ -647,11 +701,28 @@ function NikkeTeamBuilder(props) {
 
     /**
      * Sets the minimization of a given section.
-     * Boolean is a parameter for the potential update to have a Collapse All and Minimize All button.
+     * 
      * @param {string} sectionId ID value of the affected Squad.
-     * @param {*} bool true if Squad is to be minimized.
+     * @param {boolean} bool true if Squad is to be minimized.
      */
     const handleSetSquadMinimized = (sectionId, bool) => {
+        let allMin = bool;
+
+        if (allMin) {
+            for (let i = 0; i < nikkeLists.sectionOrder.length; i++) {
+                let squadId = nikkeLists.sectionOrder[i];
+                if (squadId !== sectionId && !nikkeLists.sections[squadId].minimized) {
+                    allMin = false;
+                    break;
+                }
+            }
+        }
+
+        setVisibility({
+            ...visibility,
+            allSquadsMin: allMin
+        });
+
         setNikkeLists({
             sections: {
                 ...nikkeLists.sections,
@@ -661,108 +732,111 @@ function NikkeTeamBuilder(props) {
                 }
             },
             sectionOrder: nikkeLists.sectionOrder
+        });
+    }
+
+    /**
+     * Sets the minimization of all Squads. Updates allSquadsMin in visibility.
+     * 
+     * @param {boolean} bool true if all Squads are to be minimized.
+     */
+    const handleSetAllSquadsMinimized = (bool) => {
+        let newSections = { ...nikkeLists.sections };
+
+        for (let i = 0; i < nikkeLists.sectionOrder.length; i++) {
+            newSections[nikkeLists.sectionOrder[i]].minimized = bool;
+        }
+        setNikkeLists({
+            sections: newSections,
+            sectionOrder: nikkeLists.sectionOrder
+        })
+
+        setVisibility({
+            ...visibility,
+            allSquadsMin: bool
         })
     }
 
     /**
-     * Converts the dynamic URL into a list information. Called when page is loaded and used when lists are initialized.
-     * SquadId format functions as follows
-     * - The Nikke numerical IDs are seperated by '-'.
-     * - Squads are separated by '&'.
-     * - Example: 97-111-20&23-121-114-112-21&27-83
-     * - Example: 83-53-98-93-68&38-85-86-97&20-99-100-102&118
+     * Converts the query in the URI into a list information. Called and used when page is loaded and lists are initialized.
+     * Query format functions as follows:
+     * - Keys available: 'squads' and 'bench'.
+     * - Squads are valued as a set of sets of IDs.
+     * - Bench is valued as a set of IDs.
+     * - (Squads) Sets of IDs or distinct Squads are separated by '_'.
+     * - (Squads and Bench) IDs or distinct Nikkes are separated by '-'.
+     * 
+     * Examples:
+     * - squads=31-53-93-26-63_38-85-86-68-131_100-99-74-104-102_83-118-107-20-50_97-116-114-46-89
+     * - squads=31-53-93-26-63_38-85-86-68-131_100-99-74-104-102_83-118-107-20-50_97-116-114-46-89&bench=130-125-119-113-110-98-91-84-59-55-49-48-45-34-23
+     * - bench=130-125-119-113-110-98-91-84-59-55-49-48-45-34-23
      * 
      * Returns null if the dynamic URL is invalid.
      * @returns A new nikkeLists based on the dynamic URL, if possible. If dynamic URL is invalid, returns null.
      */
-    const readSquadId = (squadId) => {
+    const readUriQuery = (squadQuery, benchQuery) => {
         // Try/catch block in case split fails or something unexpected occurs.
+        // Simplest catch-all in case of invalid URI query.
         try {
-            // Minimum length of a valid Squad ID would be 1 (e.g. 0)
-            if (!squadId || squadId.length < 1)
+            // If both squadQuery and benchQuery are empty, return null.
+            if ((squadQuery == null || squadQuery.length === 0)
+                && (benchQuery == null || benchQuery.length === 0))
                 return null;
 
-            // Separate url id by '&'.
-            let squads = squadId.split('&');
-            // Squad counter for ids and titles.
-            let squadIndex = 1;
-            // Force-limit squad parsing at 10 to limit parsing issues. (Arbitrary)
-            let squadMax = Math.min(squads.length, 10)
-
-            // Temp information for building the new nikkeLists
-            let newSections = {
-            };
+            // Initialize temp information for building the new nikkeLists.
+            let newSections = {};
             let newSectionOrder = [];
             let newBenchIds = initNikkeLists.sections.bench.nikkeIds;
             let newRosterIds = initNikkeLists.sections.roster.nikkeIds;
 
-            // Loop through Squad strings
-            for (let i = 0; i < squadMax; i++) {
-                // Remove squad indentifier and then split up Nikke IDs.
-                let nikkeList = squads[i].split('-');
-                // If a nikkeList is empty, skip squad.
-                if (nikkeList.length === 0)
-                    continue;
+            // If squadQuery isn't empty, parse through it.
+            if (squadQuery != null && squadQuery.length !== 0) {
+                // Separate squads by '_'.
+                let squads = squadQuery.split('_');
+                // Squad counter for ids and titles.
+                let squadIndex = 1;
+                // Force-limit squad count to [10](URI_SQUAD_COUNT_LIMIT). (See constant for more details.)
+                let squadCtLimit = Math.min(squads.length, URI_SQUAD_COUNT_LIMIT)
 
-                // Initialize nikkeIds array and force-limit squads to 5 to limit parsing issues. (Arbitrary)
-                let newNikkeIds = [];
-                let maxSquad = Math.min(nikkeList.length, 5);
+                // Loop through Squad strings.
+                for (let i = 0; i < squadCtLimit; i++) {
+                    // Force-limit squad sizes to [10](URI_SQUAD_SIZE_LIMIT). (See constant for more details.)
+                    let newNikkeIds = nikkeIdsStringToArray(squads[i], URI_SQUAD_SIZE_LIMIT, newRosterIds);
+                    if (newNikkeIds == null)
+                        continue;
 
-                // Loop through Nikke Id strings
-                for (let j = 0; j < maxSquad; j++) {
-                    // Check to see if Nikke ID exists. Throw exception if not found.
-                    let nikkeId = getNikkeById(nikkeList[j]).Id;
-                    if (nikkeId == null)
-                        throw new Error('Nikke not found');
-
-                    // Push Nikke's Name (in order) to array
-                    newNikkeIds.push(nikkeId);
-
-                    if (newBenchIds.length > 0) {
-                        let nikkeIndex = newBenchIds.indexOf(nikkeId);
-                        if (nikkeIndex !== -1)
-                            newBenchIds.splice(nikkeIndex, 1);
-                    }
-
-                    // Remove from Roster, if it exists
-                    let nikkeIndex = newRosterIds.indexOf(nikkeId);
-                    if (nikkeIndex !== -1)
-                        newRosterIds.splice(nikkeIndex, 1);
+                    // After looping through Nikkes, update temp information for newNikkeLists and increment squadIndex.
+                    newSections = {
+                        ...newSections,
+                        ['squad-' + squadIndex]: {
+                            id: 'squad-' + squadIndex,
+                            title: 'Squad ' + squadIndex,
+                            nikkeIds: newNikkeIds,
+                            minimized: false
+                        }
+                    };
+                    newSectionOrder.push('squad-' + squadIndex);
+                    squadIndex += 1;
                 }
-
-                // After looping through Nikkes, Update temp information for the newNikkeLists and increment squadIndex
-                newSections = {
-                    ...newSections,
-                    ['squad-' + squadIndex]: {
-                        id: 'squad-' + squadIndex,
-                        title: 'Squad ' + squadIndex,
-                        nikkeIds: newNikkeIds,
-                        minimized: false
-                    }
-                }
-                newSectionOrder.push('squad-' + squadIndex);
-                squadIndex += 1;
+            }
+            // If squadQuery is empty, use initNikkeList information
+            else {
+                newSections = initNikkeLists.sections;
+                newSectionOrder = initNikkeLists.sectionOrder;
             }
 
-            // After looping through Squads, update Squad Count and Nikke Lists
-            setSquadCnt(newSectionOrder.length)
+            // If benchQuery isn't empty, parse through it.
+            if (benchQuery != null && benchQuery.length !== 0) {
+                // Force-limit bench sizes to [50](URI_BENCH_SIZE_LIMIT). (See constant for more details.)
+                let newNikkeIds = nikkeIdsStringToArray(benchQuery, URI_BENCH_SIZE_LIMIT, newRosterIds);
 
-            setNikkeLists({
-                sections: {
-                    ...newSections,
-                    bench: {
-                        ...initNikkeLists.sections.bench,
-                        nikkeIds: newBenchIds
-                    },
-                    roster: {
-                        ...initNikkeLists.sections.roster,
-                        nikkeIds: newRosterIds
-                    }
-                },
-                sectionOrder: newSectionOrder
-            })
+                // After looping through Nikkes, update temp information for newNikkeLists
+                if (newNikkeIds != null) {
+                    newBenchIds = newNikkeIds;
+                }
+            }
 
-            // After looping though Squads, return newNikkeLists
+            // After looping though Squads and Bench, return newNikkeLists
             return {
                 sections: {
                     ...newSections,
@@ -784,69 +858,183 @@ function NikkeTeamBuilder(props) {
             return null;
         }
     }
-    // Initialize nikkeList through dynamic URL upon page startup.
-    let listById = null; //readSquadId(urlId);
-
-    // Collection of Nikkes to be used and altered.
-    const [nikkeLists, setNikkeLists] = useState(listById !== null ? listById : initNikkeLists);
 
     /**
-     * Converts current Squad information into a shareable link and copies contents into system clipboard.
-     * For details on how Squad Ids are parsed/processed, see readSquadId().
+     * Converts a string of nikkeIds separated by '-' into an array of nikkeIds.
+     * @param {string} inputString String of a series of NikkeIds, separated by '-', to be converted.
+     * @param {number} maxLength Maximum amount of Nikkes to be returned. If negative, there is no limit.
+     * @param {Array} rosterIds Array of Nikkes in the Roster. Nikkes found in inputString are removed from here.
+     * @returns A corresponding array of nikkeIds.
      */
-    const getSquadId = () => {
-        // Initialize squadId and squadIndex for counting squads.
-        let squadId = '';
-        let squadIndex = 0;
+    const nikkeIdsStringToArray = (inputString, maxLength, rosterIds = []) => {
+        // If the input is empty, return null.
+        if (inputString == null || inputString.length === 0)
+            return null;
 
-        // Force-limit squad parsing at 10 to limit parsing issues. (Arbitrary)
-        let squadMax = Math.min(nikkeLists.sectionOrder.length, 10)
+        // Split up Nikke IDs.
+        let stringIds = inputString.split('-');
+
+        // Initialize nikkeIds array.
+        let nikkeIds = [];
+        // Limit parsing to maxLength. (Arbitrary decision, but I want to limit URL sizes).
+        // If maxLength is negative, set limit stringIds.length.
+        let sizeLimit = Math.min(stringIds.length, maxLength);
+        if (sizeLimit < 0)
+            sizeLimit = stringIds.length;
+
+        // Loop through Nikke Id strings.
+        for (let i = 0; i < sizeLimit; i++) {
+            // Check to see if Nikke ID exists. Throw exception if not found.
+            // let nikke = getNikkeById(stringIds[j]);
+            // if (nikke == null)
+            //     throw new Error('Squad Code Importer: Nikke ID ', stringIds[j], ' not found');
+            // let nikkeId = nikke.Id;
+            let nikkeId = stringIds[i];
+
+            // Push Nikke's Id to array
+            nikkeIds.push(nikkeId);
+
+            // Remove from Roster, if it exists
+            let nikkeIndex = rosterIds.indexOf(nikkeId);
+            if (nikkeIndex !== -1)
+                rosterIds.splice(nikkeIndex, 1);
+        }
+
+        // After looping through Nikkes, return array.
+        return nikkeIds;
+
+    }
+
+    /**
+     * Converts an array of nikkeIds into a string of nikkeIds separated by '-'.
+     * @param {string} inputArray Array of NikkeIds to be converted.
+     * @param {number} maxLength Maximum amount of Nikkes to be returned. If negative, there is no limit.
+     * @returns A corresponding string of nikkeIds.
+     */
+    const nikkeIdsArrayToString = (inputArray, maxLength) => {
+        // Initialize nikkeIds string
+        let nikkeIds = '';
+
+        // [ADDD COMMENT]
+        let sizeLimit = Math.min(inputArray.length, maxLength)
+        // Loop through each Nikke in a Squad.
+        for (let i = 0; i < sizeLimit; i++) {
+            // Fetch Nikke Id
+            let nikkeId = inputArray[i];
+
+            // Append Nikke ID. Seperate Nikkes by '-'.
+            if (i !== 0)
+                nikkeIds += '-';
+            nikkeIds += nikkeId;
+        }
+
+        // After looping, return string value of nikkeIds
+        return nikkeIds;
+    }
+
+    // Collection of Nikkes to be used and altered.
+    const [nikkeLists, setNikkeLists] = useState(initNikkeLists);
+
+    // How many squads have been created? Different than how many squads are there currently.
+    const [squadCnt, setSquadCnt] = useState(nikkeLists.sectionOrder.length);
+
+    /**
+     * Converts current Squad and Bench information into a shareable link and copies contents into system clipboard.
+     * For details on how queries are formatted/parsed/processed, see readUriQuery().
+     * 
+     * @param {boolean} benchWanted if true, includes the bench in the returned query
+     * @returns a query depending on the Squads and Bench.
+     */
+    const getUriQuery = (benchWanted = false) => {
+        // Initialize squadQuery and benchQuery.
+        let squadQuery = '';
+        let benchQuery = '';
+
+        // Force-limit squad sizes to [10](URI_SQUAD_COUNT_LIMIT). (See constant for more details.)
+        let squadCtLimit = Math.min(nikkeLists.sectionOrder.length, URI_SQUAD_COUNT_LIMIT)
 
         // Loop through each Squad.
-        for (let i = 0; i < squadMax; i++) {
+        for (let i = 0; i < squadCtLimit; i++) {
             // Fetch Squad
             let squad = nikkeLists.sections[nikkeLists.sectionOrder[i]];
 
-            // If Squad is empty, skip.
-            if (squad.nikkeIds.length === 0)
+            // If Squad is empty, boost limit (if possible) and skip.
+            if (squad.nikkeIds.length === 0) {
+                squadCtLimit = Math.min(nikkeLists.sectionOrder.length, squadCtLimit + 1)
                 continue;
-
-            // Separate Squads by '&'.
-            if (i !== 0)
-                squadId += '&';
-
-            // Force-limit squads to 5 to limit parsing issues. (Arbitrary)
-            let maxSquad = Math.min(squad.nikkeIds.length, 5)
-            for (let j = 0; j < maxSquad; j++) {
-                // Fetch Nikke Id
-                let nikkeId = getNikkeById(squad.nikkeIds[j]).Id;
-
-                // Append Nikke ID. Seperate Nikkes by '-'.
-                if (j !== 0)
-                    squadId += '-';
-                squadId += nikkeId;
             }
-            // After looping through Nikkes, increment squadIndex.
-            squadIndex++;
+
+            // Separate Squads by '_'.
+            if (squadQuery.length !== 0)
+                squadQuery += '_';
+
+            // Force-limit squad sizes to [10](URI_SQUAD_SIZE_LIMIT). (See constant for more details.)
+            // Convert array of Nikkes into a string and append.
+            let nikkeIds = nikkeIdsArrayToString(squad.nikkeIds, URI_SQUAD_SIZE_LIMIT);
+            squadQuery += nikkeIds;
+
         }
 
-        // After looping through Squads, return SquadId.
-        return squadId;
+        // After looping through Squads, get Bench if wanted
+        if (benchWanted && nikkeLists.sections['bench'].nikkeIds.length > 0) {
+            // Copy nikkeIDs in Bench. Truncate if too large. (See below for more details.)
+            let benchArr = [...nikkeLists.sections['bench'].nikkeIds];
+            if (benchArr.length > URI_BENCH_SIZE_LIMIT)
+                benchArr = benchArr.slice(0, URI_BENCH_SIZE_LIMIT)
+
+            // Sort bench for consistency.
+            benchArr.sort((a, b) => (compareNikkeObjects(getNikkeById(a), getNikkeById(b)) ? -1 : 1));
+
+            // Force-limit bench sizes to [10](URI_BENCH_SIZE_LIMIT). (See constant for more details.)
+            // Convert array of Nikkes into a string and append.
+            let nikkeIds = nikkeIdsArrayToString(benchArr, URI_BENCH_SIZE_LIMIT);
+            benchQuery += nikkeIds;
+        }
+
+        // Append query keys (squads and bench)
+        if (squadQuery.length > 0)
+            squadQuery = 'squads=' + squadQuery;
+        if (benchQuery.length > 0)
+            benchQuery = 'bench=' + benchQuery;
+
+        // Build complete query depending on individual query lengths and return query
+        // (Note: Could be made to use like a queue of some sort, but I'm only using two keys for now, so this is enough.)
+        let query = '';
+        if (squadQuery.length > 0 && benchQuery.length > 0)
+            query = squadQuery + '&' + benchQuery;
+        else if (squadQuery.length > 0 && benchQuery.length === 0)
+            query = squadQuery;
+        else if (squadQuery.length === 0 && benchQuery.length > 0)
+            query = benchQuery;
+
+        return query;
+    }
+
+    /**
+     * Updates browser URL to match the current query, built from Squads and no Bench.
+     */
+    const updateUriQuery = (benchWanted = false) => {
+        let query = getUriQuery(benchWanted);
+
+        // Update current url to match SquadId
+        if (query.length === 0)
+            window.history.pushState(null, '', ('#/apps/nikke-team-builder'));
+        else
+            window.history.pushState(null, '', ('#/apps/nikke-team-builder?' + query));
     }
 
     /**
      * Converts the current Squads into a shareable code and copies the string onto the user's system's clipboard.
      */
-    const copySquadIdToClipboard = () => {
-        // Add this when dynamic url is fixed: 'https://ewjosh.github.io//#/apps/nikkeTeamBuilder/'
-        navigator.clipboard.writeText(getSquadId());
-    }
+    const copyUriQueryToClipboard = (benchWanted = false) => {
+        // Add this when dynamic url is fixed: ''
+        let query = getUriQuery(benchWanted);
 
-    // useLayoutEffect is like useEffect, except it waits for the browser to paint.
-    // This allows us to maintain the drag-n-drop feature without seeing it jitter.
-    useLayoutEffect(() => {
-        handleFilter(filter)
-    }, [nikkeLists.sections['roster'].nikkeIds])
+        if (query.length === 0)
+            navigator.clipboard.writeText('ewjosh.github.io/#/apps/nikke-team-builder');
+        else
+            navigator.clipboard.writeText('ewjosh.github.io/#/apps/nikke-team-builder?' + query);
+    }
 
     /**
      * Function to get the NikkeFilter custom React component.
@@ -862,7 +1050,7 @@ function NikkeTeamBuilder(props) {
                 onFilter={handleFilter}
                 icons={Icons}
                 windowSmall={props.windowSmall}
-                windowWide={props.windowWide}
+                windowLarge={props.windowLarge}
                 tags={Tags}
                 visibility={visibility}
                 setVisibility={setVisibility}
@@ -871,6 +1059,25 @@ function NikkeTeamBuilder(props) {
                 {...additionalProps}
             />;
     }
+
+
+
+    // Called on component mount/load (empty dependency).
+    useEffect(() => {
+        // Initialize nikkeList through dynamic URL upon page startup.
+        let listById = readUriQuery(searchParams.get('squads'), searchParams.get('bench'));
+
+        if (listById != null)
+            setNikkeLists(listById)
+
+        window.addEventListener('resize', handleResize);
+    }, [])
+
+    // useLayoutEffect is like useEffect, except it waits for the browser to paint.
+    // This allows us to maintain the drag-n-drop feature without seeing it jitter.
+    useLayoutEffect(() => {
+        handleFilter(filter)
+    }, [nikkeLists.sections['roster'].nikkeIds])
 
     /**
      * Function to get the NikkeList (roster version) custom React component.
@@ -909,7 +1116,7 @@ function NikkeTeamBuilder(props) {
             }
             {/* Page Title: prints states if debugMode is enabled */}
             <h1
-                onClick={() => settings.debugMode ? console.log(nikkeLists, settings)
+                onClick={() => settings.debugMode ? console.log(nikkeLists, settings, visibility)
                     : null
                 }
             >
@@ -917,130 +1124,144 @@ function NikkeTeamBuilder(props) {
             </h1>
 
             {/* Page Header */}
-            <div id='tb-header' className='flex-row'>
-                {/* Help Button */}
-                <Tooltip
-                    title='Help'
-                    placement='top'
-                    arrow
-                >
-                    <IconButton
-                        onClick={() => updateSettings('openHelp', true)}
-                        sx={{
-                            backgroundColor: '#1976d2',
-                            '&:hover': {
-                                backgroundColor: '#1976d2',
-                                filter: 'saturate(60%)'
+            <div id='tb-header' className='flex-column'>
+                <div className='flex-row'>
+                    {/* Help Button */}
+                    <Tooltip
+                        title='Help'
+                        placement='top'
+                        arrow
+                    >
+                        <StyledIconButton
+                            onClick={() => updateSettings('openHelp', true)}
+                        >
+                            <QuestionMark />
+                        </StyledIconButton>
+                    </Tooltip>
+                    <NikkeHelp
+                        open={settings.openHelp}
+                        onClose={() => updateSettings('openHelp', false)}
+                    />
+                    {/* Code Weakness */}
+                    <Select
+                        id='quick-code-select'
+                        value={settings.targetCode}
+                        onChange={(event) => updateSettings('targetCode', event.target.value)}
+                        // variant='standard'
+                        // disableUnderline
+                        IconComponent={null}
+                        SelectDisplayProps={{
+                            style: {
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: '0.1rem 0.253rem',
+                                boxSizing: 'border-box'
                             }
                         }}
+                        MenuProps={{
+                            id: 'quick-code-menu'
+                        }}
+                        sx={{
+                            ".MuiOutlinedInput-notchedOutline": { border: settings.targetCode === 'None' ? 0 : '1px solid gold' }
+                        }}
                     >
-                        <QuestionMark />
-                    </IconButton>
-                </Tooltip>
-                <NikkeHelp
-                    open={settings.openHelp}
-                    onClose={() => updateSettings('openHelp', false)}
-                />
-                {/* Code Weakness */}
-                <Select
-                    id='quick-code-select'
-                    value={settings.targetCode}
-                    onChange={(event) => updateSettings('targetCode', event.target.value)}
-                    // variant='standard'
-                    // disableUnderline
-                    IconComponent={null}
-                    SelectDisplayProps={{
-                        style: {
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            padding: '0.1rem 0.253rem',
-                            boxSizing: 'border-box'
+                        <MenuItem value='None'>
+                            <img
+                                className='sett-select-icon'
+                                src={Icons.Blank}
+                                alt='sett-select-None'
+                            />
+                        </MenuItem>
+                        {
+                            Tags.Code.map(code => {
+                                return <MenuItem key={code} value={code}>
+                                    <img
+                                        className={'sett-select-icon'}
+                                        src={Icons.Code[code]}
+                                        alt={'sett-select-' + code}
+                                    />
+                                </MenuItem>
+                            })
                         }
-                    }}
-                    MenuProps={{
-                        id: 'quick-code-menu'
-                    }}
-                    sx={{
-                        ".MuiOutlinedInput-notchedOutline": { border: settings.targetCode === 'None' ? 0 : '1px solid gold' }
-                    }}
-                >
-                    <MenuItem value='None'>
-                        <img
-                            className='sett-select-icon'
-                            src={Icons.Blank}
-                            alt='sett-select-None'
-                        />
-                    </MenuItem>
-                    {
-                        Tags.Code.map(code => {
-                            return <MenuItem key={code} value={code}>
-                                <img
-                                    className={'sett-select-icon'}
-                                    src={Icons.Code[code]}
-                                    alt={'sett-select-' + code}
-                                />
-                            </MenuItem>
-                        })
-                    }
-                </Select>
-                {/* Edit Button */}
-                <Tooltip
-                    title='Edit Squads'
-                    placement='top'
-                    arrow
-                >
-                    <Button
-                        id='edit-btn'
-                        onClick={() => updateSettings('editable', !settings.editable)}
-                        startIcon={settings.editable ? <DriveFileRenameOutlineSharpIcon /> : <Edit />}
-                        color='inherit'
-                        sx={{
-                            outline: settings.editable ? '2px solid  #ffffffcc' : 0,
-                            backgroundColor: settings.editable ? props.theme.palette.pumpkin.main : '#1976d2',
-                            textDecoration: settings.editable ? 'underline 3px' : 'none',
-                            '&:hover': {
+                    </Select>
+                    {/* Settings Button */}
+                    <Tooltip
+                        title='Settings'
+                        placement='top'
+                        arrow
+                    >
+                        <StyledIconButton
+                            onClick={() => updateSettings('openSettings', true)}
+                        >
+                            <Settings />
+                        </StyledIconButton>
+                    </Tooltip>
+                    {/* Settings Dialog */}
+                    <NikkeSettings
+                        onClose={() => updateSettings('openSettings', false)}
+                        settings={settings}
+                        updateSettings={updateSettings}
+                        windowSmall={props.windowSmall}
+                        visibility={visibility}
+                        setVisibility={setVisibility}
+                        icons={Icons}
+                        getSquadId={getUriQuery}
+                        copyUriQueryToClipboard={copyUriQueryToClipboard}
+                        readSquadId={readUriQuery}
+                        setNikkeLists={setNikkeLists}
+                    />
+                </div>
+                <div className='flex-row'>
+                    {/* Edit Button */}
+                    <Tooltip
+                        title='Edit Squads'
+                        placement='top'
+                        arrow
+                    >
+                        <StyledButton
+                            onClick={() => updateSettings('editable', !settings.editable)}
+                            startIcon={settings.editable ? <DriveFileRenameOutlineSharpIcon /> : <Edit />}
+                            color='inherit'
+                            sx={{
+                                outline: settings.editable ? '2px solid  #ffffffcc' : 0,
                                 backgroundColor: settings.editable ? props.theme.palette.pumpkin.main : '#1976d2',
-                                filter: 'saturate(60%)',
-                                textDecoration: settings.editable ? 'none' : 'underline 3px',
-                            }
-                        }}
+                                textDecoration: settings.editable ? 'underline 3px' : 'none',
+                                '&:hover': {
+                                    backgroundColor: settings.editable ? props.theme.palette.pumpkin.main : '#1976d2',
+                                    filter: 'saturate(60%)',
+                                    textDecoration: settings.editable ? 'none' : 'underline 3px',
+                                }
+                            }}
+                        >
+                            Edit
+                        </StyledButton>
+                    </Tooltip>
+                    {/* Squads Minimize Button */}
+                    <Tooltip
+                        title={visibility.allSquadsMin ? 'Expand All Squads' : 'Collapse All Squads'}
+                        placement='top'
+                        arrow
                     >
-                        Edit
-                    </Button>
-                </Tooltip>
-                {/* Settings Button */}
-                <Tooltip
-                    title='Settings'
-                    placement='top'
-                    arrow
-                >
-                    <IconButton
-                        sx={{
-                            backgroundColor: '#1976d2',
-                            '&:hover': {
-                                backgroundColor: '#1976d2',
-                                filter: 'saturate(60%)'
+                        <StyledButton
+                            onClick={() => handleSetAllSquadsMinimized(!visibility.allSquadsMin)}
+                            color='inherit'
+                            sx={{
+                                backgroundColor: settings.editable ? props.theme.palette.pumpkin.main : '#1976d2',
+                                '&:hover': {
+                                    filter: 'saturate(60%)',
+                                }
+                            }}
+                        >
+                            <RecentActorsIcon />
+                            {
+                                visibility.allSquadsMin ?
+                                    <ArrowDropUpIcon />
+                                    : <ArrowDropDownIcon />
                             }
-                        }}
-                        onClick={() => updateSettings('openSettings', true)}
-                    >
-                        <Settings />
-                    </IconButton>
-                </Tooltip>
-                {/* Settings Dialog */}
-                <NikkeSettings
-                    onClose={() => updateSettings('openSettings', false)}
-                    settings={settings}
-                    updateSettings={updateSettings}
-                    windowSmall={props.windowSmall}
-                    visibility={visibility}
-                    setVisibility={setVisibility}
-                    icons={Icons}
-                    getSquadId={getSquadId}
-                    copySquadIdToClipboard={copySquadIdToClipboard}
-                    readSquadId={readSquadId}
-                />
+                        </StyledButton>
+                    </Tooltip>
+                </div>
             </div>
 
             {/* Main Content */}

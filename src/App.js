@@ -26,6 +26,9 @@ import useScrollTrigger from '@mui/material/useScrollTrigger';
 import { alpha, createTheme, getContrastRatio, ThemeProvider } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp.js';
 
+const WINDOW_WIDTH_SMALL_THRESHOLD = 600;
+const WINDOW_WIDTH_LARGE_THRESHOLD = 1920;
+
 const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -70,24 +73,24 @@ const theme = createTheme({
 
 function App() {
   // Boolean for determining whether navbar should be using mobile or desktop versions of components and assets.
-  const [windowSmall, setWindowSmall] = useState(window.innerWidth <= 500);
-  const [windowWide, setWindowWide] = useState(window.innerWidth > 1920);
+  const [windowSmall, setWindowSmall] = useState(window.innerWidth <= WINDOW_WIDTH_SMALL_THRESHOLD);
+  const [windowLarge, setWindowLarge] = useState(window.innerWidth > WINDOW_WIDTH_LARGE_THRESHOLD);
 
   /**
    * Event fired when window is resized. Updates boolean small.
    */
   const handleResize = () => {
-    if (window.innerWidth <= 600) {
+    if (window.innerWidth <= WINDOW_WIDTH_SMALL_THRESHOLD) {
       setWindowSmall(true);
-      setWindowWide(false)
+      setWindowLarge(false);
     }
-    else if (window.innerWidth > 1920) {
+    else if (window.innerWidth > WINDOW_WIDTH_LARGE_THRESHOLD) {
       setWindowSmall(false);
-      setWindowWide(true)
+      setWindowLarge(true);
     }
     else {
       setWindowSmall(false);
-      setWindowWide(false);
+      setWindowLarge(false);
     }
   }
   window.onresize = handleResize;
@@ -117,20 +120,16 @@ function App() {
             <Route exact path='/apps/clock' element={<Clock />} />
             <Route exact path='/apps/calculator' element={<Calculator />} />
 
-            <Route path='/apps/nikkeTeamBuilder/' element={<NikkeTB
+            <Route path='/apps/nikke-team-builder' element={<NikkeTB
               theme={theme}
               windowSmall={windowSmall}
-              windowWide={windowWide}
-            />} >
-
-              {/* Route below takes dynamic URL data */}
-              <Route path=':urlId' element={<NikkeTB
-                theme={theme}
-                windowSmall={windowSmall}
-                windowWide={windowWide}
-              />} />
-
-            </Route>
+              windowLarge={windowLarge}
+            />} />
+            <Route path='/apps/nikkeTeamBuilder' element={<NikkeTB
+              theme={theme}
+              windowSmall={windowSmall}
+              windowLarge={windowLarge}
+            />} />
 
             <Route exact path='/apps/todo-list' element={<ToDo />}></Route>
             <Route exact path='/games' element={<Home />} />

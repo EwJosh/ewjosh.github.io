@@ -273,7 +273,7 @@ function NikkeFilter(props) {
                                         className='filter-category flex-column'
                                         key={'category-' + category}
                                         style={{
-                                            minWidth: props.windowWide ? 'revert' : '20%'
+                                            minWidth: props.windowLarge ? 'revert' : '20%'
                                         }}
                                     >
                                         {

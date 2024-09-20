@@ -106,7 +106,7 @@ function Navbar(props) {
                             </StyledListItem>
                             <StyledListItem disableGutters>
                                 <StyledListItemButton
-                                    href='/#/apps/nikkeTeamBuilder'
+                                    href='/#/apps/nikke-team-builder'
                                     component='a'
                                     onClick={handleCloseMenu}
                                 >

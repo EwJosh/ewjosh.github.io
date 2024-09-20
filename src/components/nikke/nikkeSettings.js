@@ -14,6 +14,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 // Import MUI icons
 import Close from '@mui/icons-material/Close';
@@ -35,11 +37,22 @@ const StyledSwitch = styled(Switch)({
     backgroundColor: '#ffffff0f'
 })
 
-function NikkeSettings(props) {
-    const [squadId, setSquadId] = useState(props.getSquadId());
+const DashedButton = styled(Button)({
+    minWidth: '3.75rem',
+    maxHeight: '2.5rem',
+    fontWeight: 'bold',
+    fontSize: 'large',
+    textTransform: 'none',
+    outline: '2px dashed #90caf9',
+    padding: 0
+})
 
-    const onSquadIdUpdate = (event) => {
-        setSquadId(event.target.value);
+function NikkeSettings(props) {
+    const [snackbar, setSnackbar] = useState(false);
+
+    const onClickCopyButton = (benchWanted) => {
+        props.copyUriQueryToClipboard(benchWanted);
+        setSnackbar(true);
     }
 
     return (
@@ -143,7 +156,7 @@ function NikkeSettings(props) {
                     <MenuItem value={1}>
                         1
                     </MenuItem>
-                    <MenuItem value={2} disabled={props.windowSmall}>
+                    <MenuItem value={2}>
                         2
                     </MenuItem>
                     <MenuItem value={3} disabled={props.windowSmall}>
@@ -164,6 +177,18 @@ function NikkeSettings(props) {
                     color='warning'
                 />
                 <span className='grid-column-span-4 justify-self-start'> Compact Mode </span>
+                {/* Hide Nikke Avatars */}
+                <StyledSwitch
+                    className='grid-column-span-2 justify-self-end'
+                    checked={props.visibility.avatars}
+                    onChange={(event) => props.setVisibility({
+                        ...props.visibility,
+                        avatars: !props.visibility.avatars
+                    })}
+                    inputProps={{ 'aria-label': 'controlled' }}
+                    color='warning'
+                />
+                <span className='grid-column-span-4 justify-self-start'> Hide Nikke Avatars </span>
                 {/* Hide Filter */}
                 <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
@@ -189,17 +214,15 @@ function NikkeSettings(props) {
                 />
                 <span className='grid-column-span-4 justify-self-start'>Hide Quick-move in Squads</span>
 
-                {/* === Visibility Category === */}
+                {/* === Export Category === */}
                 <div className='grid-column-full justify-self-left'>
-                    <h3 >Share</h3>
+                    <h3 >Export</h3>
                     <hr />
                 </div>
-                {/* Export/Import Section s0=83-53-98-93-68&s1=38-85-86-97&s2=20-99-100-102&s3=118 */}
                 <Tooltip title='Copy Team Code' placement='top' arrow>
-                    <Button
-                        id='sett-export-btn'
-                        className='grid-column-span-1 justify-self-end'
-                        onClick={props.copySquadIdToClipboard}
+                    <DashedButton
+                        className='sett-dashed-btn grid-column-span-3 justify-self-end'
+                        onClick={() => onClickCopyButton(false)}
                         color='primary'
                         sx={{
                             minWidth: 0,
@@ -207,35 +230,37 @@ function NikkeSettings(props) {
                         }}
                     >
                         <ContentPaste />
-                    </Button>
+                        Squads Only
+                    </DashedButton>
                 </Tooltip>
-
-                <TextField
-                    className='grid-column-span-4 justify-self-center'
-                    defaultValue={props.getSquadId()}
-                    onChange={onSquadIdUpdate}
-                    sx={{
-                        width: '100%',
-                        backgroundColor: '#ffffff0f'
-                    }}
-                >
-                </TextField>
-                <Tooltip title='Import Team via Code' placement='top' arrow>
-                    <Button
-                        className='grid-column-span-1 justify-self-end'
-                        id='sett-export-btn'
-                        onClick={() => props.readSquadId(squadId)}
+                <Tooltip title='Copy Team Code' placement='top' arrow>
+                    <DashedButton
+                        className='sett-dashed-btn grid-column-span-3 justify-self-end'
+                        onClick={() => onClickCopyButton(true)}
                         color='primary'
                         sx={{
                             minWidth: 0,
                             width: '100%'
                         }}
                     >
-                        <KeyboardReturnIcon />
-                    </Button>
+                        <ContentPaste />
+                        Squads + Bench
+                    </DashedButton>
                 </Tooltip>
+                <Snackbar
+                    open={snackbar}
+                    onClose={() => setSnackbar(false)}
+                    autoHideDuration={5000}
+                >
+                    <Alert
+                        onClose={() => setSnackbar(false)}
+                        severity='success'
+                    >
+                        Link copied to clipboard
+                    </Alert>
+                </Snackbar>
                 {/* Debug Mode */}
-                <FormControlLabel
+                {/* <FormControlLabel
                     className='grid-column-full justify-self-center'
                     control={<Switch
                         checked={props.settings.debugMode}
@@ -244,7 +269,7 @@ function NikkeSettings(props) {
                         color='warning'
                     />}
                     label='Debug Mode'
-                />
+                /> */}
 
             </DialogContent>
         </Dialog >

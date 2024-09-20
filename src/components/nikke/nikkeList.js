@@ -24,8 +24,6 @@ function NikkeList(props) {
             list = props.nikkeData
 
         return list.map((item, index) => {
-            console.log(item);
-
             return (
                 <NikkeUnit
                     key={'unit-' + item.id + '-' + index}
