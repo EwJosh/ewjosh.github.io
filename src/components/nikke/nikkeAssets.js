@@ -27,8 +27,12 @@ import Burst1RIcon from '../../assets/images/Nikke/icons/NikkeBurst1R.png';
 import Burst2Icon from '../../assets/images/Nikke/icons/NikkeBurst2.png';
 import Burst3Icon from '../../assets/images/Nikke/icons/NikkeBurst3.png';
 import BurstVIcon from '../../assets/images/Nikke/icons/NikkeBurstV.png';
+// Import Burst Cooldown Underlays
+import BurstCooldown20Icon from '../../assets/images/Nikke/icons/NikkeBurstCooldown20.png';
+import BurstCooldown40Icon from '../../assets/images/Nikke/icons/NikkeBurstCooldown40.png';
+import BurstCooldown60Icon from '../../assets/images/Nikke/icons/NikkeBurstCooldown60.png';
 
-// Import Base and Overlay
+// Import Base and the Highlight Overlay
 import BlankIcon from '../../assets/images/Nikke/icons/NikkeIconBase.png';
 import HighlightIcon from '../../assets/images/Nikke/icons/NikkeIconHighlight.png';
 
@@ -45,6 +49,11 @@ const icons = {
         '3': Burst3Icon,
         '1R': Burst1RIcon,
         'V': BurstVIcon
+    },
+    'Burst Cooldown': {
+        '20': BurstCooldown20Icon,
+        '40': BurstCooldown40Icon,
+        '60': BurstCooldown60Icon
     },
     'Class': {
         'Attacker': ClassAtkIcon,

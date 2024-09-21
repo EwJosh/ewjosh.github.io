@@ -74,9 +74,9 @@ function NikkeFilter(props) {
      * @param {string} category Filterable tag category.
      */
     const handleToggleVisibility = (category) => {
-        // Check if props.visibility.categoryIcons should be true or false
-        // Don't check with Burst category. Start on index 1 to skip Burst too
-        if (category !== 'Burst') {
+        // Check if props.visibility.categoryIcons should be true or false (for condensing Nikke Unit, if necessary)
+        // Don't check with Burst/Cooldown categories. Start on index 1 to skip Burst too
+        if (category !== 'Burst' && category !== 'Burst Cooldown') {
             let hasVisibility = false;
             for (let i = 1; i < props.visibility.categories.length; i++) {
                 let ctgr = props.visibility.categories[i];
@@ -107,12 +107,30 @@ function NikkeFilter(props) {
                 'categoryIcons': hasVisibility
             })
         }
-        // If clicked category is Burst, don't check and just flip
-        else
+        // If clicked category is Burst or Burst Cooldown, do the following....
+        // When toggling Burst visibility, Burst Cooldown will always match.
+        else if (category === 'Burst') {
             props.setVisibility({
                 ...props.visibility,
-                [category]: !props.visibility[category]
-            })
+                'Burst': !props.visibility['Burst'],
+                'Burst Cooldown': !props.visibility['Burst']
+            });
+        }
+        // When toggling Burst Cooldown to be visible, make Burst visible.
+        // When toggling Burst Cooldown to be invisible, don't change Burst.
+        else if (category === 'Burst Cooldown') {
+            if (props.visibility['Burst Cooldown'])
+                props.setVisibility({
+                    ...props.visibility,
+                    'Burst Cooldown': false
+                });
+            else
+                props.setVisibility({
+                    ...props.visibility,
+                    'Burst': true,
+                    'Burst Cooldown': true
+                });
+        }
     }
 
     /**
@@ -165,7 +183,7 @@ function NikkeFilter(props) {
      * @returns A React component to display the filtered tag.
      */
     const getTagIcon = (category, tag, selectState) => {
-        if (props.icons[category] == null)
+        if (category === 'Burst Cooldown' || category === 'Rarity')
             return <span>{tag}</span>;
         else if (category === 'Code' && tag === props.targetCode)
             return [
@@ -278,7 +296,11 @@ function NikkeFilter(props) {
                                     >
                                         {
 
-                                            (props.visibility.categories.indexOf(category) !== -1) ?
+                                            (
+                                                props.visibility.categories.indexOf(category) !== -1
+                                                || category === 'Burst'
+                                                || category === 'Burst Cooldown'
+                                            ) ?
                                                 <div className='filter-category-visibility-container flex-row'>
                                                     <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
                                                     {/* Create IconButton for toggling visibility */}

@@ -73,7 +73,7 @@ function NikkeSettings(props) {
                     <Close />
                 </IconButton>
             </DialogTitle>
-            <hr style={{ width: '100%', margin: 0, boxSizing: 'border-box' }} />
+            <hr />
 
             {/* Body */}
             <DialogContent
@@ -201,18 +201,18 @@ function NikkeSettings(props) {
                     color='warning'
                 />
                 <span className='grid-column-span-4 justify-self-start'> Hide Filter </span>
-                {/* Hide Quick-Move Buttons */}
+                {/* Hide Quick-Move and Info Buttons */}
                 <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
-                    checked={!props.visibility.quickMove}
+                    checked={!props.visibility.squadClean}
                     onChange={(event) => props.setVisibility({
                         ...props.visibility,
-                        quickMove: !props.visibility.quickMove
+                        squadClean: !props.visibility.squadClean
                     })}
                     inputProps={{ 'aria-label': 'controlled' }}
                     color='warning'
                 />
-                <span className='grid-column-span-4 justify-self-start'>Hide Quick-move in Squads</span>
+                <span className='grid-column-span-4 justify-self-start'>Hide Quick Move and Info buttons in Squads</span>
 
                 {/* === Export Category === */}
                 <div className='grid-column-full justify-self-left'>

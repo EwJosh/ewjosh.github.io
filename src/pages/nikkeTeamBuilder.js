@@ -22,7 +22,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Drawer from '@mui/material/Drawer';
-import { styled } from '@mui/material';
+import { Popper, styled } from '@mui/material';
 
 // Import MUI icons
 import Add from '@mui/icons-material/Add';
@@ -37,6 +37,7 @@ import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
+import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 
 // Import assets (cont.)
 const NikkeAvatars = { ...getNikkeAvatars() };
@@ -197,17 +198,19 @@ function NikkeTeamBuilder(props) {
     // Visible components are minimized if -Min is true.
     const [visibility, setVisibility] = useState({
         // Iterable list of visibility keys for NikkeUnit.
-        'categories': ['Burst', 'Code', 'Weapon', 'Class', 'Company'],
+        'categories': ['Code', 'Weapon', 'Class', 'Company'],
 
-        'avatars': true,       // Whether Nikke Avatars are rendered or not.
+        'avatars': true,        // Whether Nikke Avatars are rendered or not.
         'allSquadsMin': false,  // Whether ALL the squad components are minimized.
         'filter': true,         // Whether the filter component is rendered at all.
         'filterMin': false,     // Whether the filter component is minimized.
         'categoryIcons': true,  // If false, shrinks NikkeUnit and skips rendering of the bottom four icons.
-        'quickMove': true,      // Whether the quick-move (+/-) buttons are rendered.
+        'squadClean': true,      // Whether the quick-move (+/-) and info (i) buttons are rendered in Squads.
+        'unitDetails': false,    // Whether the popper for a NikkeUnit is visible or not.
 
         // Icons that can be hidden if false
         'Burst': true,
+        'Burst Cooldown': true,
         'Class': true,
         'Code': true,
         'Company': true,
@@ -508,17 +511,28 @@ function NikkeTeamBuilder(props) {
             return;
         }
 
-        // Run Nikke roster through filter
-        // - return true if nikke matches filter
+        // Run Nikke roster through filter.
+        // - Return true if nikke matches filter.
         let newFilteredNikkes = inputIds.filter(nikkeId => {
             let nikke = getNikkeById(nikkeId);
 
-            // If Name is being filtered, check if Nikke's name matches
+            // If Name is being filtered, check if Nikke's name or title matches.
             if (inputFilter.Name != null && inputFilter.Name.length > 0) {
-                // Create RegExp using filter. Using Start of String (^) and forcing filter to lowercase
+                // Create RegExp using filter. Using Start of String (^) and forcing filter to lowercase.
                 let regex = new RegExp('^' + inputFilter.Name.toLowerCase())
-                // Check regex to nikkeId, if nothing is returned then reject Nikke
-                if (regex.exec(nikke.Name.toLowerCase()) == null)
+                // Check regex to nikke Name, if nothing is returned then reject Nikke.
+                // If Nikke has a Title, check if at least one of title or name matches.
+                if (
+                    (
+                        nikke.Title == null
+                        && regex.exec(nikke.Name.toLowerCase()) == null
+                    )
+                    || (
+                        nikke.Title != null
+                        && regex.exec(nikke.Title.toLowerCase()) == null
+                        && regex.exec(nikke.Name.toLowerCase()) == null
+                    )
+                )
                     return false;
             }
 
@@ -595,13 +609,15 @@ function NikkeTeamBuilder(props) {
      * @param {string} sectionId ID value of the Squad to be deleted.
      */
     const handleRemoveSquad = (sectionId) => {
-        // Unload nikkeIds so that we don't lose any units. Place them into bench.
+        // Copy NikkeList's sections.
+        let newSections = nikkeLists.sections;
+
+        // Unload the Squad's nikkeIds so that we don't lose any units. Place them into bench.
         nikkeLists.sections[sectionId].nikkeIds.forEach(nikkeId =>
             nikkeLists.sections['bench'].nikkeIds.push(nikkeId)
         );
 
-        // Copy the sections object and remove the target section.
-        let newSections = nikkeLists.sections;
+        // Remove/Delete the target section.
         delete newSections[sectionId];
 
         // Create a new section order array.
@@ -646,6 +662,36 @@ function NikkeTeamBuilder(props) {
                 sectionOrder: newSectionOrder
             })
         }
+    }
+
+    /**
+    * Empties all Squads of Nikkes. Any Nikkes removed from a Squad will be dumped into Bench.
+    * Does not directly affect other Squad states such as Squad titles and minimization.
+    */
+    const handleResetAllSquads = () => {
+        // Copy NikkeList's sections.
+        let newSections = nikkeLists.sections;
+
+        // Loop through each Squad
+        nikkeLists.sectionOrder.forEach(sectionId => {
+            // Unload a Squad's nikkeIds into Bench so that we don't lose any units. 
+            newSections[sectionId].nikkeIds.forEach(nikkeId =>
+                newSections['bench'].nikkeIds.push(nikkeId)
+            );
+
+            // Set Squad's nikkeIds to be empty.
+            newSections[sectionId].nikkeIds = [];
+        }
+        )
+
+        // Update NikkeLists.
+        setNikkeLists({
+            ...nikkeLists,
+            sections: {
+                ...newSections
+            }
+        })
+
     }
 
     /**
@@ -755,6 +801,15 @@ function NikkeTeamBuilder(props) {
             ...visibility,
             allSquadsMin: bool
         })
+    }
+
+    const handleUnitDetails = (anchorEl) => {
+        return <Popper
+            open
+            anchorEl={anchorEl}
+        >
+            <span>test</span>
+        </Popper>
     }
 
     /**
@@ -1060,25 +1115,6 @@ function NikkeTeamBuilder(props) {
             />;
     }
 
-
-
-    // Called on component mount/load (empty dependency).
-    useEffect(() => {
-        // Initialize nikkeList through dynamic URL upon page startup.
-        let listById = readUriQuery(searchParams.get('squads'), searchParams.get('bench'));
-
-        if (listById != null)
-            setNikkeLists(listById)
-
-        window.addEventListener('resize', handleResize);
-    }, [])
-
-    // useLayoutEffect is like useEffect, except it waits for the browser to paint.
-    // This allows us to maintain the drag-n-drop feature without seeing it jitter.
-    useLayoutEffect(() => {
-        handleFilter(filter)
-    }, [nikkeLists.sections['roster'].nikkeIds])
-
     /**
      * Function to get the NikkeList (roster version) custom React component.
      * Turned into a function to allow access to be built in multiple areas (e.g. main page and sidebar menu)
@@ -1098,8 +1134,49 @@ function NikkeTeamBuilder(props) {
             targetCode={settings.targetCode}
             allowDuplicates={settings.allowDuplicates}
             nikkeData={NikkeData}
+            handleUnitDetails={handleUnitDetails}
         />
     }
+
+    /**
+     * Called on component mount/load (empty dependency).
+     * - Initializes Squad and Bench according to URI's Query.
+     * - Enforces new URL over old URL.
+     * - Adds the resize listener (once) without overwriting the one in the parent App.js.
+     */
+    useEffect(() => {
+        // Initialize nikkeList through dynamic URL upon page startup.
+        // Also enforce the new URL (nikke-team-builder) over the old URL (nikkeTeamBuilder).
+        let listById = readUriQuery(searchParams.get('squads'), searchParams.get('bench'));
+        if (listById != null) {
+            setNikkeLists(listById);
+            setSquadCnt(listById.sectionOrder.length);
+            window.history.replaceState(null, '', '#/apps/nikke-team-builder?' + searchParams.toString());
+        }
+        else
+            window.history.replaceState(null, '', '#/apps/nikke-team-builder');
+
+        window.addEventListener('resize', handleResize);
+    }, [])
+
+    /**
+     * Called whenever Squads (and also Bench and Roster) are updated.
+     * Updates browser's URL (queries) to match current Squad status.
+     */
+    useEffect(() => {
+        updateUriQuery(false);
+    }, [nikkeLists])
+
+    /**
+     * Called whenever Roster is updated.
+     * Updates Roster according to Filter.
+     * 
+     * Note: useLayoutEffect is like useEffect, except it waits for the browser to paint.
+     * This allows us to maintain the drag-n-drop feature without seeing it "jitter".
+     */
+    useLayoutEffect(() => {
+        handleFilter(filter)
+    }, [nikkeLists.sections['roster'].nikkeIds])
 
     return (
         <div className="page" style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
@@ -1213,6 +1290,22 @@ function NikkeTeamBuilder(props) {
                     />
                 </div>
                 <div className='flex-row'>
+                    {/* Append Squad Button */}
+                    {
+                        settings.editable ? <Tooltip title='Append Squad' placement='top' arrow>
+                            <StyledIconButton
+                                onClick={() => handleAddSquad(nikkeLists.sectionOrder.length)}
+                                sx={{
+                                    backgroundColor: '#209320',
+                                    '&:hover': {
+                                        backgroundColor: '#209320'
+                                    }
+                                }}
+                            ><Add />
+                            </StyledIconButton>
+                        </Tooltip>
+                            : null
+                    }
                     {/* Edit Button */}
                     <Tooltip
                         title='Edit Squads'
@@ -1247,7 +1340,7 @@ function NikkeTeamBuilder(props) {
                             onClick={() => handleSetAllSquadsMinimized(!visibility.allSquadsMin)}
                             color='inherit'
                             sx={{
-                                backgroundColor: settings.editable ? props.theme.palette.pumpkin.main : '#1976d2',
+                                backgroundColor: '#1976d2',
                                 '&:hover': {
                                     filter: 'saturate(60%)',
                                 }
@@ -1261,6 +1354,22 @@ function NikkeTeamBuilder(props) {
                             }
                         </StyledButton>
                     </Tooltip>
+                    {/* Empty Squads Button */}
+                    {
+                        settings.editable ? <Tooltip title='Empty Squads' placement='top' arrow>
+                            <StyledIconButton
+                                onClick={handleResetAllSquads}
+                                sx={{
+                                    backgroundColor: '#c32020',
+                                    '&:hover': {
+                                        backgroundColor: '#c32020'
+                                    }
+                                }}
+                            ><SettingsBackupRestoreIcon />
+                            </StyledIconButton>
+                        </Tooltip>
+                            : null
+                    }
                 </div>
             </div>
 
@@ -1337,6 +1446,7 @@ function NikkeTeamBuilder(props) {
                                     targetCode={settings.targetCode}
                                     enableReviews={settings.enableReviews}
                                     onSetSquadMinimized={handleSetSquadMinimized}
+                                    handleUnitDetails={handleUnitDetails}
                                     theme={props.theme}
                                 />
                                 {
@@ -1386,6 +1496,7 @@ function NikkeTeamBuilder(props) {
                     visibility={visibility}
                     onMoveNikke={handleMoveNikke}
                     targetCode={settings.targetCode}
+                    handleUnitDetails={handleUnitDetails}
                 />
 
 

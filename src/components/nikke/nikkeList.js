@@ -33,8 +33,11 @@ function NikkeList(props) {
                     sectionId={props.section.id}
                     index={index}
                     windowSmall={props.windowSmall}
-                    icons={[
+                    burstIcons={[
                         props.icons.Burst[item.Burst],
+                        props.icons['Burst Cooldown'][item['Burst Cooldown']]
+                    ]}
+                    tagIcons={[
                         props.icons.Code[item.Code],
                         props.icons.Weapon[item.Weapon],
                         props.icons.Class[item.Class],
@@ -45,6 +48,7 @@ function NikkeList(props) {
                     visibility={props.visibility}
                     onMoveNikke={onMoveNikke}
                     hasTargetCode={item.Code === props.targetCode}
+                    handleUnitDetails={props.handleUnitDetails}
                 />
             )
         });

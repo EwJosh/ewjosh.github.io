@@ -24,6 +24,7 @@ import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore
 import Visibility from '@mui/icons-material/Visibility';
 import ContentPaste from '@mui/icons-material/ContentPaste';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import Info from '@mui/icons-material/InfoOutlined';
 
 /**
  * Restyled <h3> for being used as a dropdown/accordion button
@@ -82,7 +83,7 @@ function NikkeHelp(props) {
                     <Close />
                 </IconButton>
             </DialogTitle>
-            <hr style={{ width: '100%', margin: 0, boxSizing: 'border-box' }} />
+            <hr />
 
             {/* Body */}
             <DialogContent id='help-dialog-body'>
@@ -130,13 +131,24 @@ function NikkeHelp(props) {
                         </li>
                         <ul>
                             <li>
-                                Pressing the <Remove fontSize='inherit' className='menu-icon-text' /> Remove button
+                                Pressing the <Remove fontSize='inherit' className='menu-icon-text' /> Quick Move button
                                 on a Nikke will move them to the Bench.
                             </li>
                         </ul>
                         <li>
-                            Squad names can be edited and Squads can be added or removed by <b>toggling
-                                the <Edit fontSize='inherit' className='menu-icon-text' /> Edit button</b> in the top.
+                            <b>Toggling the <Edit fontSize='inherit' className='menu-icon-text' /> Edit button</b> at the top
+                            will enable "Edit Mode." When "Edit Mode" is active...
+                            <ul>
+                                <li>
+                                    Squads can be <Add fontSize='inherit' className='menu-icon-text' /> added
+                                    or <Remove fontSize='inherit' className='menu-icon-text' /> removed.
+                                </li>
+                                <li> Squad names can be changed. </li>
+                                <li>
+                                    Squads can be <SettingsBackupRestoreIcon fontSize='inherit' className='menu-icon-text' /> emptied
+                                    all at once.
+                                </li>
+                            </ul>
                         </li>
                         <li>
                             Toggling the <ArrowDropDownIcon fontSize='inherit' className='menu-icon-text' /> Dropdown button
@@ -183,7 +195,8 @@ function NikkeHelp(props) {
                                     </li>
                                 </ul>
                                 <li>
-                                    Matches Code Weakness (If set in <Settings fontSize='inherit' className='menu-icon-text' /> Settings,
+                                    Matches Code Weakness (If set in <Settings fontSize='inherit' className='menu-icon-text' /> Settings
+                                    or the top of the page,
                                     does your squad have at least one matching Nikke?)
                                 </li>
                             </ul>
@@ -220,7 +233,7 @@ function NikkeHelp(props) {
                     <ul className='dropdown-body'>
                         <li>
                             The <b>Bench</b> is meant to be a quick placeholder for your use.
-                            Like a favorites while you organize your squads.
+                            Like a 'Favorites' while you organize your squads.
                             This should reduce going back and forth between the Roster and your squads
                         </li>
                         <ul>
@@ -229,18 +242,14 @@ function NikkeHelp(props) {
                             </li>
                             <li>
                                 Nikkes can be returned from the Bench to the Roster
-                                via the <Remove fontSize='inherit' className='menu-icon-text' /> Remove button.
+                                via the <Remove fontSize='inherit' className='menu-icon-text' /> Quick Move button.
                             </li>
                         </ul>
                         <li>The <b>Roster</b> is initialized with all the Nikke units (up until <i>the Eva collab</i> so far).</li>
                         <ul>
                             <li>
                                 Nikkes can be moved from the Roster to the Bench
-                                via the <Add fontSize='inherit' className='menu-icon-text' /> Add button.
-                            </li>
-                            <li>
-                                They can be returned to the Roster from the Bench
-                                via the <Remove fontSize='inherit' className='menu-icon-text' /> Remove button.
+                                via the <Add fontSize='inherit' className='menu-icon-text' /> Quick Move button.
                             </li>
                             <li>
                                 Roster's ability to drag-and-drop is disabled.
@@ -338,7 +347,8 @@ function NikkeHelp(props) {
                         <li>The Filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(But will still be active, however)</li>
                         <li>
                             For a nice screenshot or to reduce noise, you can also hide
-                            the <Remove fontSize='inherit' className='menu-icon-text' /> Remove button from Nikkes in Squads.
+                            the <Remove fontSize='inherit' className='menu-icon-text' /> Quick Move
+                            and <Info fontSize='inherit' className='menu-icon-text' /> Info buttons from Nikkes in Squads.
                         </li>
                         <li>
                             Your Squad can be converted into a saveable/shareable URL.
@@ -377,9 +387,6 @@ function NikkeHelp(props) {
                     </li>
                     <li>
                         Extend filter/highlight system to Bench and Squads.
-                    </li>
-                    <li>
-                        Allow squad codes to work with dynamic URLs.
                     </li>
                     <li>
                         Adjust component positions and Compact Mode features to be more intuitive.

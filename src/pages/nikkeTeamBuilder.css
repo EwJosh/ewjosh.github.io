@@ -5,6 +5,12 @@ h4 {
   margin: 0;
 }
 
+hr {
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+}
+
 .page {
   gap: 0.5rem;
 }
@@ -402,6 +408,7 @@ h4 {
   right: 0;
   min-width: 1rem;
   max-width: 30%;
+  min-height: 1rem;
 }
 
 .nikke-name-container {
@@ -462,7 +469,7 @@ h4 {
   z-index: 1;
 }
 
-div.nikke-icon {
+.nikke-icon-container > .nikke-icon {
   position: relative;
   justify-content: center;
 }
@@ -477,4 +484,33 @@ div.nikke-icon > .nikke-icon-base {
   position: absolute;
   max-width: 100%;
   z-index: 1;
+}
+
+.nikke-burst > .nikke-icon-base {
+  position: absolute;
+  max-width: 100%;
+  z-index: 1;
+  bottom: 0;
+}
+
+.nikke-burst > .icon-underlay {
+  position: absolute;
+  max-width: 100%;
+  top: -50%;
+}
+
+.nikke-unit-small .nikke-burst > .icon-underlay {
+  top: 0;
+}
+
+.nikke-unit-details {
+  max-width: 10rem;
+  padding: 0.5rem;
+  border-width: 0 0 0 5px;
+  border-style: solid;
+  border-radius: 0.25rem;
+  margin: 0 0.25rem;
+
+  background-color: #eeeeee;
+  box-sizing: border-box;
 }

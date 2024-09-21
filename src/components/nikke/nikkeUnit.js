@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 
 // Import MUI components
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Popper from '@mui/material/Popper'
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 
 // Import MUI icons
-import Add from '@mui/icons-material/Add';
+import Add from '@mui/icons-material/AddOutlined';
 import Remove from '@mui/icons-material/Remove';
+import Info from '@mui/icons-material/InfoTwoTone';
 
 function NikkeUnit(props) {
+    const [anchorEl, setAnchorEl] = useState(null);
+
     /**
          * Returns the className this Unit should have depending on the circumstances.
          * All units have 'nikke-unit'.
@@ -90,6 +95,8 @@ function NikkeUnit(props) {
             </Tooltip>;
     }
 
+
+
     return (
         <Draggable
             className='nikke-unit-container'
@@ -109,38 +116,85 @@ function NikkeUnit(props) {
                 >
                     {/* Image Container */}
                     <div className='nikke-image-container'>
+                        {/* Quick Move Button */}
                         {
-                            (props.sectionId === 'bench' || props.sectionId === 'roster' || props.visibility.quickMove) ?
+                            (props.sectionId === 'bench' || props.sectionId === 'roster' || props.visibility.squadClean) ?
                                 <IconButton
                                     onClick={() => props.onMoveNikke(props.unit.Id, props.index)}
                                     variant='outlined'
                                     size='small'
                                     color={props.sectionId !== 'bench' ? 'success' : 'error'}
                                     sx={{
-                                        border: 'solid 1px',
-                                        width: '1.2em',
-                                        height: '1.2em',
+                                        border: 'solid 2px',
+                                        width: '1em',
+                                        height: '1em',
                                         position: 'absolute',
                                         top: '0.3em',
-                                        left: '0.rem',
-                                        backgroundColor: '#fff'
+                                        left: '0rem',
+                                        backgroundColor: '#fff',
+                                        '&:hover': {
+                                            backgroundColor: '#fff',
+                                            filter: 'brightness(80%)'
+                                        }
                                     }}
                                 >
                                     {getAddRemoveButton()}
                                 </IconButton>
                                 : null
                         }
+                        {/* Info Button */}
+                        {
+                            (props.sectionId === 'bench' || props.sectionId === 'roster' || props.visibility.squadClean) ?
+                                <IconButton
+                                    onClick={(event) => setAnchorEl(anchorEl ? null : event.currentTarget)}
+                                    size='small'
+                                    color='info'
+                                    sx={{
+                                        width: '1em',
+                                        height: '1em',
+                                        position: 'absolute',
+                                        top: '0.3em',
+                                        right: '0rem',
+                                        backgroundColor: '#000000a0',
+                                        '&:hover': {
+                                            backgroundColor: '#000000a0',
+                                            filter: 'brightness(120%)'
+                                        }
+                                    }}
+                                >
+                                    <Tooltip title='More Details' placement='top' arrow>
+                                        <Info fontSize='small' sx={{
+                                            width: '1.1em',
+                                            height: '1.1em'
+                                        }} />
+                                    </Tooltip>
+                                </IconButton>
+                                : null
+                        }
 
+                        {/* Avatar Image */}
                         <img
                             className='nikke-image'
                             src={props.avatar}
                             alt={props.unit.Name}
                         />
 
+                        {/* Burst Icon */}
                         {
                             props.visibility['Burst'] ?
-
-                                <img className='nikke-icon nikke-burst' src={props.icons[0]} alt={'Burst ' + props.unit.Burst} />
+                                <div
+                                    className='nikke-icon nikke-burst flex-row'
+                                >
+                                    <img className='nikke-icon-base' src={props.burstIcons[0]} alt={'Burst ' + props.unit.Burst} />
+                                    {
+                                        props.visibility['Burst Cooldown'] ? <img
+                                            className='icon-underlay'
+                                            src={props.burstIcons[1]}
+                                            alt={'BCD' + props.unit['Burst Cooldown']}
+                                        />
+                                            : null
+                                    }
+                                </div>
                                 : null
                         }
                     </div>
@@ -169,7 +223,7 @@ function NikkeUnit(props) {
                                                 />
                                                 <img
                                                     className='nikke-icon-base'
-                                                    src={props.icons[index]}
+                                                    src={props.tagIcons[index]}
                                                     alt={category + props.unit[category]}
                                                 />
                                             </div>;
@@ -177,7 +231,7 @@ function NikkeUnit(props) {
                                             return <img
                                                 key={category}
                                                 className='nikke-icon'
-                                                src={props.icons[index]}
+                                                src={props.tagIcons[index]}
                                                 alt={category + props.unit[category]}
                                             />;
                                         else
@@ -187,6 +241,40 @@ function NikkeUnit(props) {
                             </div>
                             : null
                     }
+                    <Popper
+                        open={Boolean(anchorEl)}
+                        anchorEl={anchorEl}
+                        placement='right-start'
+                        modifiers={[{
+                            name: 'flip',
+                            options: {
+                                fallbackPlacements: ['right-end', 'left-start', 'left-end']
+                            },
+                        }]}
+                        sx={{
+                            zIndex: 2
+                        }}
+                    >
+                        <ClickAwayListener
+                            onClickAway={() => setAnchorEl(null)}
+                        >
+                            <div
+                                className='nikke-unit-details flex-column'
+                                style={{
+                                    borderColor: 'black'
+                                }}
+                            >
+                                <h3>{props.unit.Name}</h3>
+                                <hr />
+                                <span><b>Burst:</b> {props.unit.Burst} ({props.unit['Burst Cooldown']} sec)</span>
+                                <span><b>Class:</b> {props.unit.Class}</span>
+                                <span><b>Code:</b> {props.unit.Code}</span>
+                                <span><b>Company:</b> {props.unit.Company}</span>
+                                <span><b>Weapon:</b> {props.unit.Weapon}</span>
+                                <span><b>Tags:</b> <i>N/A</i></span>
+                            </div>
+                        </ClickAwayListener>
+                    </Popper>
                 </div>
             )
             }
