@@ -929,6 +929,17 @@
     "Company": "Tetra"
   },
   {
+    "Id": "132",
+    "Name": "Rouge",
+    "Rarity": "SSR",
+    "Burst": "1",
+    "Burst Cooldown": "20",
+    "Code": "Electric",
+    "Weapon": "SR",
+    "Class": "Supporter",
+    "Company": "Tetra"
+  },
+  {
     "Id": "52",
     "Name": "Rupee",
     "Rarity": "SSR",
