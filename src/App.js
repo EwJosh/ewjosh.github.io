@@ -63,10 +63,10 @@ const theme = createTheme({
       contrastText: getContrastRatio(alpha('#111', 0.9), '#fff') > 4.5 ? '#fff' : '#111',
     },
     unselected: {
-      main: alpha('#eee', 0.9),
-      light: alpha('#eee', 0.7),
-      dark: '#eee',
-      contrastText: getContrastRatio(alpha('#eee', 0.9), '#fff') > 4.5 ? '#fff' : '#111',
+      main: alpha('#e0e0e0', 0.9),
+      light: alpha('#e0e0e0', 0.7),
+      dark: '#e0e0e0',
+      contrastText: getContrastRatio(alpha('#e0e0e0', 0.9), '#fff') > 4.5 ? '#fff' : '#111',
     }
   }
 });

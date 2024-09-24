@@ -22,7 +22,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Drawer from '@mui/material/Drawer';
-import { Popper, styled } from '@mui/material';
+import { Popper, Slide, styled } from '@mui/material';
 
 // Import MUI icons
 import Add from '@mui/icons-material/Add';
@@ -73,6 +73,15 @@ const StyledIconButton = styled(IconButton)({
     }
 })
 
+export const MinimizeButton = styled(Button)({
+    minWidth: 'auto',
+    maxWidth: '25%',
+    height: '70%',
+    position: 'absolute',
+    right: 0,
+    top: 0
+});
+
 function NikkeTeamBuilder(props) {
     let [searchParams, setSearchParams] = useSearchParams();
 
@@ -91,20 +100,24 @@ function NikkeTeamBuilder(props) {
      * Could be separated into their own variables/states, but this way it's easier to manage them all.
      */
     const [settings, setSettings] = useState({
+        // Application states
         editable: false,        // Can edit Squads.
         openSideRoster: false,  // Side menu (Filter+Rostera) is open.
         openHelp: false,        // Help dialog is open.
-
         openSettings: false,    // Settings dialog is open.
+        rosterOverflow: false,  // Roster exceeds maxRosterSize.
+
+        // User-configurable
         targetCode: 'None',     // The selected Code weakness (for reviews).
         enableReviews: true,    // Reviews is enabled.
         allowDuplicates: false, // Duplicate Nikkes are allowed.
+        maxRosterSize: 32,      // Maximum Nikkes rendered in Roster.
         squadsPerRow: (window.innerWidth <= WINDOW_WIDTH_2_SQUADS) ? // Squads displayed per row. Initialized value depends on window size.
             1 : (window.innerWidth > WINDOW_WIDTH_3_SQUADS) ?
                 3
                 : 2,
-        compactMode: false,  // Whether filter and roster are side menus (true) or at the bottom of the page (false).
-        debugMode: false        // Debug mode is enabled (for console printing data).
+        compactMode: 0,         // Whether filter and roster are at the bottom of the page (==0) or a side menu on the left (<0) or right (>0).
+        debugMode: false        // Debug mode is enabled (for console printing data). Leave false unless editing.
     });
     /**
      * Sets the selected setting to the given value.
@@ -112,6 +125,7 @@ function NikkeTeamBuilder(props) {
      * @param {value} value Value to update the setting option.
      */
     const updateSettings = (setting, value) => {
+
         setSettings({
             ...settings,
             [setting]: value
@@ -135,27 +149,23 @@ function NikkeTeamBuilder(props) {
     // window.addEventListener('resize', handleResize);
 
     /**
-     * Gets ALL Nikke IDs from NikkeData.
-     * @returns Returns an Array of only Nikke IDs.
+     * An array of allL Nikke IDs from NikkeData.
      */
-    const getAllNikkeIds = () => {
-        // For each object in NikkeData, grab name
-        let ids = NikkeData.map(item => item.Id);
-
-        return ids;
-    }
+    const allNikkeIds = NikkeData.map(item => item.Id);
 
     /**
      * Initial JSON Object containing...
-     * sections: Each section and their contained Nikkes.
-     *  -Squads: Sections for Nikke game-deployment and rating.
-     *      title: Name displayed for Squads.
-     *      minimized: If true, the Squad's Nikkes and reviews are hidden.
-     *  -Bench and Roster: Sections for Nikke management. Bench is for 'favorites' and Roster is for all.
-     * sectionOrder: An ordered Array of squads.
+     * squads: Each squad and their contained Nikkes.
+     *  - title: Name displayed for Squads.
+     *  - minimized: If true, the Squad's Nikkes and reviews are hidden.
+     * broster: sections for Nikke management.
+     *  - bench: A 'Favorites' for Nikke management. Easier to access for Squads, and (generally/initially) less crowded than Roster.
+     *  - roster: Pool of all Nikkes. If they're not in a Squad or the Bench, they're in here whether rendered or not.
+     *  - filtered roster (froster): Which of the Nikkes in the Roster will be rendered.
+     * squadsOrder: An ordered Array of squads.
      */
-    const initNikkeLists = {
-        sections: {
+    const initNikkeList = {
+        squads: {
             'squad-1': {
                 id: 'squad-1',
                 title: 'Squad 1',
@@ -173,7 +183,9 @@ function NikkeTeamBuilder(props) {
                 title: 'Squad 3',
                 nikkeIds: [],
                 minimized: false
-            },
+            }
+        },
+        broster: {
             'bench': {
                 id: 'bench',
                 title: 'Bench',
@@ -182,16 +194,15 @@ function NikkeTeamBuilder(props) {
             'roster': {
                 id: 'roster',
                 title: 'Roster',
-                nikkeIds: [...getAllNikkeIds()]
+                nikkeIds: [...allNikkeIds]
+            },
+            'froster': {
+                id: 'froster',
+                nikkeIds: [...allNikkeIds]
             }
         },
-        sectionOrder: ['squad-1', 'squad-2', 'squad-3']
+        squadOrder: ['squad-1', 'squad-2', 'squad-3']
     }
-
-    // Filtered collection of Nikke objects visible from the roster section.
-    // i.e. Which of the Roster will be rendered.
-    // filteredNikkes = {[{nikke1}, {nikke2}, ...]}
-    const [filteredNikkes, setFilteredNikkes] = useState([...getAllNikkeIds()]);
 
     // States for rendering icons and other components.
     // Visible components are rendered if true, and not rendered if false.
@@ -204,6 +215,8 @@ function NikkeTeamBuilder(props) {
         'allSquadsMin': false,  // Whether ALL the squad components are minimized.
         'filter': true,         // Whether the filter component is rendered at all.
         'filterMin': false,     // Whether the filter component is minimized.
+        'benchMin': false,      // Whether the Bench and Roster components are minimized, respectively.
+        'rosterMin': false,
         'categoryIcons': true,  // If false, shrinks NikkeUnit and skips rendering of the bottom four icons.
         'squadClean': true,      // Whether the quick-move (+/-) and info (i) buttons are rendered in Squads.
         'unitDetails': false,    // Whether the popper for a NikkeUnit is visible or not.
@@ -214,7 +227,8 @@ function NikkeTeamBuilder(props) {
         'Class': true,
         'Code': true,
         'Company': true,
-        'Weapon': true
+        'Weapon': true,
+        'Rarity': true
     });
 
     /**
@@ -247,18 +261,28 @@ function NikkeTeamBuilder(props) {
      */
     const handleMoveNikke = (nikkeId, srcSectionId, dstSectionId, srcIndex, dstIndex) => {
         // Check if destination exists and that a change has been made, if not then return.
-        if (dstSectionId === srcSectionId
-            && dstIndex === srcIndex)
+        if (dstSectionId === srcSectionId && dstIndex === srcIndex)
             return;
 
-        // Get column from data corresponding to the resulting source and destination sections.
-        let srcSection = nikkeLists.sections[srcSectionId];
-        let dstSection = nikkeLists.sections[dstSectionId];
+        // Initialize booleans to determine which lists should be updated.
+        let srcIsBroster = (srcSectionId === 'bench' || srcSectionId === 'roster')
+        let dstIsBroster = (dstSectionId === 'bench' || dstSectionId === 'roster')
+
+        // Get the object data corresponding to the resulting source and destination sections.
+        let srcSection = nikkeList.broster[srcSectionId];
+        let dstSection = nikkeList.broster[dstSectionId];
+
+        // If either are null, then the section is a squad that needs to be fetched and we should update squads.
+        if (srcSection == null || dstSection == null) {
+            if (srcSection == null)
+                srcSection = nikkeList.squads[srcSectionId];
+            if (dstSection == null)
+                dstSection = nikkeList.squads[dstSectionId];
+        }
 
         // Used for refiltering the roster since I can't just use state.
         let rosterIdsCopy = [];
-
-        let newNikkeLists = {};
+        let newNikkeList = { ...nikkeList }
 
         // If moving within the same section (e.g. drag-n-drop within same squad).
         if (srcSection === dstSection) {
@@ -277,13 +301,10 @@ function NikkeTeamBuilder(props) {
             }
 
             // Set data to use new information
-            newNikkeLists = {
-                ...nikkeLists,
-                sections: {
-                    ...nikkeLists.sections,
-                    [newSection.id]: newSection
-                }
-            }
+            if (srcIsBroster)
+                newNikkeList.broster[srcSectionId] = newSection;
+            else
+                newNikkeList.squads[srcSectionId] = newSection;
         }
         // If the Nikke is being sent to Roster, insert it alphabetically to maintain consistency.
         // If it's already there, don't insert into Roster, just extract from source section.
@@ -321,6 +342,7 @@ function NikkeTeamBuilder(props) {
                 }
             }
 
+
             // Remove the dragged object from list.
             srcNikkeIds.splice(srcIndex, 1)
 
@@ -331,29 +353,27 @@ function NikkeTeamBuilder(props) {
             }
 
             // Grab a copy of roster to refilter.
-            if (srcSectionId === 'roster')
-                rosterIdsCopy = srcNikkeIds;
             rosterIdsCopy = dstNikkeIds;
 
             // Create new section using old section's data, but replacing new Nikke IDs.
             let newSrcSection = {
                 ...srcSection,
                 nikkeIds: srcNikkeIds
-            }
+            };
 
             let newDstSection = {
                 ...dstSection,
                 nikkeIds: dstNikkeIds
-            }
+            };
 
-            // Set data to use new information.
-            newNikkeLists = {
-                ...nikkeLists,
-                sections: {
-                    ...nikkeLists.sections,
-                    [newSrcSection.id]: newSrcSection,
-                    [newDstSection.id]: newDstSection
-                }
+            // Set data to use new information. (Destination is roster)
+            if (srcIsBroster) {
+                newNikkeList.broster[srcSectionId] = newSrcSection;
+                newNikkeList.broster.roster = newDstSection;
+            }
+            else {
+                newNikkeList.squads[srcSectionId] = newSrcSection;
+                newNikkeList.broster.roster = newDstSection;
             }
         }
         // If transferring between different sections.
@@ -363,7 +383,7 @@ function NikkeTeamBuilder(props) {
             let dstNikkeIds = Array.from(dstSection.nikkeIds);
 
             // If the moving Nikke is from Roster, it might be filtered and so
-            // we'll have to find the proper src index inside of roster, not filtered
+            // we'll have to find the proper src index inside of roster, not the filtered roster
             if (srcSectionId === 'roster')
                 srcIndex = srcNikkeIds.indexOf(nikkeId);
 
@@ -386,29 +406,39 @@ function NikkeTeamBuilder(props) {
             let newSrcSection = {
                 ...srcSection,
                 nikkeIds: srcNikkeIds
-            }
+            };
 
             let newDstSection = {
                 ...dstSection,
                 nikkeIds: dstNikkeIds
-            }
+            };
 
             // Set data to use new information
-            newNikkeLists = {
-                ...nikkeLists,
-                sections: {
-                    ...nikkeLists.sections,
-                    [newSrcSection.id]: newSrcSection,
-                    [newDstSection.id]: newDstSection
-                }
+            // If src Section is broster, update Broster. Otherwise, update Squad.
+            // Likewise with dst Section.
+            if (srcIsBroster) {
+                newNikkeList.broster[srcSectionId] = newSrcSection;
+            } else {
+                newNikkeList.squads[srcSectionId] = newSrcSection;
             }
+
+            if (dstIsBroster) {
+                newNikkeList.broster[dstSectionId] = newDstSection;
+            } else {
+                newNikkeList.squads[dstSectionId] = newDstSection;
+            }
+
         }
+
 
         // Update filter if roster is involved.
         if (srcSectionId === 'roster' || dstSectionId === 'roster')
-            handleFilterIds(filter, rosterIdsCopy);
+            handleFilter(filter, rosterIdsCopy);
         // Set new lists.
-        setNikkeLists(newNikkeLists);
+        setNikkeList(newNikkeList);
+        // If Squads were updated, update squad dependents.
+        if (!(srcIsBroster && dstIsBroster))
+            updateSquadDependents();
     }
 
     /**
@@ -480,188 +510,202 @@ function NikkeTeamBuilder(props) {
     }
 
     /**
-     * Neutral call for handleFilterIds. Uses the Roster's IDs from the current state.
-     * Called by the Filter component and useLayoutEffect.
-     * @param {object} inputFilter JSON Object of filterable tags.
+     * Filters an array of Nikke IDs to overwrite froster for rendering the Roster.
+     * 
+     * @param {object} inputFilter JSON Object of filterable tags. Defaults to state filter.
+     * @param {Array<string>} inputIds String Array of Nikke IDs. Defaults to state roster IDs.
+     * @param {boolean} overrideMaxRoster true if filter should ignore maxRosterSize. Defaults to false.
+     * @param {object} inputSettings JSON Object of settings to be read and updated. Defaults to state settings.
      */
-    const handleFilter = (inputFilter) => {
-        handleFilterIds(inputFilter, nikkeLists.sections['roster'].nikkeIds);
+    const handleFilter = (inputFilter = filter, inputIds = nikkeList.broster.roster.nikkeIds, overrideMaxRoster = false, inputSettings = { allowDuplicates: settings.allowDuplicates, maxRosterSize: settings.maxRosterSize }) => {
+        // Update filter state.
+        setFilter({ ...inputFilter });
+        // Initialize new filtered Nikke list and setting options.
+        let newFilteredNikkes = [];
+        let allowDuplicates = inputSettings.allowDuplicates == null ? settings.allowDuplicates : inputSettings.allowDuplicates;
+        let maxRosterSize = inputSettings.maxRosterSize == null ? settings.maxRosterSize : inputSettings.maxRosterSize;
+
+        // If allowDuplicates is active, use entire Nikke ID list as the input.
+        if (allowDuplicates)
+            inputIds = allNikkeIds;
+
+        // Some easter eggs / meme filters. See else for normal filtering.
+        if (inputFilter.Name.toLowerCase() === 'best girl') {
+            newFilteredNikkes = [...allNikkeIds];
+        }
+        else if (inputFilter.Name.toLowerCase() === 'real best girl') {
+            newFilteredNikkes = [53, 107];   // Scarlet and Scarlet: BS
+        }
+        // Otherwise, filter as normal.
+        else {
+            // Run Nikke roster through filter.
+            // - Return true if nikke matches filter.
+            newFilteredNikkes = inputIds.filter(nikkeId => {
+                let nikke = getNikkeById(nikkeId);
+
+                // If Name is being filtered, check if Nikke's name or title matches.
+                if (inputFilter.Name != null && inputFilter.Name.length > 0) {
+                    // Create RegExp using filter. Using Start of String (^) and forcing filter to lowercase.
+                    let regex = new RegExp('^' + inputFilter.Name.toLowerCase())
+                    // Check regex to nikke Name, if nothing is returned then reject Nikke.
+                    // If Nikke has a Title, check if at least one of title or name matches.
+                    if (
+                        (
+                            nikke.Title == null
+                            && regex.exec(nikke.Name.toLowerCase()) == null
+                        )
+                        || (
+                            nikke.Title != null
+                            && regex.exec(nikke.Title.toLowerCase()) == null
+                            && regex.exec(nikke.Name.toLowerCase()) == null
+                        )
+                    )
+                        return false;
+                }
+
+                // For each category, check if the selected tags match the Nikke
+                for (let j = 0; j < inputFilter.categories.length; j++) {
+                    let category = inputFilter.categories[j];
+
+                    // If all tags of a given category are selected, skip category
+                    if (inputFilter[category].length === Tags[category].length) {
+                        continue;
+                    }
+
+                    let found = false;
+
+                    // For each tag in a category, search for the selected tag
+                    for (let i = 0; i < inputFilter[category].length; i++) {
+
+                        // If a selected tag matches, set found and then break
+                        if (inputFilter[category][i] === nikke[category]) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found)
+                        return false;
+                    // Check each category
+                }
+                // If good
+                return true;
+            });
+        }
+
+        // Initialize newSettings to overwrite rosterOverflow and maxRosterSize.
+        let newSettings = {
+            ...settings,
+            allowDuplicates: allowDuplicates,
+            maxRosterSize: maxRosterSize,
+            rosterOverflow: false
+        };
+        // Limit filtered list to maxRosterSize and update rosterOverflow accordingly.
+        if (!overrideMaxRoster && newFilteredNikkes.length > maxRosterSize) {
+            newFilteredNikkes = newFilteredNikkes.slice(0, maxRosterSize - 1);
+            newSettings = {
+                ...newSettings,
+                rosterOverflow: true
+            };
+        }
+
+        // Update FilteredNikkes array and Settings.
+        nikkeList.broster.froster.nikkeIds = newFilteredNikkes;
+        setSettings(newSettings);
     }
 
     /**
-     * Runs the given IDs of Nikkes through a filter. 
-     * Called by the handleFilter and handleMoveNikke.
-     * @param {object} inputFilter JSON Object of filterable tags.
+     * Filters the current roster with the current filter state, but calls to override the maxRosterSize limit.
      */
-    const handleFilterIds = (inputFilter, inputIds) => {
-        // Update filter state.
-        setFilter({ ...inputFilter });
-
-        // Some easter eggs / meme filters
-        if (inputFilter.Name.toLowerCase() === 'best girl') {
-            setFilteredNikkes([
-                ...getAllNikkeIds()
-            ]);
-            return;
-        }
-        else if (inputFilter.Name.toLowerCase() === 'real best girl') {
-            setFilteredNikkes([
-                53, 107 //Scarlet and Scarlet: BS
-            ]);
-            return;
-        }
-
-        // Run Nikke roster through filter.
-        // - Return true if nikke matches filter.
-        let newFilteredNikkes = inputIds.filter(nikkeId => {
-            let nikke = getNikkeById(nikkeId);
-
-            // If Name is being filtered, check if Nikke's name or title matches.
-            if (inputFilter.Name != null && inputFilter.Name.length > 0) {
-                // Create RegExp using filter. Using Start of String (^) and forcing filter to lowercase.
-                let regex = new RegExp('^' + inputFilter.Name.toLowerCase())
-                // Check regex to nikke Name, if nothing is returned then reject Nikke.
-                // If Nikke has a Title, check if at least one of title or name matches.
-                if (
-                    (
-                        nikke.Title == null
-                        && regex.exec(nikke.Name.toLowerCase()) == null
-                    )
-                    || (
-                        nikke.Title != null
-                        && regex.exec(nikke.Title.toLowerCase()) == null
-                        && regex.exec(nikke.Name.toLowerCase()) == null
-                    )
-                )
-                    return false;
-            }
-
-            // For each category, check if the selected tags match the Nikke
-            for (let j = 0; j < inputFilter.categories.length; j++) {
-                let category = inputFilter.categories[j];
-
-                // If all tags of a given category are selected, skip category
-                if (inputFilter[category].length === Tags[category].length) {
-                    continue;
-                }
-
-                let found = false;
-
-                // For each tag in a category, search for the selected tag
-                for (let i = 0; i < inputFilter[category].length; i++) {
-
-                    // If a selected tag matches, set found and then break
-                    if (inputFilter[category][i] === nikke[category]) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                    return false;
-                // Check each category
-            }
-            // If good
-            return true;
-        })
-
-        // Update FilteredNikkes array
-        setFilteredNikkes([
-            ...newFilteredNikkes
-        ])
+    const overrideMaxRoster = () => {
+        handleFilter(filter, nikkeList.broster.roster.nikkeIds, true);
     }
 
     /**
      * Adds a new Squad into sections. The new Squad's placement in sectionOrder is dependent on the given index.
-     * ID and Name of the new Squad is dependent on the state squadCnt regardless of its index and the quantity of current Squads.
+     * ID and Name of the new Squad is dependent on the state squadCt regardless of its index and the quantity of current Squads.
      * @param {number} index Index for the new Squad.
      */
     const handleAddSquad = (index) => {
         // Create new section id and a new section object using Squad Count.
         // Need to increment because concurrency still reads Squad Count as pre-increment
-        let newSectionId = 'squad-' + (squadCnt + 1);
-        let newSectionTitle = 'Squad ' + (squadCnt + 1);
-        setSquadCnt(squadCnt + 1);
+        let newSquadId = 'squad-' + (squadCt + 1);
+        let newSquadTitle = 'Squad ' + (squadCt + 1);
+        setsquadCt(squadCt + 1);
 
         // Create new section order array by inserting the new section id in the index slot.
-        let newSectionOrder = nikkeLists.sectionOrder.slice(0, index + 1);
-        newSectionOrder.push(newSectionId);
-        newSectionOrder = newSectionOrder.concat(nikkeLists.sectionOrder.slice(index + 1));
+        let newSquadOrder = nikkeList.squadOrder;
+        newSquadOrder.splice(index, 0, newSquadId);
 
         // Update information. Be sure to use brackets around [newSectionId] to ensure it uses variable for name.
-        setNikkeLists({
-            sections: {
-                ...nikkeLists.sections,
-                [newSectionId]: {
-                    id: newSectionId,
-                    title: newSectionTitle,
+        setNikkeList({
+            squads: {
+                ...nikkeList.squads,
+                [newSquadId]: {
+                    id: newSquadId,
+                    title: newSquadTitle,
                     nikkeIds: [],
                     minimized: false
                 }
             },
-            sectionOrder: newSectionOrder
+            broster: { ...nikkeList.broster },
+            squadOrder: newSquadOrder
         });
     }
 
     /**
      * Deletes a Squad from sections. If the Squad has Nikkes, dump them into Bench.
-     * If attempting to remove the last Squad, reset Squad section information including squadCnt.
-     * @param {string} sectionId ID value of the Squad to be deleted.
+     * If attempting to remove the last Squad, reset Squad section information including squadCt.
+     * @param {string} squadId ID value of the Squad to be deleted.
      */
-    const handleRemoveSquad = (sectionId) => {
+    const handleRemoveSquad = (squadId) => {
         // Copy NikkeList's sections.
-        let newSections = nikkeLists.sections;
+        let newNikkeList = { ...nikkeList };
+
+        let squadEmpty = nikkeList.squads[squadId].nikkeIds.length === 0;
 
         // Unload the Squad's nikkeIds so that we don't lose any units. Place them into bench.
-        nikkeLists.sections[sectionId].nikkeIds.forEach(nikkeId =>
-            nikkeLists.sections['bench'].nikkeIds.push(nikkeId)
+        nikkeList.squads[squadId].nikkeIds.forEach(nikkeId =>
+            newNikkeList.broster.bench.nikkeIds.push(nikkeId)
         );
 
-        // Remove/Delete the target section.
-        delete newSections[sectionId];
-
-        // Create a new section order array.
-        // Use single for-loop and check name to reduce time, compared to searching for index and removing element.
-        let newSectionOrder = [];
-        nikkeLists.sectionOrder.forEach(section => {
-            if (section !== sectionId)
-                newSectionOrder.push(section)
-        })
-
-        // Deny the removal of the last squad. Could be higher, but...
+        // Deny removal if there is only one squad left.
         // Though not necessary, I'm gonna instead reset Squad Counter to 1 and replace last squad with a 'squad-1'.
-        if (nikkeLists.sectionOrder.length === 1) {
-            setSquadCnt(1);
+        if (nikkeList.squadOrder.length === 1) {
+            setsquadCt(1);
             // Doesn't work to just use handleAddSquad(0) here. Seems to be a concurrency issue with states.
 
             // Update information
-            setNikkeLists({
-                sections: {
+            setNikkeList({
+                squads: {
                     'squad-1': {
                         id: 'squad-1',
                         title: 'Squad 1',
                         nikkeIds: [],
                         minimized: false
                     },
-                    'bench': {
-                        ...nikkeLists.sections['bench']
-                    },
-                    'roster': {
-                        ...nikkeLists.sections['roster']
-                    }
                 },
-                sectionOrder: ['squad-1']
-            })
+                broster: { ...nikkeList.broster },
+                squadOrder: ['squad-1']
+            });
+            return;
         }
-        else {
-            // Otherwise, update information as normal
-            setNikkeLists({
-                sections: {
-                    ...newSections
-                },
-                sectionOrder: newSectionOrder
-            })
-        }
+
+        // Remove/Delete the target section data.
+        delete newNikkeList.squads[squadId];
+
+        // Create a new section order array.
+        // Use single for-loop and check name to reduce time, compared to searching for index and removing element.
+        newNikkeList.squadOrder = [];
+        nikkeList.squadOrder.forEach(squId => {
+            if (squId !== squadId)
+                newNikkeList.squadOrder.push(squId);
+        })
+
+        // Update information and squad dependents.
+        setNikkeList(newNikkeList);
+        if (!squadEmpty)
+            updateSquadDependents();
     }
 
     /**
@@ -669,115 +713,127 @@ function NikkeTeamBuilder(props) {
     * Does not directly affect other Squad states such as Squad titles and minimization.
     */
     const handleResetAllSquads = () => {
-        // Copy NikkeList's sections.
-        let newSections = nikkeLists.sections;
+        // Copy NikkeList's squads and bench.
+        let newSquads = nikkeList.squads;
+        let newBenchIds = nikkeList.broster.bench.nikkeIds;
 
         // Loop through each Squad
-        nikkeLists.sectionOrder.forEach(sectionId => {
+        nikkeList.squadOrder.forEach(sectionId => {
             // Unload a Squad's nikkeIds into Bench so that we don't lose any units. 
-            newSections[sectionId].nikkeIds.forEach(nikkeId =>
-                newSections['bench'].nikkeIds.push(nikkeId)
+            newSquads[sectionId].nikkeIds.forEach(nikkeId =>
+                newBenchIds.push(nikkeId)
             );
 
             // Set Squad's nikkeIds to be empty.
-            newSections[sectionId].nikkeIds = [];
-        }
-        )
-
-        // Update NikkeLists.
-        setNikkeLists({
-            ...nikkeLists,
-            sections: {
-                ...newSections
-            }
+            newSquads[sectionId].nikkeIds = [];
         })
 
+        // Update nikkeList and squad dependents.
+        let newNikkeList = {
+            squads: newSquads,
+            broster: {
+                ...nikkeList.broster,
+                bench: {
+                    ...nikkeList.broster.bench,
+                    nikkeIds: newBenchIds
+                }
+            },
+            squadOrder: nikkeList.squadOrder
+        };
+
+        setNikkeList(newNikkeList);
+        updateSquadDependents();
     }
 
     /**
      * Swaps the position of the given Squad upward (towards index 0) or downward (towards index N).
-     * @param {string} sectionId ID value of the section being moved.
+     * @param {string} squadId ID value of the section being moved.
      * @param {boolean} ifMoveUp true if moving 'upward' (towards index 0), false otherwise.
      */
-    const handleMoveSquad = (sectionId, ifMoveUp) => {
-        let sectOrder = nikkeLists.sectionOrder;
-
+    const handleMoveSquad = (squadId, ifMoveUp = false) => {
         // If only squad, return.
-        if (sectOrder.length === 1)
+        if (nikkeList.squadOrder.length === 1)
             return;
 
+        let newSquadOrder = nikkeList.squadOrder;
+
         // Grab initial indices.
-        let srcIndex = sectOrder.indexOf(sectionId);
-        let dstIndex = ifMoveUp ? srcIndex - 1 : srcIndex + 1;
+        let srcIndex = newSquadOrder.indexOf(squadId);
+        let dstIndex = ifMoveUp ? (srcIndex - 1) : (srcIndex + 1);
 
         // If attempting to move outside of range, move to opposite end.
         if (dstIndex === -1)
-            dstIndex = sectOrder.length - 1;
-        else if (dstIndex === sectOrder.length)
+            dstIndex = newSquadOrder.length - 1;
+        else if (dstIndex === newSquadOrder.length)
             dstIndex = 0;
 
         // Perform simple array swap.
-        sectOrder[srcIndex] = sectOrder[dstIndex];
-        sectOrder[dstIndex] = sectionId;
+        newSquadOrder[srcIndex] = newSquadOrder[dstIndex];
+        newSquadOrder[dstIndex] = squadId;
 
-        // Update sectionOrder.
-        setNikkeLists({
-            ...nikkeLists,
-            'sectionOrder': sectOrder
+        // Update sectionOrder and squad dependents.
+        setNikkeList({
+            ...nikkeList,
+            squadOrder: newSquadOrder
         })
+        updateSquadDependents();
     }
 
     /**
      * Updates the title to be displayed on a given Squad.
-     * @param {string} sectionId ID value of the Squad whose name is being changed. 
+     * @param {string} squadId ID value of the Squad whose name is being changed. 
      * @param {string} title String value to update the title.
      */
-    const handleSquadTitleChange = (sectionId, title) => {
-        setNikkeLists({
-            sections: {
-                ...nikkeLists.sections,
-                [sectionId]: {
-                    ...nikkeLists.sections[sectionId],
+    const handleSquadTitleChange = (squadId, title) => {
+        setNikkeList({
+            ...nikkeList,
+            squads: {
+                ...nikkeList.squads,
+                [squadId]: {
+                    ...nikkeList.squads[squadId],
                     title: title
                 }
-            },
-            sectionOrder: nikkeLists.sectionOrder
-        })
+            }
+        });
     }
 
     /**
      * Sets the minimization of a given section.
      * 
-     * @param {string} sectionId ID value of the affected Squad.
+     * @param {string} squadId ID value of the affected Squad.
      * @param {boolean} bool true if Squad is to be minimized.
      */
-    const handleSetSquadMinimized = (sectionId, bool) => {
+    const handleSetSquadMinimized = (squadId, bool) => {
+        // Use allMin to check if all the squads are minimized.
         let allMin = bool;
 
+        // If we're setting minimized to true, check if all other squads are minimized.
         if (allMin) {
-            for (let i = 0; i < nikkeLists.sectionOrder.length; i++) {
-                let squadId = nikkeLists.sectionOrder[i];
-                if (squadId !== sectionId && !nikkeLists.sections[squadId].minimized) {
+            for (let i = 0; i < nikkeList.squadOrder.length; i++) {
+                let squadId = nikkeList.squadOrder[i];
+                if (squadId !== squadId && !nikkeList.squads[squadId].minimized) {
                     allMin = false;
                     break;
                 }
             }
         }
 
+        // Update visibility
         setVisibility({
             ...visibility,
             allSquadsMin: allMin
         });
 
-        setNikkeLists({
-            sections: {
-                ...nikkeLists.sections,
-                [sectionId]: {
-                    ...nikkeLists.sections[sectionId],
+        // Update the given Squad's minimized to bool.
+        setNikkeList({
+            ...nikkeList,
+            squads: {
+                ...nikkeList.squads,
+                [squadId]: {
+                    ...nikkeList.squads[squadId],
                     minimized: bool
                 }
-            },
-            sectionOrder: nikkeLists.sectionOrder
+            }
         });
     }
 
@@ -787,14 +843,17 @@ function NikkeTeamBuilder(props) {
      * @param {boolean} bool true if all Squads are to be minimized.
      */
     const handleSetAllSquadsMinimized = (bool) => {
-        let newSections = { ...nikkeLists.sections };
+        let newSquads = { ...nikkeList.squads };
 
-        for (let i = 0; i < nikkeLists.sectionOrder.length; i++) {
-            newSections[nikkeLists.sectionOrder[i]].minimized = bool;
+        // Loop through all squads and set their minimized status to bool.
+        for (let i = 0; i < nikkeList.squadOrder.length; i++) {
+            newSquads[nikkeList.squadOrder[i]].minimized = bool;
         }
-        setNikkeLists({
-            sections: newSections,
-            sectionOrder: nikkeLists.sectionOrder
+
+        // Update nikkeList and visibility.
+        setNikkeList({
+            ...nikkeList,
+            squads: newSquads,
         })
 
         setVisibility({
@@ -803,32 +862,23 @@ function NikkeTeamBuilder(props) {
         })
     }
 
-    const handleUnitDetails = (anchorEl) => {
-        return <Popper
-            open
-            anchorEl={anchorEl}
-        >
-            <span>test</span>
-        </Popper>
-    }
-
     /**
-     * Converts the query in the URI into a list information. Called and used when page is loaded and lists are initialized.
-     * Query format functions as follows:
-     * - Keys available: 'squads' and 'bench'.
-     * - Squads are valued as a set of sets of IDs.
-     * - Bench is valued as a set of IDs.
-     * - (Squads) Sets of IDs or distinct Squads are separated by '_'.
-     * - (Squads and Bench) IDs or distinct Nikkes are separated by '-'.
-     * 
-     * Examples:
-     * - squads=31-53-93-26-63_38-85-86-68-131_100-99-74-104-102_83-118-107-20-50_97-116-114-46-89
-     * - squads=31-53-93-26-63_38-85-86-68-131_100-99-74-104-102_83-118-107-20-50_97-116-114-46-89&bench=130-125-119-113-110-98-91-84-59-55-49-48-45-34-23
-     * - bench=130-125-119-113-110-98-91-84-59-55-49-48-45-34-23
-     * 
-     * Returns null if the dynamic URL is invalid.
-     * @returns A new nikkeLists based on the dynamic URL, if possible. If dynamic URL is invalid, returns null.
-     */
+         * Converts the query in the URI into a list information. Called and used when page is loaded and lists are initialized.
+         * Query format functions as follows:
+         * - Keys available: 'squads' and 'bench'.
+         * - Squads are valued as a set of sets of IDs.
+         * - Bench is valued as a set of IDs.
+         * - (Squads) Sets of IDs or distinct Squads are separated by '_'.
+         * - (Squads and Bench) IDs or distinct Nikkes are separated by '-'.
+         * 
+         * Examples:
+         * - squads=31-53-93-26-63_38-85-86-68-131_100-99-74-104-102_83-118-107-20-50_97-116-114-46-89
+         * - squads=31-53-93-26-63_38-85-86-68-131_100-99-74-104-102_83-118-107-20-50_97-116-114-46-89&bench=130-125-119-113-110-98-91-84-59-55-49-48-45-34-23
+         * - bench=130-125-119-113-110-98-91-84-59-55-49-48-45-34-23
+         * 
+         * Returns null if the dynamic URL is invalid.
+         * @returns A new nikkeList based on the dynamic URL, if possible. If dynamic URL is invalid, returns null.
+         */
     const readUriQuery = (squadQuery, benchQuery) => {
         // Try/catch block in case split fails or something unexpected occurs.
         // Simplest catch-all in case of invalid URI query.
@@ -838,11 +888,11 @@ function NikkeTeamBuilder(props) {
                 && (benchQuery == null || benchQuery.length === 0))
                 return null;
 
-            // Initialize temp information for building the new nikkeLists.
-            let newSections = {};
-            let newSectionOrder = [];
-            let newBenchIds = initNikkeLists.sections.bench.nikkeIds;
-            let newRosterIds = initNikkeLists.sections.roster.nikkeIds;
+            // Initialize temp information for building the new nikkeList.
+            let newSquads = {};
+            let newSquadOrder = [];
+            let newBenchIds = initNikkeList.broster.bench.nikkeIds;
+            let newRosterIds = initNikkeList.broster.roster.nikkeIds;
 
             // If squadQuery isn't empty, parse through it.
             if (squadQuery != null && squadQuery.length !== 0) {
@@ -860,9 +910,9 @@ function NikkeTeamBuilder(props) {
                     if (newNikkeIds == null)
                         continue;
 
-                    // After looping through Nikkes, update temp information for newNikkeLists and increment squadIndex.
-                    newSections = {
-                        ...newSections,
+                    // After looping through Nikkes, update temp information for newNikkeList and increment squadIndex.
+                    newSquads = {
+                        ...newSquads,
                         ['squad-' + squadIndex]: {
                             id: 'squad-' + squadIndex,
                             title: 'Squad ' + squadIndex,
@@ -870,14 +920,14 @@ function NikkeTeamBuilder(props) {
                             minimized: false
                         }
                     };
-                    newSectionOrder.push('squad-' + squadIndex);
+                    newSquadOrder.push('squad-' + squadIndex);
                     squadIndex += 1;
                 }
             }
             // If squadQuery is empty, use initNikkeList information
             else {
-                newSections = initNikkeLists.sections;
-                newSectionOrder = initNikkeLists.sectionOrder;
+                newSquads = initNikkeList.squads;
+                newSquadOrder = initNikkeList.squadOrder;
             }
 
             // If benchQuery isn't empty, parse through it.
@@ -885,26 +935,27 @@ function NikkeTeamBuilder(props) {
                 // Force-limit bench sizes to [50](URI_BENCH_SIZE_LIMIT). (See constant for more details.)
                 let newNikkeIds = nikkeIdsStringToArray(benchQuery, URI_BENCH_SIZE_LIMIT, newRosterIds);
 
-                // After looping through Nikkes, update temp information for newNikkeLists
+                // After looping through Nikkes, update temp information for newNikkeList
                 if (newNikkeIds != null) {
                     newBenchIds = newNikkeIds;
                 }
             }
 
-            // After looping though Squads and Bench, return newNikkeLists
+            // After looping though Squads and Bench, build and return the new initial nikkeList
             return {
-                sections: {
-                    ...newSections,
+                squads: newSquads,
+                broster: {
+                    ...initNikkeList.broster,
                     bench: {
-                        ...initNikkeLists.sections.bench,
+                        ...initNikkeList.broster.bench,
                         nikkeIds: newBenchIds
                     },
                     roster: {
-                        ...initNikkeLists.sections.roster,
+                        ...initNikkeList.broster.roster,
                         nikkeIds: newRosterIds
                     }
                 },
-                sectionOrder: newSectionOrder
+                squadOrder: newSquadOrder
             };
         }
         // If we ever throw/catch an error, log it and return null.
@@ -987,11 +1038,12 @@ function NikkeTeamBuilder(props) {
         return nikkeIds;
     }
 
-    // Collection of Nikkes to be used and altered.
-    const [nikkeLists, setNikkeLists] = useState(initNikkeLists);
+    // Collection of Nikkes to be used and altered, managing where a given Nikke is located.
+    const [nikkeList, setNikkeList] = useState(initNikkeList);
 
     // How many squads have been created? Different than how many squads are there currently.
-    const [squadCnt, setSquadCnt] = useState(nikkeLists.sectionOrder.length);
+    // Important for making sure squad-ids don't overlap.
+    const [squadCt, setsquadCt] = useState(initNikkeList.squadOrder.length);
 
     /**
      * Converts current Squad and Bench information into a shareable link and copies contents into system clipboard.
@@ -1000,22 +1052,32 @@ function NikkeTeamBuilder(props) {
      * @param {boolean} benchWanted if true, includes the bench in the returned query
      * @returns a query depending on the Squads and Bench.
      */
-    const getUriQuery = (benchWanted = false) => {
+    const getUriQuery = (benchWanted = false, inputList = {}) => {
         // Initialize squadQuery and benchQuery.
         let squadQuery = '';
         let benchQuery = '';
 
+        // Fetch List objects. Convert to inputList, if necessary.
+        let squads = nikkeList.squads;
+        let bench = nikkeList.broster.bench;
+        let squOrder = nikkeList.squadOrder;
+        if (Object.keys(inputList).length !== 0) {
+            squads = inputList.squads;
+            bench = inputList.broster.bench;
+            squOrder = inputList.squadOrder;
+        }
+
         // Force-limit squad sizes to [10](URI_SQUAD_COUNT_LIMIT). (See constant for more details.)
-        let squadCtLimit = Math.min(nikkeLists.sectionOrder.length, URI_SQUAD_COUNT_LIMIT)
+        let squadCtLimit = Math.min(squOrder.length, URI_SQUAD_COUNT_LIMIT)
 
         // Loop through each Squad.
         for (let i = 0; i < squadCtLimit; i++) {
             // Fetch Squad
-            let squad = nikkeLists.sections[nikkeLists.sectionOrder[i]];
+            let squad = squads[squOrder[i]];
 
-            // If Squad is empty, boost limit (if possible) and skip.
-            if (squad.nikkeIds.length === 0) {
-                squadCtLimit = Math.min(nikkeLists.sectionOrder.length, squadCtLimit + 1)
+            // If Squad doesn't exist or is empty, boost limit (if possible) and skip.
+            if (squad == null || squad.nikkeIds.length === 0) {
+                squadCtLimit = Math.min(squOrder.length, squadCtLimit + 1)
                 continue;
             }
 
@@ -1027,13 +1089,12 @@ function NikkeTeamBuilder(props) {
             // Convert array of Nikkes into a string and append.
             let nikkeIds = nikkeIdsArrayToString(squad.nikkeIds, URI_SQUAD_SIZE_LIMIT);
             squadQuery += nikkeIds;
-
         }
 
         // After looping through Squads, get Bench if wanted
-        if (benchWanted && nikkeLists.sections['bench'].nikkeIds.length > 0) {
+        if (benchWanted && bench.nikkeIds.length > 0) {
             // Copy nikkeIDs in Bench. Truncate if too large. (See below for more details.)
-            let benchArr = [...nikkeLists.sections['bench'].nikkeIds];
+            let benchArr = [...bench.nikkeIds];
             if (benchArr.length > URI_BENCH_SIZE_LIMIT)
                 benchArr = benchArr.slice(0, URI_BENCH_SIZE_LIMIT)
 
@@ -1046,7 +1107,7 @@ function NikkeTeamBuilder(props) {
             benchQuery += nikkeIds;
         }
 
-        // Append query keys (squads and bench)
+        // Prepend query keys (squads and bench)
         if (squadQuery.length > 0)
             squadQuery = 'squads=' + squadQuery;
         if (benchQuery.length > 0)
@@ -1067,9 +1128,10 @@ function NikkeTeamBuilder(props) {
 
     /**
      * Updates browser URL to match the current query, built from Squads and no Bench.
+     * @param {object} inputList input nikkeList to use instead of the existing one. May be used to avoid concurrency issues.
      */
-    const updateUriQuery = (benchWanted = false) => {
-        let query = getUriQuery(benchWanted);
+    const updateUriQuery = (inputList = {}) => {
+        let query = getUriQuery(false, inputList);
 
         // Update current url to match SquadId
         if (query.length === 0)
@@ -1095,6 +1157,7 @@ function NikkeTeamBuilder(props) {
      * Function to get the NikkeFilter custom React component.
      * Turned into a function to allow access to be built in multiple areas (e.g. main page and sidebar menu)
      * without having to maintain two separate instances.
+     * 
      * @param {object} additionalProps Props to be added to the component in a JSON format. 
      * @returns An instance of a custom React component NikkeFilter.
      */
@@ -1102,7 +1165,7 @@ function NikkeTeamBuilder(props) {
         if (visibility.filter)
             return <NikkeFilter
                 filter={filter}
-                onFilter={handleFilter}
+                onFilter={(inputFilter) => handleFilter(inputFilter)}
                 icons={Icons}
                 windowSmall={props.windowSmall}
                 windowLarge={props.windowLarge}
@@ -1119,22 +1182,32 @@ function NikkeTeamBuilder(props) {
      * Function to get the NikkeList (roster version) custom React component.
      * Turned into a function to allow access to be built in multiple areas (e.g. main page and sidebar menu)
      * without having to maintain two separate instances.
+     * 
+     * @param {object} additionalProps Props to be added to the component in a JSON format. 
      * @returns An instance of a custom React component NikkeList (roster version.)
      */
-    const getRoster = () => {
+    const getRoster = (additionalProps) => {
         return <NikkeList
             key={'roster'}
-            section={nikkeLists.sections['roster']}
-            nikkes={collectNikkes(filteredNikkes)}
+            section={nikkeList.broster.roster}
+            nikkes={collectNikkes(nikkeList.broster.froster.nikkeIds)}
             icons={Icons}
             avatars={NikkeAvatars}
             windowSmall={props.windowSmall}
             visibility={visibility}
+            toggleListMin={() => setVisibility({
+                ...visibility,
+                rosterMin: !visibility.rosterMin
+            })}
+            compactMode={settings.compactMode}
+            openSideMenu={() => updateSettings('openSideRoster', true)}
             onMoveNikke={handleMoveNikke}
             targetCode={settings.targetCode}
             allowDuplicates={settings.allowDuplicates}
+            rosterOverflow={settings.rosterOverflow}
+            overrideMaxRoster={overrideMaxRoster}
             nikkeData={NikkeData}
-            handleUnitDetails={handleUnitDetails}
+            {...additionalProps}
         />
     }
 
@@ -1143,49 +1216,61 @@ function NikkeTeamBuilder(props) {
      * - Initializes Squad and Bench according to URI's Query.
      * - Enforces new URL over old URL.
      * - Adds the resize listener (once) without overwriting the one in the parent App.js.
+     * - Calls to update Roster using Filter.
      */
     useEffect(() => {
         // Initialize nikkeList through dynamic URL upon page startup.
         // Also enforce the new URL (nikke-team-builder) over the old URL (nikkeTeamBuilder).
         let listById = readUriQuery(searchParams.get('squads'), searchParams.get('bench'));
+
         if (listById != null) {
-            setNikkeLists(listById);
-            setSquadCnt(listById.sectionOrder.length);
+            setNikkeList(listById);
+            setsquadCt(listById.squadOrder.length);
             window.history.replaceState(null, '', '#/apps/nikke-team-builder?' + searchParams.toString());
         }
         else
             window.history.replaceState(null, '', '#/apps/nikke-team-builder');
 
+        // Add additional eventListener for window resizing.
         window.addEventListener('resize', handleResize);
+
+        // Call RosterDependents to Filter.
+        updateRosterDependents();
     }, [])
 
     /**
-     * Called whenever Squads (and also Bench and Roster) are updated.
+     * Called (explicitly) whenever Squads or squadOrder are updated.
      * Updates browser's URL (queries) to match current Squad status.
+     * @param {object} inputList JSON Object of the nikkeList to be used for concurrency.
      */
-    useEffect(() => {
-        updateUriQuery(false);
-    }, [nikkeLists])
+    const updateSquadDependents = (inputList = {}) => {
+        updateUriQuery(inputList);
+    }
 
     /**
-     * Called whenever Roster is updated.
+     * Called (explicitly) whenever Roster is updated.
      * Updates Roster according to Filter.
-     * 
-     * Note: useLayoutEffect is like useEffect, except it waits for the browser to paint.
-     * This allows us to maintain the drag-n-drop feature without seeing it "jitter".
+     * @param {object} inputSettings JSON Object of the settings to be used for concurrency and updating.
      */
-    useLayoutEffect(() => {
-        handleFilter(filter)
-    }, [nikkeLists.sections['roster'].nikkeIds])
+    const updateRosterDependents = (inputSettings = { allowDuplicates: settings.allowDuplicates, maxRosterSize: settings.maxRosterSize }) => {
+        handleFilter(filter, nikkeList.broster.roster.nikkeIds, false, inputSettings);
+    }
 
     return (
         <div className="page" style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
             {/* Side Menu Button */}
             {
-                settings.compactMode ?
+                settings.compactMode !== 0 && !settings.openSideRoster ?
                     <Button
                         id='tb-side-roster-btn'
+                        className={settings.compactMode < 0 ? 'position-left' : 'position-right'}
                         onClick={() => updateSettings('openSideRoster', true)}
+                        sx={{
+                            borderWidth: settings.compactMode < 0 ?
+                                '2px 2px 2px 0' : '2px 0 2px 2px',
+                            borderRadius: settings.compactMode < 0 ?
+                                '0 0.25rem 0.25rem 0' : '0.25rem 0 0 0.25rem'
+                        }}
                     >
                         <PersonSearchIcon />
                     </Button>
@@ -1193,7 +1278,7 @@ function NikkeTeamBuilder(props) {
             }
             {/* Page Title: prints states if debugMode is enabled */}
             <h1
-                onClick={() => settings.debugMode ? console.log(nikkeLists, settings, visibility)
+                onClick={() => settings.debugMode ? console.log(nikkeList, nikkeList.broster, settings, visibility)
                     : null
                 }
             >
@@ -1286,15 +1371,15 @@ function NikkeTeamBuilder(props) {
                         getSquadId={getUriQuery}
                         copyUriQueryToClipboard={copyUriQueryToClipboard}
                         readSquadId={readUriQuery}
-                        setNikkeLists={setNikkeLists}
+                        updateRosterDependents={updateRosterDependents}
                     />
                 </div>
-                <div className='flex-row'>
+                <div id='squad-control-panel' className='flex-row'>
                     {/* Append Squad Button */}
                     {
                         settings.editable ? <Tooltip title='Append Squad' placement='top' arrow>
                             <StyledIconButton
-                                onClick={() => handleAddSquad(nikkeLists.sectionOrder.length)}
+                                onClick={() => handleAddSquad(nikkeList.squadOrder.length)}
                                 sx={{
                                     backgroundColor: '#209320',
                                     '&:hover': {
@@ -1375,22 +1460,22 @@ function NikkeTeamBuilder(props) {
 
             {/* Main Content */}
             <DragDropContext onDragEnd={onDragEnd}>
+                {/* Squad Section */}
                 <div
                     id='squad-megacontainer'
                     style={{
                         gridTemplateColumns: 'repeat(' + settings.squadsPerRow + ', 1fr)',
-                        gridTemplateRows: 'repeat(' + Math.ceil(nikkeLists.sectionOrder.length / settings.squadsPerRow) + ', min-content)',
+                        gridTemplateRows: 'repeat(' + Math.ceil(nikkeList.squadOrder.length / settings.squadsPerRow) + ', min-content)',
                     }}
                 >
                     {
-                        nikkeLists.sectionOrder.map((sectionId, index) => {
-                            let section = nikkeLists.sections[sectionId];
-
-                            let nikkes = collectNikkes(section.nikkeIds);
+                        nikkeList.squadOrder.map((squadId, index) => {
+                            let squad = nikkeList.squads[squadId];
+                            let nikkes = collectNikkes(squad.nikkeIds);
 
                             return <div
                                 className='squad-supercontainer flex-row'
-                                key={sectionId}
+                                key={squadId}
                             >
                                 {
                                     // Left edit buttons: Move Squad Up op Down
@@ -1400,7 +1485,7 @@ function NikkeTeamBuilder(props) {
                                         >
                                             <Tooltip title='Move Squad up' placement='right' arrow>
                                                 <IconButton
-                                                    onClick={() => handleMoveSquad(sectionId, true)}
+                                                    onClick={() => handleMoveSquad(squadId, true)}
                                                     sx={{
                                                         maxWidth: '1.5rem',
                                                         maxHeight: '1.5rem',
@@ -1412,7 +1497,7 @@ function NikkeTeamBuilder(props) {
                                                 ><KeyboardDoubleArrowUpIcon fontSize='small' /></IconButton></Tooltip>
                                             <Tooltip title='Move Squad down' placement='right' arrow>
                                                 <IconButton
-                                                    onClick={() => handleMoveSquad(sectionId, false)}
+                                                    onClick={() => handleMoveSquad(squadId, false)}
                                                     sx={{
                                                         maxWidth: '1.5rem',
                                                         maxHeight: '1.5rem',
@@ -1426,13 +1511,13 @@ function NikkeTeamBuilder(props) {
                                         : null
                                 }
                                 <NikkeSquad
-                                    section={section}
+                                    section={squad}
                                     nikkes={nikkes}
                                     index={index}
                                     variant={
                                         (index === 0) ?
                                             'top'
-                                            : (index === nikkeLists.sectionOrder.length - 1) ?
+                                            : (index === nikkeList.squadOrder.length - 1) ?
                                                 'bottom'
                                                 : 'middle'
                                     }
@@ -1446,7 +1531,6 @@ function NikkeTeamBuilder(props) {
                                     targetCode={settings.targetCode}
                                     enableReviews={settings.enableReviews}
                                     onSetSquadMinimized={handleSetSquadMinimized}
-                                    handleUnitDetails={handleUnitDetails}
                                     theme={props.theme}
                                 />
                                 {
@@ -1455,7 +1539,7 @@ function NikkeTeamBuilder(props) {
                                         >
                                             <Tooltip title='Delete Squad' placement='left' arrow>
                                                 <IconButton
-                                                    onClick={() => handleRemoveSquad(sectionId)}
+                                                    onClick={() => handleRemoveSquad(squadId)}
                                                     sx={{
                                                         maxWidth: '1.5rem',
                                                         maxHeight: '1.5rem',
@@ -1467,7 +1551,7 @@ function NikkeTeamBuilder(props) {
                                                 ><DeleteForever fontSize='small' /></IconButton></Tooltip>
                                             <Tooltip title='Add Squad below' placement='left' arrow>
                                                 <IconButton
-                                                    onClick={() => handleAddSquad(index)}
+                                                    onClick={() => handleAddSquad(index + 1)}
                                                     sx={{
                                                         maxWidth: '1.5rem',
                                                         maxHeight: '1.5rem',
@@ -1488,36 +1572,77 @@ function NikkeTeamBuilder(props) {
                 {/* Bench Section */}
                 <NikkeList
                     key={'bench'}
-                    section={nikkeLists.sections['bench']}
-                    nikkes={collectNikkes(nikkeLists.sections['bench'].nikkeIds)}
+                    section={nikkeList.broster.bench}
+                    nikkes={collectNikkes(nikkeList.broster.bench.nikkeIds)}
                     icons={Icons}
                     avatars={NikkeAvatars}
                     windowSmall={props.windowSmall}
                     visibility={visibility}
+                    toggleListMin={() => setVisibility({
+                        ...visibility,
+                        benchMin: !visibility.benchMin
+                    })}
+                    compactMode={settings.compactMode}
                     onMoveNikke={handleMoveNikke}
                     targetCode={settings.targetCode}
-                    handleUnitDetails={handleUnitDetails}
                 />
 
 
                 {/* Filter Section, Main */}
-                {settings.compactMode ? null : getFilter()}
+                {settings.compactMode !== 0 ? null : getFilter({ mainPage: true })}
 
                 {/* Roster Section, Main */}
-                {settings.compactMode ? null : getRoster()}
+                {
+                    settings.compactMode !== 0 ?
+                        <Button
+                            id='tb-side-roster-btn'
+                            className='nikke-list-container'
+                            onClick={() => updateSettings('openSideRoster', true)}
+                            disableRipple
+                            sx={{
+                                textTransform: 'none',
+                                font: 'inherit'
+                            }}
+                        >
+                            <h2>Roster</h2>
+                            < PersonSearchIcon />
+                        </Button>
+                        : getRoster({ mainPage: true })
+                }
 
+                {/* Side Menu for Compact Mode */}
                 <Drawer
                     id='tb-side-roster-menu'
                     open={settings.openSideRoster}
                     onClose={() => updateSettings('openSideRoster', false)}
+                    anchor={settings.compactMode < 0 ? 'left' : 'right'}
+                    elevation={0}
                     PaperProps={{
                         sx: {
-                            maxWidth: props.windowSmall ? '90vw' : '50vw'
+                            width: props.windowSmall ? '90vw' : '50vw',
+                            overflow: 'visible'
                         }
                     }}
                 >
-                    {getFilter({ mainPage: true })}
-                    {getRoster()}
+                    {getFilter({ mainPage: false })}
+                    {getRoster({ mainPage: false })}
+                    <Button
+                        id='tb-side-roster-btn'
+                        className={settings.compactMode < 0 ? 'position-left' : 'position-right'}
+                        onClick={() => updateSettings('openSideRoster', false)}
+                        sx={{
+                            borderWidth: settings.compactMode < 0 ?
+                                '2px 2px 2px 0' : '2px 0 2px 2px',
+                            borderRadius: settings.compactMode < 0 ?
+                                '0 0.25rem 0.25rem 0' : '0.25rem 0 0 0.25rem',
+                            right: settings.compactMode < 0 ? 'auto' : props.windowSmall ? '-90vw' : '-42.5vw',
+                            left: settings.compactMode > 0 ? 'auto' : props.windowSmall ? '-90vw' : '-42.5vw'
+                        }}
+                    >
+                        <div>
+                            <PersonSearchIcon />
+                        </div>
+                    </Button>
                 </Drawer>
 
             </DragDropContext >

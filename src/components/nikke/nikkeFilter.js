@@ -1,4 +1,5 @@
 import React from 'react';
+import { MinimizeButton } from '../../pages/nikkeTeamBuilder.js';
 
 // Import MUI components
 import Button from '@mui/material/Button';
@@ -131,6 +132,12 @@ function NikkeFilter(props) {
                     'Burst Cooldown': true
                 });
         }
+        else if (category === 'Rarity') {
+            props.setVisibility({
+                ...props.visibility,
+                'Rarity': !props.visibility['Rarity']
+            })
+        }
     }
 
     /**
@@ -211,7 +218,7 @@ function NikkeFilter(props) {
             className='flex-column'
             style={{
                 maxWidth: props.windowSmall ? '100%' : '80vw',
-                minWidth: props.mainPage ? '100%' : '80vw'
+                minWidth: props.mainPage ? '80vw' : '100%'
             }}
         >
             {/* Header */}
@@ -249,19 +256,15 @@ function NikkeFilter(props) {
                             {props.windowSmall ? null : 'Reset'}
                         </Button>
                 }
-                <Button
+                <MinimizeButton
                     onClick={() => handleToggleVisibility('filterMin')}
                     variant='contained'
                     disableTouchRipple
+                    disableElevation
                     color={props.visibility.filterMin ? 'success' : 'pumpkin'}
                     sx={{
                         height: props.windowSmall ? '1.5rem' : '100%',
-                        minWidth: 'auto',
-                        maxWidth: '50%',
-                        borderRadius: props.visibility.filterMin ? '0 0.5rem 0.5rem 0' : '0 0.5rem 0 0',
-                        position: 'absolute',
-                        top: 0,
-                        right: 0
+                        borderRadius: props.visibility.filterMin ? '0 0.25rem 0.25rem 0' : '0 0.25rem 0 0'
                     }}
                 >
                     {
@@ -269,7 +272,7 @@ function NikkeFilter(props) {
                             <ArrowDropUpIcon />
                             : <ArrowDropDownIcon />
                     }
-                </Button>
+                </MinimizeButton>
             </div>
             {/* Body */}
             {
@@ -300,14 +303,20 @@ function NikkeFilter(props) {
                                                 props.visibility.categories.indexOf(category) !== -1
                                                 || category === 'Burst'
                                                 || category === 'Burst Cooldown'
+                                                || category === 'Rarity'
                                             ) ?
                                                 <div className='filter-category-visibility-container flex-row'>
-                                                    <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
+                                                    {
+                                                        props.windowSmall ?
+                                                            <h4>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h4>
+                                                            : <h3>{category.substring(0, 1).toLocaleUpperCase() + category.substring(1)}</h3>
+                                                    }
                                                     {/* Create IconButton for toggling visibility */}
                                                     <Tooltip
-                                                        title={props.visibility[category] ?
-                                                            'Hide Icons'
-                                                            : 'Show Icons'
+                                                        title={(category === 'Rarity' && props.visibility.Rarity) ?
+                                                            'Hide Highlights' : (category === 'Rarity' && !props.visibility.Rarity) ?
+                                                                'Show Highlights' : props.visibility[category] ?
+                                                                    'Hide Icons' : 'Show Icons'
                                                         }
                                                         placement='top'
                                                     >
@@ -392,8 +401,11 @@ function NikkeFilter(props) {
                             value={props.filter.Name}
                             onChange={(event) => handleSearchedNameChange(event.target.value)}
                             size={props.windowSmall ? 'small' : 'medium'}
+                            color='warning'
                             sx={{
-                                minWidth: props.windowSmall ? '100%' : '35%'
+                                minWidth: props.windowSmall ? '100%' : '35%',
+                                backgroundColor: '#00000040',
+                                borderRadius: '4px'
                             }}
                             InputProps={{
                                 endAdornment: (
@@ -405,7 +417,7 @@ function NikkeFilter(props) {
                                         </IconButton>
                                     </InputAdornment>
                                 ),
-                                style: {
+                                sx: {
                                     paddingRight: 0
                                 }
                             }}
@@ -415,12 +427,13 @@ function NikkeFilter(props) {
                         <FormControl
                             id='filter-misc'
                             // size='small'
+                            color='warning'
                             sx={{
                                 minWidth: props.windowSmall ? '100%' : '50%',
                                 maxWidth: '100%',
-                                boxSizing: 'border-box'
-                            }}
-                            InputProps={{
+                                boxSizing: 'border-box',
+                                backgroundColor: '#00000040',
+                                borderRadius: '4px'
                             }}
                         >
                             <InputLabel
@@ -429,6 +442,7 @@ function NikkeFilter(props) {
                             >Tags (WIP)</InputLabel>
                             <Select
                                 labelId='filter-misc-input-label'
+                                label={'Tags (WIP)'}
                                 size={props.windowSmall ? 'small' : 'medium'}
                             >
                                 <MenuItem disabled>Coming soon</MenuItem>

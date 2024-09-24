@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 
 // Import MUI components
+import { styled } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Popper from '@mui/material/Popper'
@@ -11,6 +12,33 @@ import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Add from '@mui/icons-material/AddOutlined';
 import Remove from '@mui/icons-material/Remove';
 import Info from '@mui/icons-material/InfoTwoTone';
+
+const QuickMoveButton = styled(IconButton)({
+    border: 'solid 2px',
+    width: '1em',
+    height: '1em',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: '#fff',
+    '&:hover': {
+        backgroundColor: '#fff',
+        filter: 'brightness(80%)'
+    }
+});
+
+const InfoButton = styled(IconButton)({
+    width: '1em',
+    height: '1em',
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#000000a0',
+    '&:hover': {
+        backgroundColor: '#000000a0',
+        filter: 'brightness(120%)'
+    }
+});
 
 function NikkeUnit(props) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -70,36 +98,35 @@ function NikkeUnit(props) {
         // If in Roster: Say 'Move to Bench' and use a (+) icon.
         if (props.sectionId === 'roster')
             return <Tooltip title='Move to Bench' placement='top' arrow>
-                <Add fontSize='small' sx={{
-                    width: '1em',
-                    height: '1em'
-                }} />
+                <Add fontSize='small' />
             </Tooltip>;
 
         // If in Bench: Say 'Move to Roster' and use a (-) icon.
         else if (props.sectionId === 'bench')
             return <Tooltip title='Move to Roster' placement='top' arrow>
-                <Remove fontSize='small' sx={{
-                    width: '1em',
-                    height: '1em'
-                }} />
+                <Remove fontSize='small' />
             </Tooltip>;
 
         // If in Squad: Say 'Move to Bench' and use a (-) icon.
         else
             return <Tooltip title='Move to Bench' placement='top' arrow>
-                <Remove fontSize='small' sx={{
-                    width: '1em',
-                    height: '1em'
-                }} />
+                <Remove fontSize='small' />
             </Tooltip>;
     }
 
+    /**
+     * Calls the onMoveNikke function in its parent to deal with quick-moving a nikke.
+     * Also ensures the popper is closed.
+     */
+    const onMoveNikke = () => {
+        // Close Popper
+        setAnchorEl(null);
 
+        props.onMoveNikke(props.unit.Id, props.index);
+    }
 
     return (
         <Draggable
-            className='nikke-unit-container'
             // NOTE: Draggable *has* to use initial unit name as ID, otherwise element gets eaten when dragged
             draggableId={props.unit.Id + '-' + props.sectionId + '-' + props.index}
             key={props.unit.Id}
@@ -119,56 +146,30 @@ function NikkeUnit(props) {
                         {/* Quick Move Button */}
                         {
                             (props.sectionId === 'bench' || props.sectionId === 'roster' || props.visibility.squadClean) ?
-                                <IconButton
-                                    onClick={() => props.onMoveNikke(props.unit.Id, props.index)}
-                                    variant='outlined'
+                                <QuickMoveButton
+                                    onClick={onMoveNikke}
+                                    // variant='outlined'
+                                    disableTouchRipple
                                     size='small'
                                     color={props.sectionId !== 'bench' ? 'success' : 'error'}
-                                    sx={{
-                                        border: 'solid 2px',
-                                        width: '1em',
-                                        height: '1em',
-                                        position: 'absolute',
-                                        top: '0.3em',
-                                        left: '0rem',
-                                        backgroundColor: '#fff',
-                                        '&:hover': {
-                                            backgroundColor: '#fff',
-                                            filter: 'brightness(80%)'
-                                        }
-                                    }}
                                 >
                                     {getAddRemoveButton()}
-                                </IconButton>
+                                </QuickMoveButton>
                                 : null
                         }
                         {/* Info Button */}
                         {
                             (props.sectionId === 'bench' || props.sectionId === 'roster' || props.visibility.squadClean) ?
-                                <IconButton
+                                <InfoButton
                                     onClick={(event) => setAnchorEl(anchorEl ? null : event.currentTarget)}
+                                    disableTouchRipple
                                     size='small'
                                     color='info'
-                                    sx={{
-                                        width: '1em',
-                                        height: '1em',
-                                        position: 'absolute',
-                                        top: '0.3em',
-                                        right: '0rem',
-                                        backgroundColor: '#000000a0',
-                                        '&:hover': {
-                                            backgroundColor: '#000000a0',
-                                            filter: 'brightness(120%)'
-                                        }
-                                    }}
                                 >
                                     <Tooltip title='More Details' placement='top' arrow>
-                                        <Info fontSize='small' sx={{
-                                            width: '1.1em',
-                                            height: '1.1em'
-                                        }} />
+                                        <Info fontSize='small' />
                                     </Tooltip>
-                                </IconButton>
+                                </InfoButton>
                                 : null
                         }
 
@@ -190,7 +191,7 @@ function NikkeUnit(props) {
                                         props.visibility['Burst Cooldown'] ? <img
                                             className='icon-underlay'
                                             src={props.burstIcons[1]}
-                                            alt={'BCD' + props.unit['Burst Cooldown']}
+                                            alt={props.unit['Burst Cooldown'] + 'sec'}
                                         />
                                             : null
                                     }
@@ -207,7 +208,14 @@ function NikkeUnit(props) {
                     {/* Tag Container */}
                     {
                         props.visibility.categoryIcons ?
-                            < div className='nikke-icon-container'>
+                            < div
+                                className='nikke-icon-container'
+                                style={{
+                                    backgroundColor: !props.visibility.Rarity ?
+                                        null : props.unit.Rarity === 'SSR' ?
+                                            '#ffe44960' : props.unit.Rarity === 'SR' ?
+                                                '#ef88ff60' : '#49b9ff60'
+                                }}>
                                 {
                                     props.visibility.categories.map((category, index) => {
                                         if (category === 'Code' && props.visibility['Code'] && props.hasTargetCode)
@@ -219,12 +227,12 @@ function NikkeUnit(props) {
                                                     key={category}
                                                     className='icon-overlay'
                                                     src={props.highlightIcon}
-                                                    alt={'highlight'}
+                                                    alt={'Highlighted'}
                                                 />
                                                 <img
                                                     className='nikke-icon-base'
                                                     src={props.tagIcons[index]}
-                                                    alt={category + props.unit[category]}
+                                                    alt={category + ' ' + props.unit[category]}
                                                 />
                                             </div>;
                                         else if (category !== 'Burst' && props.visibility[category])
@@ -232,7 +240,7 @@ function NikkeUnit(props) {
                                                 key={category}
                                                 className='nikke-icon'
                                                 src={props.tagIcons[index]}
-                                                alt={category + props.unit[category]}
+                                                alt={category + ' ' + props.unit[category]}
                                             />;
                                         else
                                             return null;
@@ -242,6 +250,7 @@ function NikkeUnit(props) {
                             : null
                     }
                     <Popper
+                        id='nikke-unit-popper'
                         open={Boolean(anchorEl)}
                         anchorEl={anchorEl}
                         placement='right-start'
@@ -252,7 +261,7 @@ function NikkeUnit(props) {
                             },
                         }]}
                         sx={{
-                            zIndex: 2
+                            // zIndex: 2
                         }}
                     >
                         <ClickAwayListener
@@ -261,7 +270,9 @@ function NikkeUnit(props) {
                             <div
                                 className='nikke-unit-details flex-column'
                                 style={{
-                                    borderColor: 'black'
+                                    borderColor: props.unit.Rarity === 'SSR' ?
+                                        '#ffe449a0' : props.unit.Rarity === 'SR' ?
+                                            '#e749ffa0' : '#49b9ffa0'
                                 }}
                             >
                                 <h3>{props.unit.Name}</h3>

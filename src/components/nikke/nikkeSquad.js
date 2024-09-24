@@ -1,11 +1,11 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import NikkeUnit from './nikkeUnit.js';
+import { MinimizeButton } from '../../pages/nikkeTeamBuilder.js';
 // Import Review responses for review
 import ReviewDescriptions from '../../assets/data/NikkeSquadReviews.json';
 
 // Import MUI components
-import Button from '@mui/material/Button';
 import InputBase from '@mui/material/InputBase';
 import Tooltip from '@mui/material/Tooltip';
 
@@ -17,6 +17,11 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 function NikkeSquad(props) {
+    /**
+     * Maps through an array of Nikke objects and converts them into an array of React components for rendering into Nikke cards.
+     * @param {object} provided Prop object used by Droppable and Draggable components (@hello-pangea/dnd).
+     * @returns An array of NikkeUnit React components.
+     */
     const renderDroppable = (provided) => {
         return props.nikkes.map((item, index) => {
             return (
@@ -43,7 +48,6 @@ function NikkeSquad(props) {
                     visibility={props.visibility}
                     onMoveNikke={onMoveNikke}
                     hasTargetCode={item.Code === props.targetCode}
-                    handleUnitDetails={props.handleUnitDetails}
                 />)
         });
     }
@@ -122,7 +126,7 @@ function NikkeSquad(props) {
      * If the squad can full burst but can do so every 20 seconds, tag as a warning.
      * 
      * Covers the simple cases of Bursts 1, 2, and 3 and cooldowns of 20sec, 40sec, 60sec.
-     * Covers the edge cases of Burst 1 Re-enter (e.g. Rupee: Winter and Tia), Red Hood's Burst V, and Noir & Blanc.
+     * Covers the edge cases of Burst 1 Re-enter (e.g. Rupee: Winter and Tia), Red Hood's Burst V (but not multiple), and Blanc.
      * @param {Dictionary} newReview Dictionary containing current reviews tags for the judged categories.
      * @returns the updated newReview to be reused or set.
      */
@@ -133,38 +137,41 @@ function NikkeSquad(props) {
         // Ideally, the minimum is 20. Default to 60 since it doesn't matter if it's infinite or 60 seconds for this check.
         let minBSI = { '1': 60, '2': 60, '3': 60 };
 
-        // For the edge case of Noir and Blanc: If they're both in the same squad, Blanc's 60sec B2 becomes a 20sec B2.
+        // For the edge case of Blanc:
+        // If Blanc is assigned with someone from Squad 777 (Noir, Blanc, Rouge), then Blanc's 60sec B2 becomes a ~20sec B2.
         let squad777 = false;
+        let blanc = false;
 
-        // Loop through each Nikke
+        // Loop through each Nikke.
         for (let i = 0; i < props.nikkes.length; i++) {
             let burst = props.nikkes[i].Burst;
             let bcd = parseInt(props.nikkes[i]['Burst Cooldown']);
+            let name = props.nikkes[i].Name;
 
-            // Search for Noir and Blanc
-            if (props.nikkes[i].Name === 'Noir') {
-                if (squad777)
+            // Handle edge case for Blanc and Squad 777.
+            if (name === 'Noir' || name === 'Rouge') {
+                if (blanc)
                     minBSI['2'] = 20;
                 squad777 = true;
             }
-            if (props.nikkes[i].Name === 'Blanc') {
+            if (name === 'Blanc') {
                 if (squad777)
                     bcd = 20;
-                squad777 = true;
+                blanc = true;
             }
 
-            // Burst 1R affects neither reaching full burst nor BSI, so can skip
+            // Burst 1R affects neither reaching full burst nor BSI, so can skip.
             if (burst === '1R') {
                 continue;
             }
-            // Burst V is technically always possible (only applicable to Red Hood so far)
+            // Reaching Full Burst with Burst V is technically always possible (only applicable to Red Hood so far).
             else if (burst === 'V') {
-                burstStages = ['1,', '2', '3']
+                burstStages = ['1', '2', '3'];
 
                 // Individually update BSI per stage
                 burstStages.forEach(stage => {
                     computeBSI(minBSI, stage, bcd)
-                })
+                });
             }
             // Standard Burst Skills
             else {
@@ -207,8 +214,8 @@ function NikkeSquad(props) {
      * (Doesn't have the edge case where you have A(20), B(20), C(60), C(60), C(60) but that's not currently possible in-game
      * until we either get a 20sec B3 or three 60sec B3.)
      * @param {Dictionary} minBSI A Dictionary of each burst stage (1, 2, 3). Key is stage number and value is minimum burst interval
-     * @param {number} burst Burst stage number (1, 2, 3) 
-     * @param {*} bcd Base burst cooldown duration in seconds (20, 40, 60)
+     * @param {string} burst Burst stage number (1, 2, 3) 
+     * @param {number} bcd Base burst cooldown duration in seconds (20, 40, 60)
      */
     const computeBSI = (minBSI, burst, bcd) => {
         // If min BSI for the stage is already 20 (aka the lowest base bsi), skip
@@ -220,6 +227,7 @@ function NikkeSquad(props) {
         // If the incoming bcd is lower than the current minBSI, set to that
         else if (bcd < minBSI[burst])
             minBSI[burst] = bcd;
+
     }
 
     /**
@@ -315,10 +323,7 @@ function NikkeSquad(props) {
         <div
             className='nikke-squad-container'
             style={{
-                // margin: props.editable ?
-                //     0 : '0 1.5rem',
-                borderRadius: props.editable ?
-                    0 : '1rem'
+                borderRadius: props.editable ? 0 : '0.5rem'
             }}
         >
             <div className='squad-header flex-row'
@@ -351,17 +356,14 @@ function NikkeSquad(props) {
                         }
                     }}
                 />
-                <Button
+                <MinimizeButton
                     onClick={() => props.onSetSquadMinimized(props.section.id, !props.section.minimized)}
                     variant='contained'
+                    disableTouchRipple
+                    disableElevation
                     color={props.section.minimized ? 'success' : 'pumpkin'}
                     style={{
-                        minWidth: 'auto',
-                        maxWidth: '25%',
-                        height: '70%',
-                        borderRadius: props.section.minimized ? '0 0.5rem 0.5rem 0' : '0 0.5rem 0 0',
-                        position: 'absolute',
-                        right: 0,
+                        borderRadius: props.section.minimized ? '0 0.25rem 0.25rem 0' : '0 0.25rem 0 0',
                         top: props.windowSmall ? '0.25rem' : '0.5rem'
                     }}
                 >
@@ -370,7 +372,7 @@ function NikkeSquad(props) {
                             <ArrowDropUpIcon />
                             : <ArrowDropDownIcon />
                     }
-                </Button>
+                </MinimizeButton>
             </div>
             {
                 props.section.minimized ?

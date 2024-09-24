@@ -5,22 +5,18 @@ import Tags from '../../assets/data/NikkeTags.json';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Switch from '@mui/material/Switch';
-import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import Slider from '@mui/material/Slider';
 
 // Import MUI icons
 import Close from '@mui/icons-material/Close';
 import ContentPaste from '@mui/icons-material/ContentPaste';
-import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import { styled, Tooltip } from '@mui/material';
 
 const StyledSelect = styled(Select)({
@@ -37,6 +33,31 @@ const StyledSwitch = styled(Switch)({
     backgroundColor: '#ffffff0f'
 })
 
+const StyledSliderContainer = styled('div')({
+    width: '6rem',
+    height: '2.5rem',
+    paddingLeft: '1.5rem',
+    paddingRight: '1.5rem',
+    borderRadius: '0.5rem',
+    border: '1px solid #767676',
+    backgroundColor: '#ffffff0f',
+    // display: 'flex',
+    justifyContent: 'center',
+    alignContent: 'center',
+    // boxSizing: 'border-box',
+    '.MuiSlider-root': {
+        transform: 'translateY(-25%)',
+        marginBottom: 0
+    },
+    '.MuiSlider-mark': {
+        height: '8px',
+        transform: 'translate(-50%, -50%)'
+    },
+    '.MuiSlider-markLabel': {
+        transform: 'translateX(-50%) translateY(-50%)'
+    }
+})
+
 const DashedButton = styled(Button)({
     minWidth: '3.75rem',
     maxHeight: '2.5rem',
@@ -48,8 +69,45 @@ const DashedButton = styled(Button)({
 })
 
 function NikkeSettings(props) {
+    // Whether the snackbar/alert for copying links is visible.
     const [snackbar, setSnackbar] = useState(false);
 
+    /**
+     * Calls to update Roster Dependents with the new allowDuplicates value.
+     * Toggles allowDuplicates and re-filters roster. 
+     */
+    const onUpdateAllowDuplicates = () => {
+        props.updateRosterDependents({ allowDuplicates: !props.settings.allowDuplicates });
+    }
+
+    /**
+     * Calls to update Roster Dependents with the new maxRosterSize value.
+     * Sets maxRosterSize to value and re-filters roster. 
+     * 
+     * @param {number} value Limit of how many Nikkes can be rendered in Roster.
+     */
+    const onUpdateMaxRosterSize = (value) => {
+        props.updateRosterDependents({ maxRosterSize: value });
+    }
+
+    /**
+     * Updates compactMode to the new value. Also ensures Roster is not minimized when updated.
+     * 
+     * @param {number} value Value determining compactMode's status. (==0 if disabled, <0 if enabled to the left, >0 if enabled to the right)
+     */
+    const onUpdateCompactMode = (value) => {
+        props.setVisibility({
+            ...props.visibility,
+            rosterMin: false
+        });
+        props.updateSettings('compactMode', value);
+    }
+
+    /**
+     * Calls to copy the URI with the desired queries to the system's clipboard.
+     * 
+     * @param {boolean} benchWanted if true, the bench query will be included.
+     */
     const onClickCopyButton = (benchWanted) => {
         props.copyUriQueryToClipboard(benchWanted);
         setSnackbar(true);
@@ -80,7 +138,7 @@ function NikkeSettings(props) {
                 id='settings-dialog-body'
                 sx={{
                     overflow: "initial",
-                    padding: props.windowSmall ? '2rem 0' : '2rem'
+                    padding: props.windowSmall ? '2rem 1rem' : '2rem'
                 }}
             >
 
@@ -136,11 +194,35 @@ function NikkeSettings(props) {
                 <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
                     checked={props.settings.allowDuplicates}
-                    onChange={() => props.updateSettings('allowDuplicates', !props.settings.allowDuplicates)}
+                    onChange={onUpdateAllowDuplicates}
                     inputProps={{ 'aria-label': 'controlled' }}
                     color='warning'
                 />
                 <span className='grid-column-span-4 justify-self-start'> Allow Duplicate Nikkes </span>
+                {/* Max Nikkes in Roster */}
+                <StyledSelect
+                    className='grid-column-span-2 justify-self-end'
+                    value={props.settings.maxRosterSize}
+                    onChange={(event) => onUpdateMaxRosterSize(event.target.value)}
+                >
+                    <MenuItem value={16}>
+                        16
+                    </MenuItem>
+                    <MenuItem value={32}>
+                        32
+                    </MenuItem>
+                    <MenuItem value={64}>
+                        64
+                    </MenuItem>
+                    <MenuItem value={256}>
+                        ALL
+                    </MenuItem>
+                </StyledSelect>
+                <span
+                    className='grid-column-span-4 justify-self-start'
+                >
+                    Max Nikkes in Roster
+                </span>
 
                 {/* === Visibility Category === */}
                 <div className='grid-column-full justify-self-left'>
@@ -169,18 +251,31 @@ function NikkeSettings(props) {
                     Squads Displayed per Row
                 </span>
                 {/* Compact Mode */}
-                <StyledSwitch
+                <StyledSliderContainer
                     className='grid-column-span-2 justify-self-end'
-                    checked={props.settings.compactMode}
-                    onChange={() => props.updateSettings('compactMode', !props.settings.compactMode)}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                    color='warning'
-                />
+                >
+                    <Slider
+                        defaultValue={props.settings.compactMode}
+                        onChange={(event, value) => onUpdateCompactMode(value)}
+                        color={props.settings.compactMode === 0 ? 'unselected' : 'warning'}
+                        track={false}
+                        marks={[
+                            { value: -1, label: 'Left' },
+                            { value: 0, label: 'Off' },
+                            { value: 1, label: 'Right' }
+                        ]}
+                        min={-1}
+                        step={1}
+                        max={1}
+                        size='small'
+
+                    />
+                </StyledSliderContainer>
                 <span className='grid-column-span-4 justify-self-start'> Compact Mode </span>
                 {/* Hide Nikke Avatars */}
-                <StyledSwitch
+                {/* <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
-                    checked={props.visibility.avatars}
+                    checked={!props.visibility.avatars}
                     onChange={(event) => props.setVisibility({
                         ...props.visibility,
                         avatars: !props.visibility.avatars
@@ -188,7 +283,7 @@ function NikkeSettings(props) {
                     inputProps={{ 'aria-label': 'controlled' }}
                     color='warning'
                 />
-                <span className='grid-column-span-4 justify-self-start'> Hide Nikke Avatars </span>
+                <span className='grid-column-span-4 justify-self-start'> Hide Nikke Avatars </span> */}
                 {/* Hide Filter */}
                 <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
@@ -219,9 +314,14 @@ function NikkeSettings(props) {
                     <h3 >Export</h3>
                     <hr />
                 </div>
-                <Tooltip title='Copy Team Code' placement='top' arrow>
+                {/* Copy URL: Squads Only */}
+                <Tooltip title='Copy Team URL' placement='top' arrow>
                     <DashedButton
-                        className='sett-dashed-btn grid-column-span-3 justify-self-end'
+                        className={
+                            props.windowSmall ?
+                                'sett-dashed-btn grid-column-full '
+                                : 'sett-dashed-btn grid-column-span-3'
+                        }
                         onClick={() => onClickCopyButton(false)}
                         color='primary'
                         sx={{
@@ -233,9 +333,12 @@ function NikkeSettings(props) {
                         Squads Only
                     </DashedButton>
                 </Tooltip>
-                <Tooltip title='Copy Team Code' placement='top' arrow>
+                {/* Copy URL: Squads and Bench */}
+                <Tooltip title='Copy Team URL' placement='top' arrow>
                     <DashedButton
-                        className='sett-dashed-btn grid-column-span-3 justify-self-end'
+                        className={
+                            props.windowSmall ? 'grid-column-full' : 'grid-column-span-3'
+                        }
                         onClick={() => onClickCopyButton(true)}
                         color='primary'
                         sx={{
@@ -247,6 +350,8 @@ function NikkeSettings(props) {
                         Squads + Bench
                     </DashedButton>
                 </Tooltip>
+
+                {/* Snackbar/Alert for copying links */}
                 <Snackbar
                     open={snackbar}
                     onClose={() => setSnackbar(false)}
@@ -259,18 +364,6 @@ function NikkeSettings(props) {
                         Link copied to clipboard
                     </Alert>
                 </Snackbar>
-                {/* Debug Mode */}
-                {/* <FormControlLabel
-                    className='grid-column-full justify-self-center'
-                    control={<Switch
-                        checked={props.settings.debugMode}
-                        onChange={() => props.updateSettings('debugMode', !props.debugMode)}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                        color='warning'
-                    />}
-                    label='Debug Mode'
-                /> */}
-
             </DialogContent>
         </Dialog >
     );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
+import { MinimizeButton } from '../../pages/nikkeTeamBuilder.js';
 
 // Import MUI components
 import NikkeUnit from './nikkeUnit.js'
@@ -7,23 +8,17 @@ import NikkeUnit from './nikkeUnit.js'
 // Import MUI icons
 import ChairAltIcon from '@mui/icons-material/ChairAlt';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
 function NikkeList(props) {
     /**
      * Maps through an array of Nikke objects and converts them into an array of React components for rendering into Nikke cards.
-     * props.nikkes is used by default. If allowDuplicates is active, Roster will map through the initial NikkeData.
      * @param {object} provided Prop object used by Droppable and Draggable components (@hello-pangea/dnd).
      * @returns An array of NikkeUnit React components.
      */
     const renderDroppable = (provided) => {
-        // By default (for both Bench and Roster, we'll map through their Nikkes).
-        let list = props.nikkes;
-
-        // If allowDuplicates is active, Roster will map through the initial NikkeData.
-        if (props.section.id === 'roster' && props.allowDuplicates)
-            list = props.nikkeData
-
-        return list.map((item, index) => {
+        return props.nikkes.map((item, index) => {
             return (
                 <NikkeUnit
                     key={'unit-' + item.id + '-' + index}
@@ -48,7 +43,6 @@ function NikkeList(props) {
                     visibility={props.visibility}
                     onMoveNikke={onMoveNikke}
                     hasTargetCode={item.Code === props.targetCode}
-                    handleUnitDetails={props.handleUnitDetails}
                 />
             )
         });
@@ -71,8 +65,24 @@ function NikkeList(props) {
         props.onMoveNikke(nikkeId, props.section.id, dstSectionId, srcIndex, -1);
     }
 
+    /**
+     * Gets the component's minimized status in the visibility object depending on the  Section's ID.
+     * @returns true if the component is minimized.
+     */
+    const isMin = () => {
+        if (props.section.id === 'bench')
+            return props.visibility.benchMin;
+        else if (props.section.id === 'roster')
+            return props.visibility.rosterMin;
+        else
+            return false;
+    }
+
     return (
-        <div id={props.section.id} className='nikke-list-container'>
+        <div
+            id={props.section.id}
+            className='nikke-list-container'
+        >
             {/* Header */}
             <div className='nikke-list-header'>
                 {
@@ -80,30 +90,69 @@ function NikkeList(props) {
                         <PersonSearchIcon className='section-badge' />
                         : <ChairAltIcon className='section-badge' />
                 }
-                <h2>{props.section.title}</h2>
-            </div>
+                <h2> {props.section.title}</h2>
+                {
+                    (props.section.id === 'roster' && props.compactMode !== 0) ?
+                        null :
+                        <MinimizeButton
+                            onClick={props.toggleListMin}
+                            variant='contained'
+                            disableTouchRipple
+                            disableElevation
+                            color={
+                                isMin() ?
+                                    'success' : 'pumpkin'
+                            }
+                            sx={{
+                                height: props.windowSmall ? '1.5rem' : '100%',
+                                borderRadius: isMin() ? '0 0.25rem 0.25rem 0' : '0 0.25rem 0 0',
+                            }}
+                        >
+                            {
+                                props.visibility.filterMin ?
+                                    <ArrowDropUpIcon />
+                                    : <ArrowDropDownIcon />
+                            }
+                        </MinimizeButton>
+                }
+            </div >
             {/* Body */}
-            <Droppable
-                droppableId={props.section.id}
-                key={props.section.id}
-                direction='horizontal'
-            >
-                {(provided, snapshot) => (
-                    <div
-                        className='nikke-list'
+            {
+                isMin() ?
+                    null :
+                    <Droppable
+                        droppableId={props.section.id}
                         key={props.section.id}
-                        ref={provided.innerRef}
-                        style={{
-                            backgroundColor: snapshot.isDraggingOver ? '#1976d280' : '#b59872'
-                        }}
-                        {...provided.droppableProps}
+                        direction='horizontal'
                     >
-                        {renderDroppable(provided)}
-                        {provided.placeholder}
-                    </div>
-                )}
-            </Droppable>
-        </div>
+                        {(provided, snapshot) => (
+                            <div
+                                className='nikke-list'
+                                key={props.section.id}
+                                ref={provided.innerRef}
+                                style={{
+                                    backgroundColor: snapshot.isDraggingOver ? '#1976d280' : '#b59872'
+                                }}
+                                {...provided.droppableProps}
+                            >
+                                {renderDroppable(provided)}
+                                {
+                                    props.section.id === 'roster' && props.rosterOverflow ?
+                                        <div
+                                            id='roster-overflow-card'
+                                            className='nikke-unit'
+                                            onClick={props.overrideMaxRoster}
+                                        >
+                                            <span className='nikke-name'>...</span>
+                                        </div>
+                                        : null
+                                }
+                                {provided.placeholder}
+                            </div>
+                        )}
+                    </Droppable>
+            }
+        </div >
     );
 }
 

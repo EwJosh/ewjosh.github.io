@@ -23,8 +23,9 @@ import Close from '@mui/icons-material/Close';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import Visibility from '@mui/icons-material/Visibility';
 import ContentPaste from '@mui/icons-material/ContentPaste';
-import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import Info from '@mui/icons-material/InfoOutlined';
+import Link from '@mui/icons-material/Link';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 /**
  * Restyled <h3> for being used as a dropdown/accordion button
@@ -88,13 +89,16 @@ function NikkeHelp(props) {
             {/* Body */}
             <DialogContent id='help-dialog-body'>
                 {/* Basic Instructions */}
-                <h2>How to use Nikke Team Builder:</h2>
+                <h2>How to use the Nikke Team Builder:</h2>
                 <ul>
                     <li>
-                        Press the <Add fontSize='inherit' className='menu-icon-text' /> Add button
-                        to move a Nikke from the Roster to the Bench.
+                        Select the <Add fontSize='inherit' className='menu-icon-text' /> Move button
+                        to transfer a Nikke from the Roster to the Bench.
                     </li>
-                    <li>Drag and drop Nikkes into the dark box of a Squad.</li>
+                    <li>
+                        Drag and drop Nikkes from the <ChairAltIcon fontSize='inherit' className='menu-icon-text' /> Bench
+                        into the dark box of a <RecentActorsIcon fontSize='inherit' className='menu-icon-text' /> Squad.
+                    </li>
                     <li>
                         More squads can be added after toggling
                         the <Edit fontSize='inherit' className='menu-icon-text' /> Edit
@@ -104,6 +108,10 @@ function NikkeHelp(props) {
                         Check
                         the <Settings fontSize='inherit' className='menu-icon-text' /> Settings
                         button for more settings.
+                    </li>
+                    <li>
+                        Squads can be imported/exported by the updated URL in your browser.
+                        You can include the Bench using the button in <Settings fontSize='inherit' className='menu-icon-text' /> Settings.
                     </li>
                 </ul>
 
@@ -187,13 +195,14 @@ function NikkeHelp(props) {
                                     Squad size (Simply whether your squad is at a full legal size, 5 Nikkes)
                                 </li>
                                 <li>
-                                    Full Burst potential (Can your squad reach Full Burst, and preferrably do so every 20 seconds?)
+                                    Full Burst potential (Can your squad reach Full Burst, and preferrably do so every ~20 seconds?)
                                 </li>
-                                <ul>
-                                    <li>
-                                        Covers edge cases for B1-Recast, Red Hood's BV, and Blanc's special burst cooldown.
-                                    </li>
-                                </ul>
+                                <li>
+                                    Covers edge cases for
+                                    B1 Re-enter,
+                                    Red Hood's Burst Lamba <i>but NOT duplicate Red Hoods</i>,
+                                    and Blanc's special burst cooldown with Squad 777.
+                                </li>
                                 <li>
                                     Matches Code Weakness (If set in <Settings fontSize='inherit' className='menu-icon-text' /> Settings
                                     or the top of the page,
@@ -245,7 +254,10 @@ function NikkeHelp(props) {
                                 via the <Remove fontSize='inherit' className='menu-icon-text' /> Quick Move button.
                             </li>
                         </ul>
-                        <li>The <b>Roster</b> is initialized with all the Nikke units (up until <i>the Eva collab</i> so far).</li>
+                        <li>
+                            The <b>Roster</b> is initialized with all the Nikke units
+                            (up until <i>Rouge</i> so far).
+                        </li>
                         <ul>
                             <li>
                                 Nikkes can be moved from the Roster to the Bench
@@ -254,7 +266,17 @@ function NikkeHelp(props) {
                             <li>
                                 Roster's ability to drag-and-drop is disabled.
                             </li>
-                            <li>Filter is applied only on the Roster.</li>
+                            <li>The Roster is filtered.</li>
+                            <li>
+                                The amount of Nikkes rendered in the Roster is limited to reduce lag.
+                                If the roster exceeds the max (configurable in <Settings fontSize='inherit' className='menu-icon-text' /> Settings),
+                                there will be a <MoreHorizIcon fontSize='inherit' className='menu-icon-text'>...</MoreHorizIcon> button
+                                that temporarily overrides the limiter.
+                            </li>
+                            <li>
+                                The Roster can also be moved to a side menu in
+                                the <Settings fontSize='inherit' className='menu-icon-text' /> Settings to reduce lag and scrolling.
+                            </li>
                         </ul>
                         <li>
                             Duplicate Nikkes are not initially allowed in this Team Builder for the sake of Solo Raids.
@@ -290,12 +312,12 @@ function NikkeHelp(props) {
                         <li>
                             <h4>The categories available for filtering are</h4>
                             <ul>
-                                <li>Burst&nbsp;&nbsp;&nbsp;&nbsp;(1-Recast and Red Hood's are distinct here)</li>
+                                <li>Burst&nbsp;&nbsp;&nbsp;&nbsp;(1 Re-enter and Red Hood's are distinct here)</li>
                                 <li>Base Burst Cooldown</li>
                                 <li>Rarity&nbsp;&nbsp;&nbsp;&nbsp;(by default, R and SR are deselected)</li>
                                 <li>Class</li>
                                 <li>Code/Element</li>
-                                <li>Manufacturer</li>
+                                <li>Company/Manufacturer</li>
                                 <li>Weapon</li>
                                 <li>Name</li>
                             </ul>
@@ -328,45 +350,50 @@ function NikkeHelp(props) {
                 <Collapse in={open.settings}>
                     <ul className='dropdown-body'>
                         <li>
-                            Code Weakness can be selected.
+                            <b>Code Weakness</b> can be selected.
                             <ul>
                                 <li>Code-effective Nikkes will be highlighted.</li>
                                 <li>When selected, Squad Review will check if your squad has at least one unit with the selected code.</li>
                                 <li>Important for getting that 10% bonus damage or when Raid bosses have code immunity.</li>
                             </ul>
                         </li>
-                        <li>Reviews can be fully disabled.</li>
+                        <li><b>Reviews</b> can be fully disabled.</li>
                         <li>
-                            Duplicate Nikkes can be enabled.&nbsp;&nbsp;&nbsp;&nbsp;(Note: Re-disabling
+                            <b>Duplicate Nikkes</b> can be enabled.&nbsp;&nbsp;&nbsp;&nbsp;(Note: Re-disabling
                             duplicates doesn't delete duplicates in Squads and Bench)
                         </li>
                         <li>
-                            'Compact Mode' can be enabled which moves the Filter and Roster into a menu that can be opened via a side button.
-                            This should help reduce side-scrolling.
+                            Enabling <b>'Compact Mode'</b> moves the Filter and Roster into a menu that can be opened via a side button.
+                            This reduces scrolling between the Squads, Bench, and the Roster.
+                            The menu's position can be selected between the left and right.
                         </li>
                         <li>The Filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(But will still be active, however)</li>
                         <li>
                             For a nice screenshot or to reduce noise, you can also hide
                             the <Remove fontSize='inherit' className='menu-icon-text' /> Quick Move
-                            and <Info fontSize='inherit' className='menu-icon-text' /> Info buttons from Nikkes in Squads.
+                            and <Info fontSize='inherit' className='menu-icon-text' /> Info buttons from Nikkes inside Squads.
                         </li>
                         <li>
-                            Your Squad can be converted into a saveable/shareable URL.
+                            Your Squad can be converted into a <b>saveable/shareable URL</b> <Link fontSize='inherit' className='menu-icon-text' />.
                             <ul>
-                                <li>This URL is a way to <b>save your teams</b> or <b>share them</b> with others without having to store cookies on your device or upload your data online.</li>
+                                <li>
+                                    This URL is a way to <b>save your teams</b> or <b>share them</b> with others
+                                    without us having to store cookies on your device or upload your data online.
+                                </li>
                                 <li>
                                     The <ContentPaste fontSize='inherit' className='menu-icon-text' /> Copy buttons will copy the saveable/shareable URL to your system's clipboard.
 
                                 </li>
                                 <li>
-                                    If you want to include the Bench, use the 'Squads + Bench' button. Otherwise, you can use the link in the browser or the 'Squads Only' button.
+                                    If you want to include the Bench, use the 'Squads + Bench' button.
+                                    Otherwise, you can use the link in your browser or the 'Squads Only' button.
                                 </li>
 
                                 <li>
-                                    If the dynamic URL is used to launch the page, your Squads (and Bench) will be pre-built with the corresponding Nikkes.
+                                    If a dynamic URL is used to launch the page, your Squads (and Bench) will be pre-built with the corresponding Nikkes.
                                 </li>
-                                <li>Squad sizes up to 10 Nikkes are supported, anything beyond will be truncated.</li>
                                 <li>Up to 10 Squads are supported, anything beyond or empty will be truncated.</li>
+                                <li>Squad sizes up to 10 Nikkes are supported, anything beyond will be truncated.</li>
                                 <li>Bench sizes up to 50 are are supported, anything beyond will be truncated.</li>
                             </ul>
                         </li>
@@ -408,8 +435,8 @@ function NikkeHelp(props) {
                         <i>Neon Genesis Evangelion</i>.
                     </li>
                     <li>The Nikke Unit Avatars are screenshots edited by me. Nikke's hexagonal icons were recreated by me.</li>
-                    <li>Special thanks to my friend for motivating me to make this website more mobile-friendly.</li>
-                    <li>And thanks to you for using my team builder</li>
+                    <li>Special thanks to my friend for bug testing and motivating me to make this website more mobile-friendly.</li>
+                    <li>And thanks to you for using my team builder!</li>
                 </ul>
             </DialogContent >
         </Dialog >
