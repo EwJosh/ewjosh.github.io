@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.962ee391.css",
-    "main.js": "/static/js/main.a63ddb8a.js",
+    "main.css": "/static/css/main.e5c79df9.css",
+    "main.js": "/static/js/main.0f29b988.js",
     "static/js/787.f10dde0b.chunk.js": "/static/js/787.f10dde0b.chunk.js",
     "static/media/Neve.png": "/static/media/Neve.b2afeae60536fdc76029.png",
     "static/media/Rupee Winter Shopper.png": "/static/media/Rupee Winter Shopper.150a9a1f4a5a49e68a19.png",
@@ -129,6 +129,7 @@
     "static/media/D Killer Wife.png": "/static/media/D Killer Wife.9622a327ae4622f0a110.png",
     "static/media/Himeno.png": "/static/media/Himeno.3dc5c8e23bfecfcd3500.png",
     "static/media/2B.png": "/static/media/2B.f24d21c730a066409044.png",
+    "static/media/Rouge.png": "/static/media/Rouge.5f9650c641411bf85b2d.png",
     "static/media/Makima.png": "/static/media/Makima.2b1a236079135b88c33a.png",
     "static/media/Crow.png": "/static/media/Crow.5eaa5fb914b94ef48acd.png",
     "static/media/Elegg.png": "/static/media/Elegg.9ad439a9614723abd075.png",
@@ -148,12 +149,12 @@
     "static/media/NikkeClassSupporter.png": "/static/media/NikkeClassSupporter.e88fce0b2d97e50cf90b.png",
     "static/media/NikkeWeaponSG.png": "/static/media/NikkeWeaponSG.d43c4e3687063a7a84a7.png",
     "index.html": "/index.html",
-    "main.962ee391.css.map": "/static/css/main.962ee391.css.map",
-    "main.a63ddb8a.js.map": "/static/js/main.a63ddb8a.js.map",
+    "main.e5c79df9.css.map": "/static/css/main.e5c79df9.css.map",
+    "main.0f29b988.js.map": "/static/js/main.0f29b988.js.map",
     "787.f10dde0b.chunk.js.map": "/static/js/787.f10dde0b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.962ee391.css",
-    "static/js/main.a63ddb8a.js"
+    "static/css/main.e5c79df9.css",
+    "static/js/main.0f29b988.js"
   ]
 }
