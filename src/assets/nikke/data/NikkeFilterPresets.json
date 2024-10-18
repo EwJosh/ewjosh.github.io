@@ -1,0 +1,234 @@
+{
+  "categories": ["Sustain", "Buffs and Debuffs", "Damage Types", "Skill Triggers"],
+  "category Sustain": ["Sustain (any ally)", "Heals (selfless)", "Heals (any)", "Shields", "Taunt", "Cover"],
+  "category Buffs and Debuffs": [
+    "Heal support",
+    "DPS Buffer (selfless)",
+    "Burst Efficiency",
+    "Debuff cleansing",
+    "Debuffer (enemies)"
+  ],
+  "category Damage Types": [
+    "Pierce Dmg and support",
+    "Distributed Dmg and support",
+    "True Dmg and support",
+    "Sustained Dmg and support"
+  ],
+  "category Skill Triggers": ["Last Bullet", "Code-dependent", "Weapon-dependent", "Class-dependent"],
+  "Clear": {
+    "Triggers": [],
+    "Skill Effects": [],
+    "Skill Targets": []
+  },
+  "Sustain (any ally)": {
+    "Skill Effects": [
+      "Cover DEF ▲",
+      "Cover Max HP ▲",
+      "DEF ▲",
+      "Debuff Immunity",
+      "Decoy",
+      "Dispel Debuff",
+      "Dmg Taken ▼",
+      "HP Potency ▲",
+      "HP Recovery ▲",
+      "Hollow Max HP ▲",
+      "Invulnerability",
+      "Lifesteal",
+      "Max HP ▲",
+      "Next Shield HP ▲",
+      "Rebuild new cover",
+      "Recover HP",
+      "Recover Shield HP",
+      "Recover cover HP",
+      "Recover decoy HP",
+      "Regenerate HP",
+      "Regenerate decoy HP",
+      "Revive",
+      "Share Dmg Taken: Equal",
+      "Share Dmg Taken: Proportional",
+      "Share HP Recovery",
+      "Shield",
+      "Stealth",
+      "Storage",
+      "Taunt",
+      "Wind Element Dmg Taken ▼"
+    ],
+    "Skill Targets": [
+      "Partial Allies",
+      "Self",
+      "Code Allies",
+      "Weapon Allies: AR",
+      "Weapon Allies: MG",
+      "Weapon Allies: RL",
+      "Weapon Allies: SG",
+      "Weapon Allies: SMG",
+      "Weapon Allies: SR",
+      "Class Allies: Attacker",
+      "Class Allies: Defender",
+      "Class Allies: Supporter"
+    ]
+  },
+  "Heals (selfless)": {
+    "Skill Effects": [
+      "Recover HP",
+      "Max HP ▲",
+      "Regenerate HP",
+      "Lifesteal",
+      "Storage",
+      "Share HP Recovery",
+      "Revive",
+      "Duplicate MAX HP"
+    ],
+    "Skill Targets": [
+      "All Allies",
+      "Partial Allies",
+      "Code Allies",
+      "Weapon Allies: AR",
+      "Weapon Allies: MG",
+      "Weapon Allies: RL",
+      "Weapon Allies: SG",
+      "Weapon Allies: SMG",
+      "Weapon Allies: SR",
+      "Class Allies: Attacker",
+      "Class Allies: Defender",
+      "Class Allies: Supporter"
+    ]
+  },
+  "Heals (any)": {
+    "Skill Effects": [
+      "Recover HP",
+      "Max HP ▲",
+      "Regenerate HP",
+      "Lifesteal",
+      "Storage",
+      "Share HP Recovery",
+      "Revive",
+      "Duplicate MAX HP"
+    ],
+    "Skill Targets": []
+  },
+  "Heal support": {
+    "Skill Effects": [
+      "HP Potency ▲",
+      "HP Recovery ▲",
+      "Hollow Max HP ▲",
+      "Max HP ▲",
+      "Share HP Recovery",
+      "Duplicate MAX HP"
+    ],
+    "Skill Targets": []
+  },
+  "Shields": { "Skill Effects": ["Shield"] },
+  "Taunt": { "Skill Effects": ["Taunt", "Decoy", "Stealth"] },
+  "DPS Buffer (selfless)": {
+    "Skill Effects": [
+      "ATK ▲",
+      "Attack Dmg ▲",
+      "Attack Spd ▲",
+      "Charge Dmg Multiplier ▲",
+      "Charge Dmg ▲",
+      "Charge Spd ▲",
+      "Core Hit Dmg ▲",
+      "Crit Dmg ▲",
+      "Crit Rate normal ▲",
+      "Crit Rate ▲",
+      "Cumulative Dmg Ratio ▲",
+      "Distributed Dmg ▲",
+      "Duplicate ATK",
+      "Explosion Radius ▲",
+      "Hit Rate ▲",
+      "Interruption Dmg ▲",
+      "Max Range ▲",
+      "Parts Dmg ▲",
+      "Pellets ▲",
+      "Pierce Dmg ▲",
+      "Piercing Radius ▲",
+      "Projectile Dmg ▲",
+      "Projectile Efficacy ▲",
+      "Reload",
+      "Reload Spd ▲",
+      "Shield Dmg ▲",
+      "Single-enemy-target Burst Dmg ▲",
+      "Skill Cooldown ▼",
+      "Stack Count ▲",
+      "Status Duration ▲",
+      "Strong Element Dmg ▲",
+      "Sustained Dmg ▲",
+      "True Dmg ▲",
+      "Unlimited Ammo"
+    ],
+    "Skill Targets": [
+      "All Allies",
+      "Partial Allies",
+      "Code Allies",
+      "Weapon Allies: AR",
+      "Weapon Allies: MG",
+      "Weapon Allies: RL",
+      "Weapon Allies: SG",
+      "Weapon Allies: SMG",
+      "Weapon Allies: SR",
+      "Class Allies: Attacker",
+      "Class Allies: Defender",
+      "Class Allies: Supporter"
+    ]
+  },
+  "Burst Efficiency": {
+    "Skill Effects": ["Burst Cooldown ▼", "Burst Gauge Fill Spd ▲", "Fill Burst Gauge"]
+  },
+  "Last Bullet": {
+    "Triggers": ["Last Bullet"]
+  },
+  "Code-dependent": {
+    "Skill Targets": ["Code Allies", "Code Enemies"]
+  },
+  "Weapon-dependent": {
+    "Skill Targets": [
+      "Weapon Allies: AR",
+      "Weapon Allies: MG",
+      "Weapon Allies: RL",
+      "Weapon Allies: SG",
+      "Weapon Allies: SMG",
+      "Weapon Allies: SR"
+    ]
+  },
+  "Class-dependent": {
+    "Skill Targets": ["Class Allies: Attacker", "Class Allies: Defender", "Class Allies: Supporter"]
+  },
+  "Pierce Dmg and Support": {
+    "Skill Effects": ["Pierce", "Pierce Dmg ▲", "Pierce Radius ▲"]
+  },
+  "Distributed Dmg and Support": {
+    "Skill Effects": ["Deal Distributed Dmg", "Distributed Dmg ▲"]
+  },
+  "True Dmg and Support": {
+    "Skill Effects": ["Deal True Dmg", "True Dmg", "True Dmg ▲"]
+  },
+  "Cover": {
+    "Skill Effects": ["Cover DEF ▲", "Cover Max HP ▲", "Rebuild new cover", "Recover cover HP"]
+  },
+  "Debuff cleansing": {
+    "Skill Effects": ["Debuff Immunity", "Dispel Debuff"]
+  },
+  "Debuffer (enemies)": {
+    "Skill Effects": [
+      "ATK ▼",
+      "DEF ▼",
+      "Dispel Buff",
+      "Dmg Taken ▲",
+      "HP Potency ▼",
+      "Immobilize",
+      "Inflict Status",
+      "Pull towards center",
+      "Status Duration ▲",
+      "Stun"
+    ],
+    "Skill Targets": [
+      "All Enemies",
+      "Partial Enemies",
+      "Single Enemy",
+      "Code Enemies",
+      "Target Enemies",
+      "In-range Enemies"
+    ]
+  }
+}
