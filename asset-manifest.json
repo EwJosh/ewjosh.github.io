@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.e5c79df9.css",
-    "main.js": "/static/js/main.0f29b988.js",
+    "main.css": "/static/css/main.05b040aa.css",
+    "main.js": "/static/js/main.4ffdaab0.js",
     "static/js/787.f10dde0b.chunk.js": "/static/js/787.f10dde0b.chunk.js",
     "static/media/Neve.png": "/static/media/Neve.b2afeae60536fdc76029.png",
     "static/media/Rupee Winter Shopper.png": "/static/media/Rupee Winter Shopper.150a9a1f4a5a49e68a19.png",
@@ -26,6 +26,7 @@
     "static/media/Nihilister.png": "/static/media/Nihilister.821540c983488b9610b0.png",
     "static/media/Privaty Unkind Maid.png": "/static/media/Privaty Unkind Maid.aa0b3202ee56979c28fd.png",
     "static/media/Kilo.png": "/static/media/Kilo.075c045a16a7c7d3a22f.png",
+    "static/media/Phantom.png": "/static/media/Phantom.dcb1a8cd45c5299d756b.png",
     "static/media/Mica.png": "/static/media/Mica.47923160663fb0d36382.png",
     "static/media/Naga.png": "/static/media/Naga.f1848d3677f3ee7e5b0e.png",
     "static/media/Soda Twinkling Bunny.png": "/static/media/Soda Twinkling Bunny.25161508feb6d225d9fc.png",
@@ -57,6 +58,7 @@
     "static/media/Rosanna Chic Ocean.png": "/static/media/Rosanna Chic Ocean.28bae0f46388e9ba0ad6.png",
     "static/media/Ein.png": "/static/media/Ein.ee398087071e2bbe759d.png",
     "static/media/Signal.png": "/static/media/Signal.1a7c0bcd7e30927f3f30.png",
+    "static/media/Rumani.png": "/static/media/Rumani.858bc1b4dcab3b7634ab.png",
     "static/media/Biscuit.png": "/static/media/Biscuit.2ec5d57c5c635182d6d5.png",
     "static/media/Delta.png": "/static/media/Delta.46bb5e2301515d7c9063.png",
     "static/media/Guillotine.png": "/static/media/Guillotine.0322bb7989c860879d7a.png",
@@ -89,6 +91,7 @@
     "static/media/Soldier EG.png": "/static/media/Soldier EG.20cf16ef427d5ea1ea71.png",
     "static/media/Emilia.png": "/static/media/Emilia.0631102ecdd08ca9b5cd.png",
     "static/media/A2.png": "/static/media/A2.53dfcadbe43179e57caa.png",
+    "static/media/Quency Escape Queen.png": "/static/media/Quency Escape Queen.bf36f94145980ef28c9d.png",
     "static/media/Anis.png": "/static/media/Anis.e4bdcc115b80ba14f67c.png",
     "static/media/Centi.png": "/static/media/Centi.7ce3b5e4d76d9ef3995f.png",
     "static/media/Neon Blue Ocean.png": "/static/media/Neon Blue Ocean.d13975928cfdc5bf42e4.png",
@@ -144,17 +147,18 @@
     "static/media/NikkeCodeWind.png": "/static/media/NikkeCodeWind.77b258865caaa9d91773.png",
     "static/media/NikkeCodeWater.png": "/static/media/NikkeCodeWater.7816c5530c5cdddaf53d.png",
     "static/media/NikkeCodeElectric.png": "/static/media/NikkeCodeElectric.acd8b3299cdc34c28272.png",
+    "static/media/NikkeBurstR.png": "/static/media/NikkeBurstR.df0fdf5969a6123134c7.png",
     "static/media/NikkeCodeIron.png": "/static/media/NikkeCodeIron.0835465c069b0e4b28aa.png",
     "static/media/NikkeWeaponSR.png": "/static/media/NikkeWeaponSR.6ac578407958e69f144d.png",
     "static/media/NikkeClassSupporter.png": "/static/media/NikkeClassSupporter.e88fce0b2d97e50cf90b.png",
     "static/media/NikkeWeaponSG.png": "/static/media/NikkeWeaponSG.d43c4e3687063a7a84a7.png",
     "index.html": "/index.html",
-    "main.e5c79df9.css.map": "/static/css/main.e5c79df9.css.map",
-    "main.0f29b988.js.map": "/static/js/main.0f29b988.js.map",
+    "main.05b040aa.css.map": "/static/css/main.05b040aa.css.map",
+    "main.4ffdaab0.js.map": "/static/js/main.4ffdaab0.js.map",
     "787.f10dde0b.chunk.js.map": "/static/js/787.f10dde0b.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.e5c79df9.css",
-    "static/js/main.0f29b988.js"
+    "static/css/main.05b040aa.css",
+    "static/js/main.4ffdaab0.js"
   ]
 }
