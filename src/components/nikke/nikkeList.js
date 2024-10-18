@@ -38,8 +38,15 @@ function NikkeList(props) {
                         props.icons.Class[item.Class],
                         props.icons.Company[item.Company]
                     ]}
+                    favItemIcon={
+                        item.favAble ?
+                            props.icons.FavItem.favAble
+                            : item.favBoosted ?
+                                props.icons.FavItem.favBoosted
+                                : null
+                    }
                     highlightIcon={props.icons.Highlight}
-                    avatar={props.avatars[item.Name]}
+                    portrait={props.portraits[item.Name]}
                     visibility={props.visibility}
                     onMoveNikke={onMoveNikke}
                     hasTargetCode={item.Code === props.targetCode}
@@ -140,10 +147,20 @@ function NikkeList(props) {
                                     props.section.id === 'roster' && props.rosterOverflow ?
                                         <div
                                             id='roster-overflow-card'
-                                            className='nikke-unit'
-                                            onClick={props.overrideMaxRoster}
+                                            className={props.windowSmall ? 'nikke-unit nikke-unit-small' : 'nikke-unit'}
                                         >
-                                            <span className='nikke-name'>...</span>
+                                            <button
+                                                id='roster-overflow-temp-btn'
+                                                onClick={props.overrideMaxRoster}
+                                            >
+                                                <span className='nikke-name'>peek</span>
+                                            </button>
+                                            <button
+                                                id='roster-overflow-perm-btn'
+                                                onClick={props.unlockMaxRoster}
+                                            >
+                                                <span className='nikke-name'>unlock</span>
+                                            </button>
                                         </div>
                                         : null
                                 }
@@ -151,6 +168,12 @@ function NikkeList(props) {
                             </div>
                         )}
                     </Droppable>
+            }
+            {/* Footer: For Roster, display the amount of Nikkes rendered. */}
+            {
+                props.section.id === 'roster' ?
+                    <span>Showing {props.nikkes.length} Nikkes</span>
+                    : null
             }
         </div >
     );

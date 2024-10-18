@@ -3,7 +3,7 @@ import { Droppable } from '@hello-pangea/dnd';
 import NikkeUnit from './nikkeUnit.js';
 import { MinimizeButton } from '../../pages/nikkeTeamBuilder.js';
 // Import Review responses for review
-import ReviewDescriptions from '../../assets/data/NikkeSquadReviews.json';
+import ReviewDescriptions from '../../assets/nikke/data/NikkeSquadReviews.json';
 
 // Import MUI components
 import InputBase from '@mui/material/InputBase';
@@ -11,8 +11,8 @@ import Tooltip from '@mui/material/Tooltip';
 
 // Import MUI icons
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
-import Error from '@mui/icons-material/Error';
-import ReportProblemOutlined from '@mui/icons-material/ReportProblemOutlined';
+import ErrorIcon from '@mui/icons-material/Error';
+import ReportProblemIcon from '@mui/icons-material/ReportProblemOutlined';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 
@@ -43,8 +43,15 @@ function NikkeSquad(props) {
                         props.icons.Class[item.Class],
                         props.icons.Company[item.Company]
                     ]}
+                    favItemIcon={
+                        item.favAble ?
+                            props.icons.FavItem.favAble
+                            : item.favBoosted ?
+                                props.icons.FavItem.favBoosted
+                                : null
+                    }
                     highlightIcon={props.icons.Highlight}
-                    avatar={props.avatars[item.Name]}
+                    portrait={props.portraits[item.Name]}
                     visibility={props.visibility}
                     onMoveNikke={onMoveNikke}
                     hasTargetCode={item.Code === props.targetCode}
@@ -288,8 +295,8 @@ function NikkeSquad(props) {
                         className={'squad-review-tip review-' + reviewCase}
                         style={{ fontSize: props.windowSmall ? 'medium' : 'x-large' }}
                     >
-                        {(reviewCase === 'error') ? <Error /> : null}
-                        {(reviewCase === 'warning') ? <ReportProblemOutlined /> : null}
+                        {(reviewCase === 'error') ? <ErrorIcon /> : null}
+                        {(reviewCase === 'warning') ? <ReportProblemIcon /> : null}
                         <span>{category}</span>
                     </div>
                 }

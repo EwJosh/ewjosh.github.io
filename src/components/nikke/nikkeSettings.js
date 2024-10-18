@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Tags from '../../assets/data/NikkeTags.json';
+import Tags from '../../assets/nikke/data/NikkeTags.json';
 
 // Import MUI components
 import Dialog from '@mui/material/Dialog';
@@ -13,18 +13,19 @@ import Switch from '@mui/material/Switch';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import Slider from '@mui/material/Slider';
+import Tooltip from '@mui/material/Tooltip';
+import { styled } from '@mui/material';
 
 // Import MUI icons
-import Close from '@mui/icons-material/Close';
-import ContentPaste from '@mui/icons-material/ContentPaste';
-import { styled, Tooltip } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 
+// Restyled MUI Select and Switch to standardize sizing and coloring.
 const StyledSelect = styled(Select)({
     minWidth: '3.75rem',
     maxHeight: '2.5rem',
     backgroundColor: '#ffffff0f'
 })
-
 const StyledSwitch = styled(Switch)({
     minWidth: '3.75rem',
     maxHeight: '2.5rem',
@@ -33,6 +34,7 @@ const StyledSwitch = styled(Switch)({
     backgroundColor: '#ffffff0f'
 })
 
+// Restyled div container for a MUI Slider.
 const StyledSliderContainer = styled('div')({
     width: '6rem',
     height: '2.5rem',
@@ -41,10 +43,8 @@ const StyledSliderContainer = styled('div')({
     borderRadius: '0.5rem',
     border: '1px solid #767676',
     backgroundColor: '#ffffff0f',
-    // display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
-    // boxSizing: 'border-box',
     '.MuiSlider-root': {
         transform: 'translateY(-25%)',
         marginBottom: 0
@@ -58,6 +58,7 @@ const StyledSliderContainer = styled('div')({
     }
 })
 
+// Restyled MUI Button with a Dashed Outlined.
 const DashedButton = styled(Button)({
     minWidth: '3.75rem',
     maxHeight: '2.5rem',
@@ -128,7 +129,7 @@ function NikkeSettings(props) {
             <DialogTitle className='dialog-header'>
                 Settings
                 <IconButton onClick={props.onClose}>
-                    <Close />
+                    <CloseIcon />
                 </IconButton>
             </DialogTitle>
             <hr />
@@ -255,7 +256,7 @@ function NikkeSettings(props) {
                     className='grid-column-span-2 justify-self-end'
                 >
                     <Slider
-                        defaultValue={props.settings.compactMode}
+                        value={props.settings.compactMode}
                         onChange={(event, value) => onUpdateCompactMode(value)}
                         color={props.settings.compactMode === 0 ? 'unselected' : 'warning'}
                         track={false}
@@ -272,18 +273,18 @@ function NikkeSettings(props) {
                     />
                 </StyledSliderContainer>
                 <span className='grid-column-span-4 justify-self-start'> Compact Mode </span>
-                {/* Hide Nikke Avatars */}
-                {/* <StyledSwitch
+                {/* Hide Nikke Portrait Background */}
+                <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
-                    checked={!props.visibility.avatars}
+                    checked={!props.visibility.portraitGradient}
                     onChange={(event) => props.setVisibility({
                         ...props.visibility,
-                        avatars: !props.visibility.avatars
+                        portraitGradient: !props.visibility.portraitGradient
                     })}
                     inputProps={{ 'aria-label': 'controlled' }}
                     color='warning'
                 />
-                <span className='grid-column-span-4 justify-self-start'> Hide Nikke Avatars </span> */}
+                <span className='grid-column-span-4 justify-self-start'> Hide background for Nikke portraits </span>
                 {/* Hide Filter */}
                 <StyledSwitch
                     className='grid-column-span-2 justify-self-end'
@@ -329,7 +330,7 @@ function NikkeSettings(props) {
                             width: '100%'
                         }}
                     >
-                        <ContentPaste />
+                        <ContentPasteIcon />
                         Squads Only
                     </DashedButton>
                 </Tooltip>
@@ -346,7 +347,7 @@ function NikkeSettings(props) {
                             width: '100%'
                         }}
                     >
-                        <ContentPaste />
+                        <ContentPasteIcon />
                         Squads + Bench
                     </DashedButton>
                 </Tooltip>

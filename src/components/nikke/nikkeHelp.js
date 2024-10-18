@@ -26,6 +26,7 @@ import ContentPaste from '@mui/icons-material/ContentPaste';
 import Info from '@mui/icons-material/InfoOutlined';
 import Link from '@mui/icons-material/Link';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
 
 /**
  * Restyled <h3> for being used as a dropdown/accordion button
@@ -48,6 +49,7 @@ const DropdownButton = styled('h3')({
 function NikkeHelp(props) {
     // State used for the opening of certain sections.
     const [open, setOpen] = useState({
+        'nikkes': false,
         'squads': true,
         'reviews': false,
         'broster': true,
@@ -119,6 +121,101 @@ function NikkeHelp(props) {
                 <hr />
                 <h2>Available features</h2>
                 <span>Click to collapse sections.</span>
+
+                {/* Nikke Details */}
+                <DropdownButton
+                    className={open.nikkes ?
+                        'dropdown-btn dropdown-btn-open'
+                        : 'dropdown-btn dropdown-btn-closed'
+                    }
+                    onClick={() => handleClick('nikkes')}
+                >
+                    {open.nikkes ? <ArrowDropDownIcon fontSize='large' /> : <ArrowDropUpIcon fontSize='large' />}
+                    <AccountBoxIcon fontSize='inherit' className='menu-icon-text' />
+                    <span> Nikkes</span>
+                </DropdownButton>
+                <Collapse in={open.nikkes}>
+                    <ul className='dropdown-body'>
+                        <li>
+                            <b>Nikkes</b> are rendered in this application as cards and contain information reflecting their in-game stats.
+                        </li>
+                        <li>
+                            Selecting the <Add
+                                fontSize='inherit'
+                                className='menu-icon-text'
+                            /> / <Remove
+                                fontSize='inherit'
+                                className='menu-icon-text'
+                            /> Quick Move buttons will move the Nikke to either the Bench or Roster, depending on its current location.
+                        </li>
+                        <li>
+                            If the Nikke is located in the Bench or a Squad, you can drag and drop their card to assign them.
+                        </li>
+                        <li>
+                            Selecting the <Info fontSize='inherit' className='menu-icon-text' /> Info button
+                            will show a pop-up containing more detailed information regarding the Nikke.
+                        </li>
+                        <li>
+                            <b>Nikkes contain the following information:</b>
+                        </li>
+                        <ul>
+                            <li>Portrait Image</li>
+                            <li>Name</li>
+                            <ul><li>May be shortened or altered in the card</li></ul>
+                            <li>Rarity</li>
+                            <ul><li>In the cards, it's displayed as a background highlight behind the basic tag icons.</li></ul>
+                            <li>Burst Stage</li>
+                            <ul>
+                                <li>Re-enter Bursts (1R/2R) are regarded as separate from their base Burst values (1/2)</li>
+                                <li>Red Hood's Burst Lambda is typed out as 'V' in the pop-up</li>
+                            </ul>
+                            <li>Base Burst Cooldown</li>
+                            <ul>
+                                <li>In the card, it's indicated by the amount of banners underneath the Burst Stage.</li>
+                                <li className='list-style-none'>1 banner for 20 sec, 2 banners for 40 sec, 3 banners for 60 sec. </li>
+                            </ul>
+                            <li>Code/Element</li>
+                            <li>Weapon</li>
+                            <li>Class</li>
+                            <li>Company/Manufacturer</li>
+                            <li>Character Color</li>
+                            <ul>
+                                <li>tl;dr Characters in Nikke (Playable and certain NPCs) have colors, most notably used in their dialog.</li>
+                                <li>In the cards, it's shown as the border underneath their portrait.</li>
+                                <li> In the pop-up, it's shown along the left border of the pop-up.</li>
+                            </ul>
+                            <li>Skill Triggers</li>
+                            <ul>
+                                <li>e.g. 'Last Bullet,' 'Below HP Threshold,' etc.</li>
+                                <li>For simplicity, not all Triggers have been recorded. Only the more simple or important Triggers are listed.</li>
+                            </ul>
+                            <li>Scaling Stats and Scaling Effects</li>
+                            <ul>
+                                <li>Related Scaling Stats and Effects are linked by a <b className='menu-icon-text'>:</b>.</li>
+                                <li>
+                                    Scaling Stats are stats that are explicitly used in calculations for determining skill numbers.
+                                    Useful in determining whether a team synergizes well.
+                                    (e.g. 2B's damage output scales in proportion to her Final Max HP.)
+                                </li>
+                                <li>For simplicity, Scaling Effects is a generalization of the scaling stat's direct effect.</li>
+                                <li>If effect directly increases DPS, such as by 'ATK ▲' or 'Charge Spd ▲', it will be labeled as 'Buff Dmg.'</li>
+                                <li>If effect directly increases Sustainability, such as by 'Recovering HP' or 'Applying Shield', it will be labeled as 'Sustain.'</li>
+                                <li>If effect directly deal damage it will be labeled as 'Deal Dmg.'</li>
+                            </ul>
+                            <li>Skill Effects and Skill Targets</li>
+                            <ul>
+                                <li>Related Skill Effects and Targets are linked by a <b className='menu-icon-text'>:</b>.</li>
+                                <li>For simplicity, Skill Targets have been watered down here. However, Skill Effects should be entirely comprehensive.</li>
+                                <li>'Partial Allies'/'Partial Enemies' is anything outside 'Self'/'Single Enemy' and 'All Allies'/'All Enemies.'</li>
+                                <li>If there is a special Target such as 'Weapon' or 'Class,'' displaying that takes priority over 'Self/Single/Partial/All.'</li>
+                            </ul>
+                        </ul>
+                        <li>
+                            For the full view of the database used in this app, you can check out this Google Sheets link.
+                            (If you see this, I have not uploaded the link yet.)
+                        </li>
+                    </ul>
+                </Collapse>
 
                 {/* Squads Details */}
                 <DropdownButton
@@ -200,7 +297,7 @@ function NikkeHelp(props) {
                                 <li>
                                     Covers edge cases for
                                     B1 Re-enter,
-                                    Red Hood's Burst Lamba <i>but NOT duplicate Red Hoods</i>,
+                                    Red Hood's Burst Lambda <i>but NOT duplicate Red Hoods</i>,
                                     and Blanc's special burst cooldown with Squad 777.
                                 </li>
                                 <li>
@@ -312,16 +409,26 @@ function NikkeHelp(props) {
                         <li>
                             <h4>The categories available for filtering are</h4>
                             <ul>
-                                <li>Burst&nbsp;&nbsp;&nbsp;&nbsp;(1 Re-enter and Red Hood's are distinct here)</li>
-                                <li>Base Burst Cooldown</li>
+                                <li>Name</li>
                                 <li>Rarity&nbsp;&nbsp;&nbsp;&nbsp;(by default, R and SR are deselected)</li>
+                                <li>Burst&nbsp;&nbsp;&nbsp;&nbsp;(Re-enter and Red Hood's are distinct here)</li>
+                                <li>Burst Cooldown</li>
                                 <li>Class</li>
                                 <li>Code/Element</li>
                                 <li>Company/Manufacturer</li>
                                 <li>Weapon</li>
-                                <li>Name</li>
+                                <li>
+                                    Favorite Item state&nbsp;&nbsp;&nbsp;&nbsp;(Whether to
+                                    show only the base Nikke, apply their Favorite Items, or show both versions.)
+                                </li>
+                                <li>Skill Triggers</li>
+                                <li>Scaling Stats and Scaling Effects</li>
+                                <li>Skill Effects and Skill Targets</li>
+                                <li className='tertiary-li'>Note: For more information, see the Nikke section above.</li>
                             </ul>
                         </li>
+                        <li>Selecting a Preset will update the 'Triggers', 'Skill Effects', and/or 'Skill Targets'.</li>
+                        <ul><li>This should help find units for specific purposes like healing or code-support.</li></ul>
                         <li>
                             <SettingsBackupRestoreIcon fontSize='inherit' className='menu-icon-text' />
                             &nbsp;The filter tags can be reset.
@@ -355,17 +462,37 @@ function NikkeHelp(props) {
                                 <li>Code-effective Nikkes will be highlighted.</li>
                                 <li>When selected, Squad Review will check if your squad has at least one unit with the selected code.</li>
                                 <li>Important for getting that 10% bonus damage or when Raid bosses have code immunity.</li>
+                                <li>Also configurable in the main page, below the page title.</li>
                             </ul>
                         </li>
                         <li><b>Reviews</b> can be fully disabled.</li>
                         <li>
                             <b>Duplicate Nikkes</b> can be enabled.&nbsp;&nbsp;&nbsp;&nbsp;(Note: Re-disabling
-                            duplicates doesn't delete duplicates in Squads and Bench)
+                            duplicates doesn't delete existing duplicates in Squads and Bench.)
+                        </li>
+                        <li>If the app gets too laggy, you can limit the <b>Max Nikkes rendered in the Roster</b> (Default is 'ALL').</li>
+                        <ul>
+                            <li>If set, Nikkes beyond the cap (and including) will be hidden.</li>
+                            <li>
+                                You can temporarily bypass the limit by selecting <b className='menu-icon-text'>peek</b>.
+                                Updating the filter will enforce the limit again.
+                            </li>
+                            <li>
+                                Selecting <b className='menu-icon-text'>unlock</b> will reset this setting to 'ALL'.
+                            </li>
+                        </ul>
+                        <li>
+                            The width of the Squad grid can be configured by updating <b>Squads per Row</b>.
+                            This is automatically set and updated according to window size.
                         </li>
                         <li>
                             Enabling <b>'Compact Mode'</b> moves the Filter and Roster into a menu that can be opened via a side button.
                             This reduces scrolling between the Squads, Bench, and the Roster.
                             The menu's position can be selected between the left and right.
+                        </li>
+                        <li>
+                            By default this is hidden for website clarity, but you can show a <b>background for Nikke portraits</b>
+                            to display a background gradient depending on the character's color.
                         </li>
                         <li>The Filter section can be hidden&nbsp;&nbsp;&nbsp;&nbsp;(But will still be active, however)</li>
                         <li>
@@ -405,18 +532,10 @@ function NikkeHelp(props) {
                 <h2>Upcoming Features</h2>
                 <ul>
                     <li>
-                        Miscellaneous Tag System.
-                        Used for filtering and reviews in regards to Nikke attributes
-                        such as healing, shielding, pierce, true damage, cleansing, etc.
-                    </li>
-                    <li>
                         Add hightlight system. An alternate filter that highlights tagged Nikkes like similar to Code Weakness.
                     </li>
                     <li>
                         Extend filter/highlight system to Bench and Squads.
-                    </li>
-                    <li>
-                        Adjust component positions and Compact Mode features to be more intuitive.
                     </li>
                 </ul>
                 <hr />

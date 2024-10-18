@@ -9,7 +9,7 @@ function Home() {
     }
 
     return (
-        <div className="page">
+        <div id="homepage" className="page">
             <div className="flex-row spacing-1">
                 <div className="half-box paper-back">
                     <p>

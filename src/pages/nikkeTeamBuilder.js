@@ -1,11 +1,11 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { DragDropContext } from '@hello-pangea/dnd'; //'react-beautiful-dnd';
 
 // Import assets
-import NikkeData from '../assets/data/NikkeData.json';
-import Tags from '../assets/data/NikkeTags.json';
-import { Icons, getNikkeAvatars } from '../components/nikke/nikkeAssets.js'
+import NikkeData from '../assets/nikke/data/NikkeData.json';
+import Tags from '../assets/nikke/data/NikkeTags.json';
+import { Icons, getNikkePortraits } from '../components/nikke/nikkeAssets.js'
 
 // Import components
 import './nikkeTeamBuilder.css';
@@ -22,14 +22,14 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Drawer from '@mui/material/Drawer';
-import { Popper, Slide, styled } from '@mui/material';
+import { styled } from '@mui/material';
 
 // Import MUI icons
-import Add from '@mui/icons-material/Add';
-import Edit from '@mui/icons-material/Edit';
-import QuestionMark from '@mui/icons-material/QuestionMark';
-import Settings from '@mui/icons-material/Settings';
-import DeleteForever from '@mui/icons-material/DeleteForever';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import DriveFileRenameOutlineSharpIcon from '@mui/icons-material/DriveFileRenameOutlineSharp';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
@@ -38,9 +38,10 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
+import CloseIcon from '@mui/icons-material/Close';
 
 // Import assets (cont.)
-const NikkeAvatars = { ...getNikkeAvatars() };
+const NikkePortraits = { ...getNikkePortraits() };
 const WINDOW_WIDTH_2_SQUADS = 1290;
 const WINDOW_WIDTH_3_SQUADS = 1920
 // Force-limit Squad parsing amount at 10 to limit parsing issues.
@@ -52,6 +53,7 @@ const URI_SQUAD_SIZE_LIMIT = 10;
 // Force-limit Bench size to 50 to limit url length. (Arbitrary limit)
 const URI_BENCH_SIZE_LIMIT = 50;
 
+// Restyled MUI Button and IconButton. Used for the buttons in the TB's header.
 const StyledButton = styled(Button)({
     width: '5rem',
     height: '2.5rem',
@@ -64,7 +66,6 @@ const StyledButton = styled(Button)({
         filter: 'saturate(60%)'
     }
 })
-
 const StyledIconButton = styled(IconButton)({
     backgroundColor: '#1976d2',
     '&:hover': {
@@ -73,6 +74,7 @@ const StyledIconButton = styled(IconButton)({
     }
 })
 
+// Restyled MUI Button for toggling minimizing of components (Squads, Bench, Filter, Roster). Can be imported to other components.
 export const MinimizeButton = styled(Button)({
     minWidth: 'auto',
     maxWidth: '25%',
@@ -83,6 +85,7 @@ export const MinimizeButton = styled(Button)({
 });
 
 function NikkeTeamBuilder(props) {
+    // Search Parameters read by the URI query.
     let [searchParams, setSearchParams] = useSearchParams();
 
     /**
@@ -90,9 +93,22 @@ function NikkeTeamBuilder(props) {
     * See Tags to see what's available..
     */
     const [filter, setFilter] = useState({
-        ...Tags,
+        // Initialize Basic Tags to have all selected.
+        'Burst': Tags.Burst,
+        'Burst Cooldown': Tags['Burst Cooldown'],
+        'Class': Tags.Class,
+        'Code': Tags.Code,
+        'Company': Tags.Company,
+        'Weapon': Tags.Weapon,
+
         'Rarity': ['SSR'],  // Initialize Rarity to only have SSR selected.
-        'Name': ''          // Add Name to filter (not in Tags) and initialize as blank.
+        'FavItem': 'all',   // Initialize FavItem to show both favAble and favBoosted.
+        'Name': '',         // Add Name to filter (not in Tags) and initialize as blank.
+        'Triggers': [],     // Initialize TSS to be empty.
+        'Scaling Stats': [],
+        'Scaling Effects': [],
+        'Skill Effects': [],
+        'Skill Targets': []
     });
 
     /**
@@ -101,23 +117,25 @@ function NikkeTeamBuilder(props) {
      */
     const [settings, setSettings] = useState({
         // Application states
-        editable: false,        // Can edit Squads.
-        openSideRoster: false,  // Side menu (Filter+Rostera) is open.
-        openHelp: false,        // Help dialog is open.
-        openSettings: false,    // Settings dialog is open.
-        rosterOverflow: false,  // Roster exceeds maxRosterSize.
-
+        'editable': false,        // Can edit Squads.
+        'openSideRoster': false,  // Side menu (Filter+Rostera) is open.
+        'openHelp': false,        // Help dialog is open.
+        'openSettings': false,    // Settings dialog is open.
+        'rosterOverflow': false,  // Roster exceeds maxRosterSize.
+        // Filter categories displayed per row. Initialized value depends on window size.
+        'filterCtgrPerRow': (window.innerWidth <= WINDOW_WIDTH_2_SQUADS) ?
+            2 : 4,
         // User-configurable
-        targetCode: 'None',     // The selected Code weakness (for reviews).
-        enableReviews: true,    // Reviews is enabled.
-        allowDuplicates: false, // Duplicate Nikkes are allowed.
-        maxRosterSize: 32,      // Maximum Nikkes rendered in Roster.
-        squadsPerRow: (window.innerWidth <= WINDOW_WIDTH_2_SQUADS) ? // Squads displayed per row. Initialized value depends on window size.
+        'targetCode': 'None',     // The selected Code weakness (for reviews).
+        'enableReviews': true,    // Reviews is enabled.
+        'allowDuplicates': false, // Duplicate Nikkes are allowed.
+        'maxRosterSize': 256,      // Maximum Nikkes rendered in Roster.
+        'squadsPerRow': (window.innerWidth <= WINDOW_WIDTH_2_SQUADS) ? // Squads displayed per row. Initialized value depends on window size.
             1 : (window.innerWidth > WINDOW_WIDTH_3_SQUADS) ?
                 3
                 : 2,
-        compactMode: 0,         // Whether filter and roster are at the bottom of the page (==0) or a side menu on the left (<0) or right (>0).
-        debugMode: false        // Debug mode is enabled (for console printing data). Leave false unless editing.
+        'compactMode': 0,         // Whether filter and roster are at the bottom of the page (==0) or a side menu on the left (<0) or right (>0).
+        'debugMode': true        // Debug mode is enabled (for console printing data). Leave false unless editing.
     });
     /**
      * Sets the selected setting to the given value.
@@ -133,20 +151,35 @@ function NikkeTeamBuilder(props) {
     }
 
     /**
-   * Event fired when window is resized. Updates squadsPerRow in settings.
-   */
+     * Event fired when window is resized.
+     * Updates squadsPerRow and filterCtgrPerRow in settings.
+     */
     const handleResize = () => {
+        // Small
         if (window.innerWidth <= WINDOW_WIDTH_2_SQUADS) {
-            updateSettings('squadsPerRow', 1);
+            setSettings({
+                ...settings,
+                squadsPerRow: 1,
+                filterCtgrPerRow: 2
+            });
         }
+        // Large
         else if (window.innerWidth > WINDOW_WIDTH_3_SQUADS) {
-            updateSettings('squadsPerRow', 3);
+            setSettings({
+                ...settings,
+                squadsPerRow: 3,
+                filterCtgrPerRow: 4
+            });
         }
+        // Medium
         else {
-            updateSettings('squadsPerRow', 2);
+            setSettings({
+                ...settings,
+                squadsPerRow: 2,
+                filterCtgrPerRow: 4
+            });
         }
     }
-    // window.addEventListener('resize', handleResize);
 
     /**
      * An array of allL Nikke IDs from NikkeData.
@@ -211,15 +244,18 @@ function NikkeTeamBuilder(props) {
         // Iterable list of visibility keys for NikkeUnit.
         'categories': ['Code', 'Weapon', 'Class', 'Company'],
 
-        'avatars': true,        // Whether Nikke Avatars are rendered or not.
+        'tutorial': true,       // Whether the page shows use-case hints.
+        'portrait': true,        // Whether Nikke Portraits are rendered or not.
+        'portraitGradient': false, // Whether Nikke portraits have a gradient background.
         'allSquadsMin': false,  // Whether ALL the squad components are minimized.
         'filter': true,         // Whether the filter component is rendered at all.
         'filterMin': false,     // Whether the filter component is minimized.
+        'filterAdvanced': false,    // Whether the advanced filtering options are visible.
         'benchMin': false,      // Whether the Bench and Roster components are minimized, respectively.
         'rosterMin': false,
         'categoryIcons': true,  // If false, shrinks NikkeUnit and skips rendering of the bottom four icons.
-        'squadClean': true,      // Whether the quick-move (+/-) and info (i) buttons are rendered in Squads.
-        'unitDetails': false,    // Whether the popper for a NikkeUnit is visible or not.
+        'squadClean': true,     // Whether the quick-move (+/-) and info (i) buttons are rendered in Squads.
+        'unitDetails': false,   // Whether the popper for a NikkeUnit is visible or not.
 
         // Icons that can be hidden if false
         'Burst': true,
@@ -228,7 +264,8 @@ function NikkeTeamBuilder(props) {
         'Code': true,
         'Company': true,
         'Weapon': true,
-        'Rarity': true
+        'Rarity': true,
+        'FavItem': true
     });
 
     /**
@@ -433,7 +470,7 @@ function NikkeTeamBuilder(props) {
 
         // Update filter if roster is involved.
         if (srcSectionId === 'roster' || dstSectionId === 'roster')
-            handleFilter(filter, rosterIdsCopy);
+            handleFilter(filter, rosterIdsCopy, settings.overrideMaxRoster);
         // Set new lists.
         setNikkeList(newNikkeList);
         // If Squads were updated, update squad dependents.
@@ -529,24 +566,43 @@ function NikkeTeamBuilder(props) {
         if (allowDuplicates)
             inputIds = allNikkeIds;
 
-        // Some easter eggs / meme filters. See else for normal filtering.
-        if (inputFilter.Name.toLowerCase() === 'best girl') {
-            newFilteredNikkes = [...allNikkeIds];
+        // Escape special characters in the input Name and force lower case.
+        let inputName = inputFilter.Name.toLowerCase();
+        inputName = inputName.replace(/[/\-\\^$*+?.()|[\]{}]/g, '\\$&');
+
+        // Some easter eggs / meme / test filters. See else for normal filtering.
+        if (inputName.toLowerCase() === 'best girl') {
+            newFilteredNikkes = [...allNikkeIds];   // All girls are best girl.
         }
-        else if (inputFilter.Name.toLowerCase() === 'real best girl') {
+        else if (inputName.toLowerCase() === 'real best girl') {
             newFilteredNikkes = [53, 107];   // Scarlet and Scarlet: BS
+        }
+        else if (inputName === 'test 32') {
+            // Gives exactly 32 Nikkes. Used to test the overflow functionality.
+            let tempIds = ['96', '97', '111', '19', '20', '121', '93', '66', '21', '129', '117', '79', '85', '22', '23', '123',
+                '74', '24', '118', '82', '113', '25', '25f', '26', '83', '27', '126', '112', '114', '28', '29', '30'];
+            tempIds.forEach(nikkeId => {
+                if (!nikkeList.broster.bench.nikkeIds.includes(nikkeId)) {
+                    newFilteredNikkes.push(nikkeId);
+                }
+            })
         }
         // Otherwise, filter as normal.
         else {
             // Run Nikke roster through filter.
-            // - Return true if nikke matches filter.
+            // - Return false if Nikke doesn't match filter; return true if nikke matches filter.
             newFilteredNikkes = inputIds.filter(nikkeId => {
                 let nikke = getNikkeById(nikkeId);
 
                 // If Name is being filtered, check if Nikke's name or title matches.
-                if (inputFilter.Name != null && inputFilter.Name.length > 0) {
-                    // Create RegExp using filter. Using Start of String (^) and forcing filter to lowercase.
-                    let regex = new RegExp('^' + inputFilter.Name.toLowerCase())
+                if (inputName != null && inputName.length > 0) {
+                    // Create regex to check for start+inputName OR whitespace+inputName.
+                    // Using Start of String (^), OR (|), and Whitespace (\s).
+                    // (e.g. 'ma' won't proc 'friMA', but will proc 'MAst' and 'privaty: unkind MAid')
+                    let regex = new RegExp(
+                        '^' + inputName
+                        + '|\\s' + inputName
+                    );
                     // Check regex to nikke Name, if nothing is returned then reject Nikke.
                     // If Nikke has a Title, check if at least one of title or name matches.
                     if (
@@ -563,34 +619,62 @@ function NikkeTeamBuilder(props) {
                         return false;
                 }
 
-                // For each category, check if the selected tags match the Nikke
-                for (let j = 0; j < inputFilter.categories.length; j++) {
-                    let category = inputFilter.categories[j];
+                // Check for FavItem (one is selected from 'favAble', 'favBoosted', and 'all'):
+                // - If the tag is favAble, omit Nikke if favBoosted is true.
+                // - If the tag is favBoosted, omit Nikke if favAble is true.
+                // - Otherwise, don't influence.
+                if (inputFilter.FavItem === 'favAble' && nikke.favBoosted)
+                    return false;
+                else if (inputFilter.FavItem === 'favBoosted' && nikke.favAble)
+                    return false;
 
-                    // If all tags of a given category are selected, skip category
-                    if (inputFilter[category].length === Tags[category].length) {
-                        continue;
-                    }
+                // For each filterable categories, check if any the selected tags match the Nikke.
+                for (let j = 0; j < Tags.filterList.length; j++) {
+                    // Fetch category ID (or array of IDs).
+                    let category = Tags.filterList[j];
 
+                    // If any category cannot find a Nikke, filter out.
                     let found = false;
 
-                    // For each tag in a category, search for the selected tag
-                    for (let i = 0; i < inputFilter[category].length; i++) {
+                    // If the filterList entry is an array of IDs, they can be linked.
+                    if (Array.isArray(category)) {
+                        // Search the array of IDs.
+                        // If any are skippable (empty or full), perform standard filter search.
+                        let useLinked = true;
+                        category.forEach(ctgrId => {
+                            if (inputFilter[ctgrId].length === 0
+                                || inputFilter[ctgrId].length === Tags[ctgrId].length
+                            )
+                                useLinked = false;
+                        });
 
-                        // If a selected tag matches, set found and then break
-                        if (inputFilter[category][i] === nikke[category]) {
-                            found = true;
-                            break;
+                        // If none of the linked categories are skippable, use linked filter search.
+                        if (useLinked)
+                            found = searchLinkedFilterCategory(nikke, category, inputFilter);
+                        // Otherwise perform standard filter search for each category in the array.
+                        else {
+                            for (let c = 0; c < category.length; c++) {
+                                found = searchFilterCategory(nikke, category[c], inputFilter);
+
+                                // If any lack the matching tag(s), omit Nikke.
+                                if (!found)
+                                    return false;
+                            }
                         }
                     }
+                    // Otherwise, use the standard filter search.
+                    else
+                        found = searchFilterCategory(nikke, category, inputFilter);
 
+                    // If filtered category does not contain a matching tag, omit Nikke.
                     if (!found)
                         return false;
-                    // Check each category
                 }
-                // If good
+
+                // If there are no problems, keep Nikke.
                 return true;
             });
+
         }
 
         // Initialize newSettings to overwrite rosterOverflow and maxRosterSize.
@@ -612,6 +696,164 @@ function NikkeTeamBuilder(props) {
         // Update FilteredNikkes array and Settings.
         nikkeList.broster.froster.nikkeIds = newFilteredNikkes;
         setSettings(newSettings);
+    }
+
+    /**
+     * Parses through the tag(s) in the provided filtered category and checks if a match exists for the provided Nikke. 
+     * 
+     * @param {object} nikke Object containing Nikke data.
+     * @param {string} categoryId String identifier for the category to be searched through. 
+     * @param {object} inputFilter Object containing the inputted filter.
+     * @returns false if the Nikke's data does not match the filter's data, in respect to the provided category. Otherwise true.
+     */
+    const searchFilterCategory = (nikke, categoryId, inputFilter) => {
+        // Fetch the respective values to compare the Nikke and Filter.
+        let nikkeValue = nikke[categoryId];
+        let filterList = inputFilter[categoryId];
+
+        // If the filtered category does not exist, skip category.
+        // If all tags of a given category are selected or unselected, skip category.
+        if (filterList == null
+            || filterList.length === Tags[categoryId].length
+            || filterList.length === 0
+        )
+            return true;
+        // If Nikke does not have the category and the category isn't being skipped, omit Nikke.
+        else if (nikkeValue == null)
+            return false;
+
+        // Check if nikkeValue is an array or a single primitive .
+        let isArray = Array.isArray(nikkeValue);
+
+        // For each selected tag within a category, search for a match with the Nikke.
+        for (let i = 0; i < filterList.length; i++) {
+            // Fetch selected tag.
+            let tag = filterList[i];
+
+            // If the Nikke's entry is an array, parse through the array.
+            if (isArray) {
+                for (let k = 0; k < nikkeValue.length; k++) {
+                    // If any elements of the array match the selected tag, return true.
+                    if (tag === nikkeValue[k])
+                        return true;
+                }
+            }
+            // If the Nikke's entry is a single value, compare with the selected tag.
+            else {
+                // If they match, return true
+                if (tag === nikkeValue)
+                    return true;
+                // Special Case: If the category is 'Burst' and the tag is 'R', check if the Burst is '1R' or '2R'.
+                else if ((categoryId === 'Burst' && tag === 'R')
+                    && (nikkeValue === '1R' || nikkeValue === '2R'))
+                    return true;
+            }
+        }
+
+        // If no match is found after parsing, omit Nikke.
+        return false;
+    }
+
+    /**
+     * Parses through the tag(s) in the provided filtered linked-categories and check if a match exists for the provided Nikke. 
+     * Compares using multiple equal-length arrays from the Nikke to the arrays from the inputted filter.
+     * Category values from the Nikke are linked together by index.
+     * Uses recursion to allow X arrays to be linked together.
+     * 
+     * Example:
+     * nikke={A: [a0, a1, a2, a2], B:[b0, b0, b0, b1]}, categoryIds=[A, B], inputFilter={A: [a0, a2, a5], B: [b0, b2]}
+     * This function will link nikke.A and nikke.B by indices to check
+     * if any permutation from the Nikke ([a0, b0], [a1, b0], [a2, b0], [a2, b1]) will match with
+     * any possible permutation from the filter ([a0, b0], [a0, b2], [a2, b0], [a2, b2], [a5, b0], [a5, b2]).
+     * Since [a0, b0] is found in this example Nikke, the function would return true with these arguments.
+     *  
+     * @param {object} nikke Object containing Nikke data.
+     * @param {Array} categoryIds Array of string identifiers for the categories to be searched through.
+     * @param {object} inputFilter Object containing the inputted filter.
+     * @returns false if the Nikke's data does not match the filter's data, in respect to the provided category. Otherwise true.
+     */
+    const searchLinkedFilterCategory = (nikke, categoryIds, inputFilter) => {
+        // If the input category(s) is invalid, skip category.
+        if (categoryIds == null || categoryIds.length === 0)
+            return true;
+
+        // If either Nikke or Filter are missing any of the given categoryIds,
+        // then omit (if does not exit in Nikke) or skip (if does not exist or empty in Filter).
+        for (let c = 0; c < categoryIds.length; c++) {
+            if (nikke[categoryIds[c]] == null)
+                return false;
+            else if (inputFilter[categoryIds[c]].length === 0)
+                return true;
+        }
+
+        // Loop through the possible permutations of Nikke array elements.
+        for (let i = 0; i < nikke[categoryIds[0]].length; i++) {
+            // Link Nikke array elements by index.
+            let nikkeValue = [];
+            for (let c = 0; c < categoryIds.length; c++) {
+                nikkeValue.push(nikke[categoryIds[c]][i]);
+            }
+
+            // If we reach an index that doesn't have enough elements in all arrays,
+            // there would be no match, so omit Nikke.
+            if (nikkeValue.length !== categoryIds.length)
+                return false;
+
+            // Initiate recursion for checking the linked arrays.
+            let found = searchLinkedFilterCategoryRecurse(nikkeValue, categoryIds, inputFilter, 0);
+
+            // If a full linked match was found, keep Nikke.
+            if (found)
+                return true;
+        }
+
+        // If a match is never found, omit Nikke.
+        return false;
+    }
+
+    /**
+     * Recursively checks if the elements of a given Nikke array
+     * are found in the respective arrays of the Filter object, as designated by the array of category IDs.
+     * Each layer of recursion will compare the depth-indexed element of the Nikke array
+     * with all the filter options from the depth-indexed category.
+     * 
+     * @param {Array} nikkeValues Array of values from the Nikke to be compared.
+     * @param {Array} categoryIds Array of string identifiers for the categories to be searched through.
+     * @param {object} inputFilter Object containing the inputted filter.
+     * @param {number} depth Index of the categoryIds being searched.
+     * @returns true if the each element in nikkeValue can be found in the respective categories of the filter.
+     */
+    const searchLinkedFilterCategoryRecurse = (nikkeValues, categoryIds, inputFilter, depth) => {
+        // If depth is invalid, omit Nikke.
+        if (depth < 0 || depth >= categoryIds.length)
+            return false;
+
+        // Fetch the Nikke tag and Category ID for comparing by depth.
+        let nikkeTag = nikkeValues[depth];
+        let categoryId = categoryIds[depth];
+
+        // Loop through the filtered option in the category.
+        for (let f = 0; f < inputFilter[categoryId].length; f++) {
+            let found = false;
+            // Fetch the filtered option to directly compare with the Nikke tag.
+            let filterOption = inputFilter[categoryId][f];
+
+            // If they do match AND there is still more categories to search,
+            // recurse search with incremented depth.
+            if (nikkeTag === filterOption && depth < categoryIds.length - 1)
+                found = searchLinkedFilterCategoryRecurse(nikkeValues, categoryIds, inputFilter, depth + 1);
+            // If they do match AND we've parsed through all categories (i.e. max depth),
+            // then keep Nikke.
+            else if (nikkeTag === filterOption)
+                return true;
+
+            if (found)
+                return true;
+            // If no immediate match is found, continue checking all filtered options
+        }
+
+        // If no match is ever found in the filter, omit Nikke.
+        return false;
     }
 
     /**
@@ -810,8 +1052,8 @@ function NikkeTeamBuilder(props) {
         // If we're setting minimized to true, check if all other squads are minimized.
         if (allMin) {
             for (let i = 0; i < nikkeList.squadOrder.length; i++) {
-                let squadId = nikkeList.squadOrder[i];
-                if (squadId !== squadId && !nikkeList.squads[squadId].minimized) {
+                let squId = nikkeList.squadOrder[i];
+                if (squadId !== squId && !nikkeList.squads[squId].minimized) {
                     allMin = false;
                     break;
                 }
@@ -1169,6 +1411,7 @@ function NikkeTeamBuilder(props) {
                 icons={Icons}
                 windowSmall={props.windowSmall}
                 windowLarge={props.windowLarge}
+                gridWidth={settings.filterCtgrPerRow}
                 tags={Tags}
                 visibility={visibility}
                 setVisibility={setVisibility}
@@ -1192,7 +1435,7 @@ function NikkeTeamBuilder(props) {
             section={nikkeList.broster.roster}
             nikkes={collectNikkes(nikkeList.broster.froster.nikkeIds)}
             icons={Icons}
-            avatars={NikkeAvatars}
+            portraits={NikkePortraits}
             windowSmall={props.windowSmall}
             visibility={visibility}
             toggleListMin={() => setVisibility({
@@ -1204,8 +1447,12 @@ function NikkeTeamBuilder(props) {
             onMoveNikke={handleMoveNikke}
             targetCode={settings.targetCode}
             allowDuplicates={settings.allowDuplicates}
-            rosterOverflow={settings.rosterOverflow}
+            rosterOverflow={
+                (nikkeList.broster.froster.nikkeIds.length === (settings.maxRosterSize - 1) && !settings.overrideMaxRoster)
+                || settings.overrideMaxRoster
+            }
             overrideMaxRoster={overrideMaxRoster}
+            unlockMaxRoster={() => handleFilter(filter, nikkeList.broster.roster.nikkeIds, false, { maxRosterSize: 256 })}
             nikkeData={NikkeData}
             {...additionalProps}
         />
@@ -1257,7 +1504,7 @@ function NikkeTeamBuilder(props) {
     }
 
     return (
-        <div className="page" style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
+        <div id='nikke-tb' className='page' style={{ fontSize: props.windowSmall ? '0.75rem' : '1rem' }}>
             {/* Side Menu Button */}
             {
                 settings.compactMode !== 0 && !settings.openSideRoster ?
@@ -1297,7 +1544,7 @@ function NikkeTeamBuilder(props) {
                         <StyledIconButton
                             onClick={() => updateSettings('openHelp', true)}
                         >
-                            <QuestionMark />
+                            <QuestionMarkIcon />
                         </StyledIconButton>
                     </Tooltip>
                     <NikkeHelp
@@ -1325,7 +1572,7 @@ function NikkeTeamBuilder(props) {
                             id: 'quick-code-menu'
                         }}
                         sx={{
-                            ".MuiOutlinedInput-notchedOutline": { border: settings.targetCode === 'None' ? 0 : '1px solid gold' }
+                            '.MuiOutlinedInput-notchedOutline': { border: settings.targetCode === 'None' ? 0 : '1px solid gold' }
                         }}
                     >
                         <MenuItem value='None'>
@@ -1356,7 +1603,7 @@ function NikkeTeamBuilder(props) {
                         <StyledIconButton
                             onClick={() => updateSettings('openSettings', true)}
                         >
-                            <Settings />
+                            <SettingsIcon />
                         </StyledIconButton>
                     </Tooltip>
                     {/* Settings Dialog */}
@@ -1386,7 +1633,7 @@ function NikkeTeamBuilder(props) {
                                         backgroundColor: '#209320'
                                     }
                                 }}
-                            ><Add />
+                            ><AddIcon />
                             </StyledIconButton>
                         </Tooltip>
                             : null
@@ -1399,7 +1646,7 @@ function NikkeTeamBuilder(props) {
                     >
                         <StyledButton
                             onClick={() => updateSettings('editable', !settings.editable)}
-                            startIcon={settings.editable ? <DriveFileRenameOutlineSharpIcon /> : <Edit />}
+                            startIcon={settings.editable ? <DriveFileRenameOutlineSharpIcon /> : <EditIcon />}
                             color='inherit'
                             sx={{
                                 outline: settings.editable ? '2px solid  #ffffffcc' : 0,
@@ -1460,12 +1707,12 @@ function NikkeTeamBuilder(props) {
 
             {/* Main Content */}
             <DragDropContext onDragEnd={onDragEnd}>
-                {/* Squad Section */}
+                {/* Squads Section */}
                 <div
                     id='squad-megacontainer'
                     style={{
                         gridTemplateColumns: 'repeat(' + settings.squadsPerRow + ', 1fr)',
-                        gridTemplateRows: 'repeat(' + Math.ceil(nikkeList.squadOrder.length / settings.squadsPerRow) + ', min-content)',
+                        gridTemplateRows: 'repeat(' + Math.ceil((nikkeList.squadOrder.length + visibility.tutorial) / settings.squadsPerRow) + ', min-content)'
                     }}
                 >
                     {
@@ -1522,7 +1769,7 @@ function NikkeTeamBuilder(props) {
                                                 : 'middle'
                                     }
                                     icons={Icons}
-                                    avatars={NikkeAvatars}
+                                    portraits={NikkePortraits}
                                     windowSmall={props.windowSmall}
                                     visibility={visibility}
                                     onMoveNikke={handleMoveNikke}
@@ -1548,7 +1795,7 @@ function NikkeTeamBuilder(props) {
                                                         borderWidth: '1px 1px 1px 0',
                                                         borderRadius: '0 50% 50% 0'
                                                     }}
-                                                ><DeleteForever fontSize='small' /></IconButton></Tooltip>
+                                                ><DeleteForeverIcon fontSize='small' /></IconButton></Tooltip>
                                             <Tooltip title='Add Squad below' placement='left' arrow>
                                                 <IconButton
                                                     onClick={() => handleAddSquad(index + 1)}
@@ -1560,12 +1807,38 @@ function NikkeTeamBuilder(props) {
                                                         borderWidth: '1px 1px 1px 0',
                                                         borderRadius: '0 50% 50% 0'
                                                     }}
-                                                ><Add /></IconButton></Tooltip>
+                                                ><AddIcon /></IconButton></Tooltip>
                                         </div>
                                         : null
                                 }
                             </div>;
                         })
+                    }
+                    {/* Tutorial tip */}
+                    {
+                        visibility.tutorial ?
+                            <div
+                                className='squad-supercontainer tutorial'
+                                style={{
+                                    width: props.windowSmall ? '20.25em' : '36.5rem'
+                                }}
+                            >
+                                <h4>Tip:</h4>
+                                <Button
+                                    onClick={() => setVisibility({ ...visibility, tutorial: false })}
+                                    size={props.windowSmall ? 'small' : 'medium'}
+                                >
+                                    Dismiss <CloseIcon />
+                                </Button>
+                                <p>
+                                    For instructions, select the <QuestionMarkIcon fontSize='inherit' className='menu-icon-text' /> button above.
+                                </p><p>
+                                    Want more squads?
+                                    Toggle the <EditIcon fontSize='inherit' className='menu-icon-text' /> Edit button above
+                                    and add more with <AddIcon fontSize='inherit' className='menu-icon-text' />.
+                                </p>
+                            </div>
+                            : null
                     }
                 </div>
 
@@ -1575,7 +1848,7 @@ function NikkeTeamBuilder(props) {
                     section={nikkeList.broster.bench}
                     nikkes={collectNikkes(nikkeList.broster.bench.nikkeIds)}
                     icons={Icons}
-                    avatars={NikkeAvatars}
+                    portraits={NikkePortraits}
                     windowSmall={props.windowSmall}
                     visibility={visibility}
                     toggleListMin={() => setVisibility({
