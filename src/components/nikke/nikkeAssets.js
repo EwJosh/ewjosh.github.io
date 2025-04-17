@@ -41,9 +41,6 @@ import FavBoostedIcon from '../../assets/nikke/images/icons/NikkeFavBoosted.png'
 import BlankIcon from '../../assets/nikke/images/icons/NikkeIconBase.png';
 import HighlightIcon from '../../assets/nikke/images/icons/NikkeIconHighlight.png';
 
-// Import Nikke Data for getting portrait images
-import NikkeData from '../../assets/nikke/data/NikkeData.json';
-
 /**
  * Constant collection of icons
  */
@@ -100,21 +97,22 @@ export { icons as Icons };
 
 /**
  * Dynamically imports image assets using paths created by Nikke Names to get their portraits.
+ * 
+ * @param {Array<Object>} nikkeData Array of Nikke data objects
  * @returns Dictionary of image assets for Nikke portraits
  */
-function getNikkePortraits() {
+function getNikkePortraits(nikkeData) {
     let nikkePortraits = {};
     let imgContext = require.context('../../assets/nikke/images/portraits', true);
 
-    NikkeData.forEach(nikke => {
-        let name = nikke.Name.replace(':', '');
-
+    nikkeData.forEach(nikke => {
+        let name = nikke.Name.replace(/[:()]/g, '');
         try {
-            let image = imgContext(`./${name}.png`);
+            let img = imgContext(`./${name}.png`);
 
             nikkePortraits = {
                 ...nikkePortraits,
-                [nikke.Name]: image
+                [nikke.Name]: img
             };
         } catch (error) {
             console.log('Missing Portrait asset for ', name);
@@ -124,3 +122,22 @@ function getNikkePortraits() {
     return nikkePortraits;
 }
 export { getNikkePortraits };
+
+/**
+ * Import an image to use if a Nikke portrait can't be found.
+ * 
+ * @param {Array<Object>} nikkeData Array of Nikke data objects.
+ * @returns image to default to.
+ */
+function getDefaultNikkePortrait(nikkeData) {
+    let imgContext = require.context('../../assets/nikke/images/portraits', true);
+
+    let defaultImg = null;
+    try {
+        defaultImg = imgContext(`./Default Nikke.png`);
+    } catch (error) {
+        console.log('Missing default Portrait asset.');
+    }
+    return defaultImg;
+}
+export { getDefaultNikkePortrait };

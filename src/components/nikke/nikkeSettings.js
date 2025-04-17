@@ -78,7 +78,7 @@ function NikkeSettings(props) {
      * Toggles allowDuplicates and re-filters roster. 
      */
     const onUpdateAllowDuplicates = () => {
-        props.updateRosterDependents({ allowDuplicates: !props.settings.allowDuplicates });
+        props.updateRosterDependents(null, { allowDuplicates: !props.settings.allowDuplicates });
     }
 
     /**
@@ -88,7 +88,7 @@ function NikkeSettings(props) {
      * @param {number} value Limit of how many Nikkes can be rendered in Roster.
      */
     const onUpdateMaxRosterSize = (value) => {
-        props.updateRosterDependents({ maxRosterSize: value });
+        props.updateRosterDependents(null, { maxRosterSize: value });
     }
 
     /**

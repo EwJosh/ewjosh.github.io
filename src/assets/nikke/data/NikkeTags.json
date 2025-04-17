@@ -1,4 +1,20 @@
 {
+  "primitiveCategories": [
+    "Id",
+    "Name",
+    "Title",
+    "Rarity",
+    "Burst",
+    "Burst Cooldown",
+    "Code",
+    "Weapon",
+    "Class",
+    "Company",
+    "Color",
+    "favAble",
+    "favBoosted"
+  ],
+  "arrayCategories": ["Triggers", "Scaling Stats", "Scaling Effects", "Skill Effects", "Skill Targets"],
   "mainCategories": ["Rarity", "Burst", "Burst Cooldown", "Code", "Weapon", "Class", "Company"],
   "advancedCategories": ["Triggers", ["Scaling Stats", "Scaling Effects"], ["Skill Effects", "Skill Targets"]],
   "filterList": [

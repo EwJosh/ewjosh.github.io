@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+// Drag 'n Drop library.
 import { DragDropContext } from '@hello-pangea/dnd'; //'react-beautiful-dnd';
+// HTTP Client. For fetching the csv data.
+import axios from 'axios';
 
 // Import assets
-import NikkeData from '../assets/nikke/data/NikkeData.json';
 import Tags from '../assets/nikke/data/NikkeTags.json';
-import { Icons, getNikkePortraits } from '../components/nikke/nikkeAssets.js'
+import { Icons, getNikkePortraits, getDefaultNikkePortrait } from '../components/nikke/nikkeAssets.js'
 
 // Import components
 import './nikkeTeamBuilder.css';
@@ -40,8 +42,7 @@ import RecentActorsIcon from '@mui/icons-material/RecentActors';
 import SettingsBackupRestoreIcon from '@mui/icons-material/SettingsBackupRestore';
 import CloseIcon from '@mui/icons-material/Close';
 
-// Import assets (cont.)
-const NikkePortraits = { ...getNikkePortraits() };
+// Thresholds for auto-setting the number of squads shown per row.
 const WINDOW_WIDTH_2_SQUADS = 1290;
 const WINDOW_WIDTH_3_SQUADS = 1920
 // Force-limit Squad parsing amount at 10 to limit parsing issues.
@@ -73,6 +74,9 @@ const StyledIconButton = styled(IconButton)({
         filter: 'saturate(60%)'
     }
 })
+const CodeDropDownIcon = styled(ArrowDropDownIcon)({
+    fill: '#ffffff00'
+})
 
 // Restyled MUI Button for toggling minimizing of components (Squads, Bench, Filter, Roster). Can be imported to other components.
 export const MinimizeButton = styled(Button)({
@@ -85,8 +89,16 @@ export const MinimizeButton = styled(Button)({
 });
 
 function NikkeTeamBuilder(props) {
+    // Loading state variable.
+    const [isLoading, setIsLoading] = useState(true);
+
     // Search Parameters read by the URI query.
-    let [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
+
+    // Dictionary of Nikkes and their respective portrait asset.
+    const [nikkePortraits, setNikkePortraits] = useState({});
+    // Default portrait if one can't be found.
+    const [defaultNikkePortrait, setDefaultNikkePortrait] = useState(null);
 
     /**
     * Active set of tags to process user filtering and can be modified.
@@ -182,9 +194,71 @@ function NikkeTeamBuilder(props) {
     }
 
     /**
-     * An array of allL Nikke IDs from NikkeData.
+     * Information of all Nikkes. Nikke Data includes...
+     * primitive attributes: Id, Title, Rarity, Burst, Burst Cooldown, Code, Weapon, Class, Company, Color, favAble, favBoosted
+     * array attributes: Triggers, Scaling Stats, Scaling Effects, Skill Effects, Skill Targets
      */
-    const allNikkeIds = NikkeData.map(item => item.Id);
+    const [nikkeData, setNikkeData] = useState([]);
+
+    /**
+     * Converts Comma-separated-value-formatted (CSV-formatted) text into an array of Nikke objects.
+     * 
+     * @param {string} csvText Comma-separated-value-formatted string containing Nikke Data.
+     * @returns an array of objects with Nikke data.
+     */
+    const parseCsv = (csvText) => {
+        // Split CSV text into rows.
+        let rows = csvText.split(/\r?\n/);
+        // Extract header in the first row.
+        let header = rows[0].split(',');
+        // Initialize an array to store parsed data.
+        let data = [];
+
+        // Loop through each row (except header/row 0).
+        for (let j = 1; j < rows.length; j++) {
+            // Split the row by commas (,).
+            let row = rows[j].split(',');
+            // Create an object (nikke) using the data in a given row and add it to the data array.
+            let nikke = {};
+
+            // Parse through each row.
+            for (let i = 0; i < header.length; i++) {
+                // If there is no value, skip.
+                if (row[i] === '' || row[i] === '---')
+                    continue;
+
+                // Fetch attribute from header.
+                let attribute = header[i];
+
+                // If attribute/category is known to be primitive, set attribute to be the found value.
+                if (Tags.primitiveCategories.includes(attribute))
+                    nikke[attribute] = row[i];
+                // If attribute/category is known to be an array, initialize array or appendfound value appropriately.
+                else if (Tags.arrayCategories.includes(attribute)) {
+                    if (nikke[attribute] == null)
+                        nikke[attribute] = [row[i]];
+                    else
+                        nikke[attribute].push(row[i]);
+                }
+                // If neither are true, throw warning.
+                else
+                    console.log('Warning: category not found in tag list:', attribute);
+            }
+
+            data.push(nikke);
+        }
+        return data;
+    }
+
+    /**
+     * Gets an array of all Nikke IDs.
+     * @returns an array of all Nikke IDs found in NikkeData.
+     */
+    const getAllNikkeIds = (inputData = nikkeData) => {
+        if (inputData.length > 0) return inputData.map(item => item.Id);
+        else return [];
+    };
+
 
     /**
      * Initial JSON Object containing...
@@ -227,11 +301,11 @@ function NikkeTeamBuilder(props) {
             'roster': {
                 id: 'roster',
                 title: 'Roster',
-                nikkeIds: [...allNikkeIds]
+                nikkeIds: getAllNikkeIds()
             },
             'froster': {
                 id: 'froster',
-                nikkeIds: [...allNikkeIds]
+                nikkeIds: getAllNikkeIds()
             }
         },
         squadOrder: ['squad-1', 'squad-2', 'squad-3']
@@ -467,10 +541,18 @@ function NikkeTeamBuilder(props) {
 
         }
 
-
-        // Update filter if roster is involved.
+        // Update froster if roster is involved by running filter and getting the IDs.
         if (srcSectionId === 'roster' || dstSectionId === 'roster')
-            handleFilter(filter, rosterIdsCopy, settings.overrideMaxRoster);
+            newNikkeList = {
+                ...nikkeList,
+                broster: {
+                    ...nikkeList.broster,
+                    froster: {
+                        ...nikkeList.broster.froster,
+                        nikkeIds: handleFilter(filter, rosterIdsCopy, settings.overrideMaxRoster)
+                    }
+                }
+            };
         // Set new lists.
         setNikkeList(newNikkeList);
         // If Squads were updated, update squad dependents.
@@ -509,7 +591,7 @@ function NikkeTeamBuilder(props) {
         let nikkes = [];
 
         nikkeIds.forEach(nikkeId => {
-            NikkeData.forEach(nikke => {
+            nikkeData.forEach(nikke => {
                 if (nikke.Id === nikkeId)
                     nikkes.push(nikke);
             })
@@ -519,28 +601,14 @@ function NikkeTeamBuilder(props) {
     }
 
     /**
-     * Gets the specified Nikke object via its Name value through the original NikkeData list, if it exists.
-     * @param {string} nikkeName Full name value of the desired Nikke.
-     * @returns The specified Nikke if found in the original list, null otherwise.
-     */
-    const getNikkeByName = (nikkeName) => {
-        for (let i = 0; i < NikkeData.length; i++) {
-            if (NikkeData[i].Name === nikkeName)
-                return NikkeData[i];
-
-        }
-        return null;
-    }
-
-    /**
-     * Gets the specified Nikke object via its ID value through the original NikkeData list, if it exists.
+     * Gets the specified Nikke object via its ID value through the original nikkeData list, if it exists.
      * @param {string} nikkeId ID value of the desired Nikke.
      * @returns The specified Nikke if found in the original list, null otherwise.
      */
     const getNikkeById = (nikkeId) => {
-        for (let i = 0; i < NikkeData.length; i++) {
-            if (NikkeData[i].Id === nikkeId)
-                return NikkeData[i];
+        for (let i = 0; i < nikkeData.length; i++) {
+            if (nikkeData[i].Id === nikkeId)
+                return nikkeData[i];
 
         }
         return null;
@@ -553,6 +621,7 @@ function NikkeTeamBuilder(props) {
      * @param {Array<string>} inputIds String Array of Nikke IDs. Defaults to state roster IDs.
      * @param {boolean} overrideMaxRoster true if filter should ignore maxRosterSize. Defaults to false.
      * @param {object} inputSettings JSON Object of settings to be read and updated. Defaults to state settings.
+     * @returns an integer array of Nikke ID values of filtered Nikkes.
      */
     const handleFilter = (inputFilter = filter, inputIds = nikkeList.broster.roster.nikkeIds, overrideMaxRoster = false, inputSettings = { allowDuplicates: settings.allowDuplicates, maxRosterSize: settings.maxRosterSize }) => {
         // Update filter state.
@@ -564,7 +633,7 @@ function NikkeTeamBuilder(props) {
 
         // If allowDuplicates is active, use entire Nikke ID list as the input.
         if (allowDuplicates)
-            inputIds = allNikkeIds;
+            inputIds = getAllNikkeIds();
 
         // Escape special characters in the input Name and force lower case.
         let inputName = inputFilter.Name.toLowerCase();
@@ -572,12 +641,12 @@ function NikkeTeamBuilder(props) {
 
         // Some easter eggs / meme / test filters. See else for normal filtering.
         if (inputName.toLowerCase() === 'best girl') {
-            newFilteredNikkes = [...allNikkeIds];   // All girls are best girl.
+            newFilteredNikkes = [...getAllNikkeIds()];   // All girls are best girl.
         }
         else if (inputName.toLowerCase() === 'real best girl') {
             newFilteredNikkes = [53, 107];   // Scarlet and Scarlet: BS
         }
-        else if (inputName === 'test 32') {
+        else if (inputName.toLowerCase() === 'test 32') {
             // Gives exactly 32 Nikkes. Used to test the overflow functionality.
             let tempIds = ['96', '97', '111', '19', '20', '121', '93', '66', '21', '129', '117', '79', '85', '22', '23', '123',
                 '74', '24', '118', '82', '113', '25', '25f', '26', '83', '27', '126', '112', '114', '28', '29', '30'];
@@ -693,9 +762,20 @@ function NikkeTeamBuilder(props) {
             };
         }
 
-        // Update FilteredNikkes array and Settings.
-        nikkeList.broster.froster.nikkeIds = newFilteredNikkes;
+        // Update froster IDs and Settings.
+        let newNikkeList = {
+            ...nikkeList,
+            broster: {
+                ...nikkeList.broster,
+                froster: {
+                    ...nikkeList.broster.froster,
+                    nikkeIds: newFilteredNikkes
+                }
+            }
+        };
+        setNikkeList(newNikkeList);
         setSettings(newSettings);
+        return newFilteredNikkes;
     }
 
     /**
@@ -1133,8 +1213,8 @@ function NikkeTeamBuilder(props) {
             // Initialize temp information for building the new nikkeList.
             let newSquads = {};
             let newSquadOrder = [];
-            let newBenchIds = initNikkeList.broster.bench.nikkeIds;
-            let newRosterIds = initNikkeList.broster.roster.nikkeIds;
+            let newBenchIds = [];
+            let newRosterIds = getAllNikkeIds();
 
             // If squadQuery isn't empty, parse through it.
             if (squadQuery != null && squadQuery.length !== 0) {
@@ -1222,7 +1302,7 @@ function NikkeTeamBuilder(props) {
         // Split up Nikke IDs.
         let stringIds = inputString.split('-');
 
-        // Initialize nikkeIds array.
+        // Initialize nikkeIDs array.
         let nikkeIds = [];
         // Limit parsing to maxLength. (Arbitrary decision, but I want to limit URL sizes).
         // If maxLength is negative, set limit stringIds.length.
@@ -1230,16 +1310,12 @@ function NikkeTeamBuilder(props) {
         if (sizeLimit < 0)
             sizeLimit = stringIds.length;
 
-        // Loop through Nikke Id strings.
+        // Loop through Nikke ID strings.
         for (let i = 0; i < sizeLimit; i++) {
-            // Check to see if Nikke ID exists. Throw exception if not found.
-            // let nikke = getNikkeById(stringIds[j]);
-            // if (nikke == null)
-            //     throw new Error('Squad Code Importer: Nikke ID ', stringIds[j], ' not found');
-            // let nikkeId = nikke.Id;
+            // Grab Nikke ID
             let nikkeId = stringIds[i];
 
-            // Push Nikke's Id to array
+            // Push Nikke's ID to array
             nikkeIds.push(nikkeId);
 
             // Remove from Roster, if it exists
@@ -1435,7 +1511,7 @@ function NikkeTeamBuilder(props) {
             section={nikkeList.broster.roster}
             nikkes={collectNikkes(nikkeList.broster.froster.nikkeIds)}
             icons={Icons}
-            portraits={NikkePortraits}
+            portraits={nikkePortraits}
             windowSmall={props.windowSmall}
             visibility={visibility}
             toggleListMin={() => setVisibility({
@@ -1453,37 +1529,100 @@ function NikkeTeamBuilder(props) {
             }
             overrideMaxRoster={overrideMaxRoster}
             unlockMaxRoster={() => handleFilter(filter, nikkeList.broster.roster.nikkeIds, false, { maxRosterSize: 256 })}
-            nikkeData={NikkeData}
+            nikkeData={nikkeData}
+            defaultNikkePortrait={defaultNikkePortrait}
             {...additionalProps}
         />
     }
 
     /**
      * Called on component mount/load (empty dependency).
-     * - Initializes Squad and Bench according to URI's Query.
-     * - Enforces new URL over old URL.
+     * - Fetches information from online database.
+     * - Sets Nikke Data and Nikke List to match the new information.
+     * - Concludes loading (sets isLoading to false).
      * - Adds the resize listener (once) without overwriting the one in the parent App.js.
-     * - Calls to update Roster using Filter.
      */
     useEffect(() => {
-        // Initialize nikkeList through dynamic URL upon page startup.
-        // Also enforce the new URL (nikke-team-builder) over the old URL (nikkeTeamBuilder).
-        let listById = readUriQuery(searchParams.get('squads'), searchParams.get('bench'));
+        // Fetch database information.
+        // Use Axios to get the CSV (Comma-separated Values) data from the URL (my Google Spreadsheet).
+        let csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSPsUYbJeBgyP__oQ9VQmhhuSt8XicQKBf4KLgZi6iZ-70ApxVhcnkPp456GPlRFFbCSVVLq_w8RRN6/pub?output=csv';
 
-        if (listById != null) {
-            setNikkeList(listById);
-            setsquadCt(listById.squadOrder.length);
-            window.history.replaceState(null, '', '#/apps/nikke-team-builder?' + searchParams.toString());
-        }
-        else
-            window.history.replaceState(null, '', '#/apps/nikke-team-builder');
+        // Fetch Nikke Data from database. Check for isLoading to prevent fetch running multiple times and overwriting dependencies.
+        if (isLoading)
+            axios.get(csvUrl)
+                .then((response) => {
+                    // Convert the csv-formatted data from response into an array of objects.
+                    let tempNikkeData = parseCsv(response.data);
+
+                    // Set nikkeData and nikkeList states.
+                    setNikkeData(tempNikkeData);
+                    setNikkeList({
+                        ...initNikkeList,
+                        broster: {
+                            ...initNikkeList.broster,
+                            roster: {
+                                ...initNikkeList.broster.roster,
+                                nikkeIds: getAllNikkeIds(tempNikkeData)
+                            }
+                        }
+                    });
+
+                    // Update isLoading.
+                    setIsLoading(false);
+                })
+                .catch((error) => {
+                    // Throw error if caught.
+                    console.error('Error fetching CSV data:', error);
+                });
+        // End of axios get
 
         // Add additional eventListener for window resizing.
         window.addEventListener('resize', handleResize);
-
-        // Call RosterDependents to Filter.
-        updateRosterDependents();
     }, [])
+
+    /**
+     * Called after isLoading is updated.
+     * - Initializes Squad and Bench according to URI's Query.
+     * - Enforces new URL over old URL.
+     * - Calls to update Roster using Filter.
+     * - Update Portraits.
+     */
+    useEffect(() => {
+        // Fetch list information found in dynamic URL upon page startup.
+        let listById = readUriQuery(searchParams.get('squads'), searchParams.get('bench'));
+        if (listById != null) {
+            // Call RosterDependents to Filter. Grab filtered roster IDs.
+            let frosterIds = updateRosterDependents(listById.broster.roster.nikkeIds);
+
+            // Update NikkeList and squadCt according to URI Query with proper filtered roster IDs.
+            setNikkeList({
+                ...listById,
+                broster: {
+                    ...listById.broster,
+                    froster: {
+                        ...listById.broster.froster,
+                        nikkeIds: frosterIds
+                    }
+                }
+            });
+            setsquadCt(listById.squadOrder.length);
+
+            // Also enforce the new URL (nikke-team-builder) over the old URL (nikkeTeamBuilder).
+            window.history.replaceState(null, '', '#/apps/nikke-team-builder?' + searchParams.toString());
+        }
+        // If URI Query is empty, update filtered roster normally.
+        else {
+            // Call RosterDependents to Filter.
+            updateRosterDependents();
+
+            // Also enforce the new URL (nikke-team-builder) over the old URL (nikkeTeamBuilder).
+            window.history.replaceState(null, '', '#/apps/nikke-team-builder');
+        }
+
+        // Import Portraits and Default Portrait based on nikkeData.
+        setNikkePortraits(getNikkePortraits(nikkeData));
+        setDefaultNikkePortrait(getDefaultNikkePortrait(nikkeData));
+    }, [isLoading])
 
     /**
      * Called (explicitly) whenever Squads or squadOrder are updated.
@@ -1498,9 +1637,13 @@ function NikkeTeamBuilder(props) {
      * Called (explicitly) whenever Roster is updated.
      * Updates Roster according to Filter.
      * @param {object} inputSettings JSON Object of the settings to be used for concurrency and updating.
+     * @return an array of Nikke IDs that pass the filter.
      */
-    const updateRosterDependents = (inputSettings = { allowDuplicates: settings.allowDuplicates, maxRosterSize: settings.maxRosterSize }) => {
-        handleFilter(filter, nikkeList.broster.roster.nikkeIds, false, inputSettings);
+    const updateRosterDependents = (inputIds, inputSettings = { allowDuplicates: settings.allowDuplicates, maxRosterSize: settings.maxRosterSize }) => {
+        if (inputIds == null)
+            return handleFilter(filter, nikkeList.broster.roster.nikkeIds, false, inputSettings);
+        else
+            return handleFilter(filter, inputIds, false, inputSettings);
     }
 
     return (
@@ -1525,7 +1668,7 @@ function NikkeTeamBuilder(props) {
             }
             {/* Page Title: prints states if debugMode is enabled */}
             <h1
-                onClick={() => settings.debugMode ? console.log(nikkeList, nikkeList.broster, settings, visibility)
+                onClick={() => settings.debugMode ? console.log(nikkeData, nikkeList, settings, visibility)
                     : null
                 }
             >
@@ -1558,7 +1701,7 @@ function NikkeTeamBuilder(props) {
                         onChange={(event) => updateSettings('targetCode', event.target.value)}
                         // variant='standard'
                         // disableUnderline
-                        IconComponent={null}
+                        IconComponent={CodeDropDownIcon}
                         SelectDisplayProps={{
                             style: {
                                 display: 'flex',
@@ -1769,7 +1912,8 @@ function NikkeTeamBuilder(props) {
                                                 : 'middle'
                                     }
                                     icons={Icons}
-                                    portraits={NikkePortraits}
+                                    portraits={nikkePortraits}
+                                    defaultNikkePortrait={defaultNikkePortrait}
                                     windowSmall={props.windowSmall}
                                     visibility={visibility}
                                     onMoveNikke={handleMoveNikke}
@@ -1848,7 +1992,8 @@ function NikkeTeamBuilder(props) {
                     section={nikkeList.broster.bench}
                     nikkes={collectNikkes(nikkeList.broster.bench.nikkeIds)}
                     icons={Icons}
-                    portraits={NikkePortraits}
+                    portraits={nikkePortraits}
+                    defaultNikkePortrait={defaultNikkePortrait}
                     windowSmall={props.windowSmall}
                     visibility={visibility}
                     toggleListMin={() => setVisibility({

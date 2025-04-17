@@ -46,7 +46,7 @@ function NikkeList(props) {
                                 : null
                     }
                     highlightIcon={props.icons.Highlight}
-                    portrait={props.portraits[item.Name]}
+                    portrait={props.portraits[item.Name] != null ? props.portraits[item.Name] : props.defaultNikkePortrait}
                     visibility={props.visibility}
                     onMoveNikke={onMoveNikke}
                     hasTargetCode={item.Code === props.targetCode}
